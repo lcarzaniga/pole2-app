@@ -1,0 +1,11 @@
+# Drift codegen options.
+#
+# `store_date_time_values_as_text` stores DateTime columns as ISO-8601 UTC text
+# instead of Unix seconds — portable and timezone-safe, which matters for the
+# future cloud-sync path (see docs/DOMAIN_MODEL.md §5).
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          store_date_time_values_as_text: true

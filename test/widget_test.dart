@@ -1,0 +1,161 @@
+import 'package:drift/native.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:project_kobe/app/app.dart';
+import 'package:project_kobe/app/theme/app_theme.dart';
+import 'package:project_kobe/core/database/app_database.dart';
+import 'package:project_kobe/core/providers/database_provider.dart';
+import 'package:project_kobe/features/home/presentation/home_screen.dart';
+import 'package:project_kobe/l10n/app_localizations.dart';
+import 'package:project_kobe/shared/brand/pole_wordmark.dart';
+import 'package:project_kobe/shared/brand/turtle_shell_menu.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+/// Wraps Home with a real theme, an in-memory database, Italian localization,
+/// and Reduce Motion on (so animations collapse to an instant).
+Widget _framed(AppDatabase db) {
+  return ProviderScope(
+    overrides: [
+      databaseProvider.overrideWith((ref) {
+        ref.onDispose(db.close);
+        return db;
+      }),
+    ],
+    child: MaterialApp(
+      theme: AppTheme.light,
+      locale: const Locale('it'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      // Reduce Motion on, but keep the real viewport size (copyWith, not a
+      // zeroed MediaQueryData) — the shell geometry reads MediaQuery.size.
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(disableAnimations: true),
+        child: child!,
+      ),
+      home: const HomeScreen(),
+    ),
+  );
+}
+
+Future<void> _teardown(WidgetTester tester) async {
+  await tester.pumpWidget(const SizedBox());
+  await tester.pumpAndSettle();
+}
+
+void main() {
+  // The launcher persists a familiarity counter via shared_preferences; give
+  // tests an in-memory mock so it never hits an unregistered plugin.
+  setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  testWidgets('The real app builds without error (router + onGenerateTitle)',
+      (tester) async {
+    // Pumps the actual KobeApp (not a stripped-down MaterialApp), so app-level
+    // wiring like onGenerateTitle and the GoRouter is exercised. This catches
+    // crashes that a bare MaterialApp harness would miss.
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        databaseProvider.overrideWith((ref) {
+          ref.onDispose(db.close);
+          return db;
+        }),
+      ],
+      child: const KobeApp(),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(tester.takeException(), isNull);
+    // The home app bar shows the Pole² brand wordmark (Work Sans, Text.rich).
+    expect(find.byType(PoleWordmark), findsWidgets);
+
+    // The app must be pinned to Italian: English is not a supported locale, so
+    // no mixed Italian/English interface can ever appear.
+    expect(KobeApp.supportedLocale, const Locale('it'));
+    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(app.locale, const Locale('it'));
+    expect(app.supportedLocales, const [Locale('it')]);
+    // The Italian empty-state copy is showing (not the English draft).
+    expect(find.text('Una casa serena per le tue cose'), findsWidgets);
+    expect(find.text('A calm home for your things'), findsNothing);
+
+    await _teardown(tester);
+  });
+
+  testWidgets('With no possessions, Home shows the calm Italian empty state',
+      (tester) async {
+    await tester.pumpWidget(_framed(AppDatabase.forTesting(NativeDatabase.memory())));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(PoleWordmark), findsOneWidget);
+    expect(find.text('Una casa serena per le tue cose'), findsOneWidget);
+    expect(find.text('Tutto resta su questo dispositivo'), findsOneWidget);
+    expect(find.bySemanticsLabel('Conserva qualcosa'), findsOneWidget);
+
+    await _teardown(tester);
+  });
+
+  testWidgets('Tapping the turtle blooms the shell into exactly six actions',
+      (tester) async {
+    // A real phone portrait (≈ Galaxy S23 logical size), so the centred bloom
+    // and all six labels sit inside safe bounds — the geometry we ship.
+    tester.view.physicalSize = const Size(360, 780);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_framed(AppDatabase.forTesting(NativeDatabase.memory())));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.bySemanticsLabel('Conserva qualcosa'));
+    await tester.pumpAndSettle();
+
+    // Exactly the six labels, in the consistent "Un/Una …" grammatical form.
+    const labels = [
+      'Un oggetto',
+      'Una foto',
+      'Un documento',
+      'Un promemoria',
+      'Una nota',
+      'Un dettaglio',
+    ];
+    for (final label in labels) {
+      expect(find.text(label), findsOneWidget);
+    }
+    // No stray seventh hexagon action tile.
+    expect(find.byType(TurtleShellMenu), findsOneWidget);
+
+    // A not-yet-wired action closes the shell and shows a calm, human message.
+    await tester.tap(find.text('Una nota'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.textContaining('inizia conservando'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+
+    await _teardown(tester);
+  });
+
+  testWidgets('Home shows a calm deadline summary when a date is upcoming',
+      (tester) async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    final p = await db.possessionsDao.createPossession(title: 'Frigorifero');
+    await db.eventsDao.createReminder(
+      possessionId: p.id,
+      title: 'Scadenza garanzia',
+      at: DateTime.now().add(const Duration(days: 12)),
+    );
+
+    await tester.pumpWidget(_framed(db));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    // The reminder's own title plus a localized "in 12 days".
+    expect(find.textContaining('Scadenza garanzia'), findsWidgets);
+    expect(find.textContaining('tra 12 giorni'), findsWidgets);
+
+    await _teardown(tester);
+  });
+}

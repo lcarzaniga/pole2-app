@@ -1,0 +1,4 @@
+○ sleep.target - Sleep
+     Loaded: loaded (]8;;file://loris-srv01/usr/lib/systemd/system/sleep.target\/usr/lib/systemd/system/sleep.target]8;;\; static[0;1;32m[0m)
+     Active: inactive (dead)
+       Docs: ]8;;man:systemd.special(7)\man:systemd.special(7)]8;;\

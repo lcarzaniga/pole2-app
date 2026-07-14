@@ -1,0 +1,137 @@
+{
+  "@@locale": "it",
+
+  "appName": "Pole²",
+
+  "homeEmptyTitle": "Una casa serena per le tue cose",
+  "homeEmptyBody": "Tutto ciò a cui tieni può vivere qui — al sicuro, e solo su questo dispositivo.",
+  "homeEmptyCta": "Tocca per iniziare",
+  "privacyLine": "Tutto resta su questo dispositivo",
+
+  "a11yKeepSomething": "Conserva qualcosa",
+  "a11yClose": "Chiudi",
+
+  "actionObject": "Un oggetto",
+  "actionPhoto": "Una foto",
+  "actionDocument": "Un documento",
+  "actionReminder": "Un promemoria",
+  "actionNote": "Una nota",
+  "actionDetail": "Un dettaglio",
+  "quickActionSoon": "Presto. Per ora, inizia conservando un oggetto.",
+
+  "photoSourceTitle": "Aggiungi una foto",
+  "photoTakePhoto": "Scatta una foto",
+  "photoChooseGallery": "Scegli dalla galleria",
+  "cameraDeniedSnack": "Pole² non può ancora usare la fotocamera. Puoi autorizzarla dalle impostazioni.",
+  "captureFailedSnack": "Nulla è andato perso. Riprova quando vuoi.",
+
+  "createTitle": "Conserva qualcosa",
+  "whatIsItLabel": "Che cos'è?",
+  "createHint": "es. Lavastoviglie, l'orologio del nonno, l'auto",
+  "createReassure": "Puoi aggiungere foto, ricevute e dettagli quando vuoi. Per ora non serve altro.",
+  "keepItButton": "Conserva",
+
+  "upcomingDatesCount": "{count, plural, =1{1 data in arrivo} other{{count} date in arrivo}}",
+  "@upcomingDatesCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "addPhoto": "Aggiungi una foto",
+  "renameTooltip": "Rinomina",
+  "nameLabel": "Nome",
+  "saveButton": "Salva",
+
+  "keptOn": "Conservato il {date}",
+  "@keptOn": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+
+  "nextUp": "Prossimo: {what}",
+  "@nextUp": {
+    "placeholders": { "what": { "type": "String" } }
+  },
+
+  "detailsTitle": "Dettagli",
+  "detailsEmptySubtitle": "Da dove viene, quanto è costato, quando l'hai preso.",
+  "tapToAddMore": "Tocca per aggiungere altro",
+
+  "documentsTitle": "Documenti",
+  "documentsSubtitle": "Qui vivono ricevute, manuali e garanzie.",
+
+  "historyTitle": "Storia",
+  "addDate": "Aggiungi una data",
+  "historyEmpty": "Ancora niente — aggiungi come l'hai preso, o una data da ricordare.",
+
+  "onDate": "il {date}",
+  "@onDate": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+
+  "menuRename": "Rinomina",
+  "menuPutAway": "Metti via",
+  "menuRemove": "Rimuovi",
+
+  "archivedSnack": "Messo via. È al sicuro.",
+  "removedSnack": "Rimosso. Non è ancora perso nulla.",
+  "eventRemovedSnack": "Rimosso.",
+  "undo": "Annulla",
+
+  "errorNothingLost": "Qualcosa è andato storto — ma non è andato perso nulla.",
+  "goneMessage": "Non è più qui.",
+
+  "boughtAt": "Comprato da {supplier}",
+  "@boughtAt": {
+    "placeholders": { "supplier": { "type": "String" } }
+  },
+  "bought": "Comprato",
+  "receivedAsGift": "Ricevuto in regalo",
+  "inheritedHeadline": "Ereditato",
+  "alreadyHadHeadline": "Ce l'avevo già",
+  "keptHeadline": "Conservato",
+  "fromSupplier": "Da {supplier}",
+  "@fromSupplier": {
+    "placeholders": { "supplier": { "type": "String" } }
+  },
+  "purchaseDetailsHeadline": "Dettagli d'acquisto",
+
+  "acquisitionTitle": "Dettagli d'acquisto",
+  "howDidYouGetIt": "Come l'hai avuto?",
+  "acqTypeBought": "Comprato",
+  "acqTypeGift": "Regalo",
+  "acqTypeInherited": "Ereditato",
+  "acqTypeAlreadyHad": "Già mio",
+  "acqTypeOther": "Altro",
+  "whenLabel": "Quando",
+  "notSet": "Non impostata",
+  "whereFromLabel": "Da dove",
+  "whereFromHint": "Negozio o persona",
+  "priceLabel": "Prezzo",
+  "noteLabel": "Nota",
+  "acquisitionReassure": "Aggiungi quanto vuoi — puoi sempre tornarci.",
+
+  "reminderTitle": "Aggiungi una data",
+  "reminderHint": "es. Scadenza garanzia",
+  "suggWarranty": "Scadenza garanzia",
+  "suggReturn": "Fine reso",
+  "suggService": "Manutenzione",
+  "suggInsurance": "Rinnovo assicurazione",
+  "suggFilter": "Cambio filtro",
+  "chooseDate": "Scegli una data",
+  "remindMe": "Ricordamelo",
+  "leadSameDay": "Il giorno stesso",
+  "leadDayBefore": "1 giorno prima",
+  "leadWeekBefore": "1 settimana prima",
+  "leadMonthBefore": "1 mese prima",
+
+  "today": "Oggi",
+  "tomorrow": "Domani",
+  "yesterday": "Ieri",
+  "inDays": "{count, plural, =1{tra 1 giorno} other{tra {count} giorni}}",
+  "@inDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "daysAgo": "{count, plural, =1{1 giorno fa} other{{count} giorni fa}}",
+  "@daysAgo": {
+    "placeholders": { "count": { "type": "int" } }
+  }
+}

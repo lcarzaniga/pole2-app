@@ -1,0 +1,319 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Italian (`it`).
+class AppLocalizationsIt extends AppLocalizations {
+  AppLocalizationsIt([String locale = 'it']) : super(locale);
+
+  @override
+  String get appName => 'Pole²';
+
+  @override
+  String get homeEmptyTitle => 'Una casa serena per le tue cose';
+
+  @override
+  String get homeEmptyBody =>
+      'Tutto ciò a cui tieni può vivere qui — al sicuro, e solo su questo dispositivo.';
+
+  @override
+  String get homeEmptyCta => 'Tocca per iniziare';
+
+  @override
+  String get privacyLine => 'Tutto resta su questo dispositivo';
+
+  @override
+  String get a11yKeepSomething => 'Conserva qualcosa';
+
+  @override
+  String get a11yClose => 'Chiudi';
+
+  @override
+  String get actionObject => 'Un oggetto';
+
+  @override
+  String get actionPhoto => 'Una foto';
+
+  @override
+  String get actionDocument => 'Un documento';
+
+  @override
+  String get actionReminder => 'Un promemoria';
+
+  @override
+  String get actionNote => 'Una nota';
+
+  @override
+  String get actionDetail => 'Un dettaglio';
+
+  @override
+  String get quickActionSoon =>
+      'Presto. Per ora, inizia conservando un oggetto.';
+
+  @override
+  String get photoSourceTitle => 'Aggiungi una foto';
+
+  @override
+  String get photoTakePhoto => 'Scatta una foto';
+
+  @override
+  String get photoChooseGallery => 'Scegli dalla galleria';
+
+  @override
+  String get cameraDeniedSnack =>
+      'Pole² non può ancora usare la fotocamera. Puoi autorizzarla dalle impostazioni.';
+
+  @override
+  String get captureFailedSnack => 'Nulla è andato perso. Riprova quando vuoi.';
+
+  @override
+  String get createTitle => 'Conserva qualcosa';
+
+  @override
+  String get whatIsItLabel => 'Che cos\'è?';
+
+  @override
+  String get createHint => 'es. Lavastoviglie, l\'orologio del nonno, l\'auto';
+
+  @override
+  String get createReassure =>
+      'Puoi aggiungere foto, ricevute e dettagli quando vuoi. Per ora non serve altro.';
+
+  @override
+  String get keepItButton => 'Conserva';
+
+  @override
+  String upcomingDatesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count date in arrivo',
+      one: '1 data in arrivo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get addPhoto => 'Aggiungi una foto';
+
+  @override
+  String get renameTooltip => 'Rinomina';
+
+  @override
+  String get nameLabel => 'Nome';
+
+  @override
+  String get saveButton => 'Salva';
+
+  @override
+  String keptOn(String date) {
+    return 'Conservato il $date';
+  }
+
+  @override
+  String nextUp(String what) {
+    return 'Prossimo: $what';
+  }
+
+  @override
+  String get detailsTitle => 'Dettagli';
+
+  @override
+  String get detailsEmptySubtitle =>
+      'Da dove viene, quanto è costato, quando l\'hai preso.';
+
+  @override
+  String get tapToAddMore => 'Tocca per aggiungere altro';
+
+  @override
+  String get documentsTitle => 'Documenti';
+
+  @override
+  String get documentsSubtitle => 'Qui vivono ricevute, manuali e garanzie.';
+
+  @override
+  String get historyTitle => 'Storia';
+
+  @override
+  String get addDate => 'Aggiungi una data';
+
+  @override
+  String get historyEmpty =>
+      'Ancora niente — aggiungi come l\'hai preso, o una data da ricordare.';
+
+  @override
+  String onDate(String date) {
+    return 'il $date';
+  }
+
+  @override
+  String get menuRename => 'Rinomina';
+
+  @override
+  String get menuPutAway => 'Metti via';
+
+  @override
+  String get menuRemove => 'Rimuovi';
+
+  @override
+  String get archivedSnack => 'Messo via. È al sicuro.';
+
+  @override
+  String get removedSnack => 'Rimosso. Non è ancora perso nulla.';
+
+  @override
+  String get eventRemovedSnack => 'Rimosso.';
+
+  @override
+  String get undo => 'Annulla';
+
+  @override
+  String get errorNothingLost =>
+      'Qualcosa è andato storto — ma non è andato perso nulla.';
+
+  @override
+  String get goneMessage => 'Non è più qui.';
+
+  @override
+  String boughtAt(String supplier) {
+    return 'Comprato da $supplier';
+  }
+
+  @override
+  String get bought => 'Comprato';
+
+  @override
+  String get receivedAsGift => 'Ricevuto in regalo';
+
+  @override
+  String get inheritedHeadline => 'Ereditato';
+
+  @override
+  String get alreadyHadHeadline => 'Ce l\'avevo già';
+
+  @override
+  String get keptHeadline => 'Conservato';
+
+  @override
+  String fromSupplier(String supplier) {
+    return 'Da $supplier';
+  }
+
+  @override
+  String get purchaseDetailsHeadline => 'Dettagli d\'acquisto';
+
+  @override
+  String get acquisitionTitle => 'Dettagli d\'acquisto';
+
+  @override
+  String get howDidYouGetIt => 'Come l\'hai avuto?';
+
+  @override
+  String get acqTypeBought => 'Comprato';
+
+  @override
+  String get acqTypeGift => 'Regalo';
+
+  @override
+  String get acqTypeInherited => 'Ereditato';
+
+  @override
+  String get acqTypeAlreadyHad => 'Già mio';
+
+  @override
+  String get acqTypeOther => 'Altro';
+
+  @override
+  String get whenLabel => 'Quando';
+
+  @override
+  String get notSet => 'Non impostata';
+
+  @override
+  String get whereFromLabel => 'Da dove';
+
+  @override
+  String get whereFromHint => 'Negozio o persona';
+
+  @override
+  String get priceLabel => 'Prezzo';
+
+  @override
+  String get noteLabel => 'Nota';
+
+  @override
+  String get acquisitionReassure =>
+      'Aggiungi quanto vuoi — puoi sempre tornarci.';
+
+  @override
+  String get reminderTitle => 'Aggiungi una data';
+
+  @override
+  String get reminderHint => 'es. Scadenza garanzia';
+
+  @override
+  String get suggWarranty => 'Scadenza garanzia';
+
+  @override
+  String get suggReturn => 'Fine reso';
+
+  @override
+  String get suggService => 'Manutenzione';
+
+  @override
+  String get suggInsurance => 'Rinnovo assicurazione';
+
+  @override
+  String get suggFilter => 'Cambio filtro';
+
+  @override
+  String get chooseDate => 'Scegli una data';
+
+  @override
+  String get remindMe => 'Ricordamelo';
+
+  @override
+  String get leadSameDay => 'Il giorno stesso';
+
+  @override
+  String get leadDayBefore => '1 giorno prima';
+
+  @override
+  String get leadWeekBefore => '1 settimana prima';
+
+  @override
+  String get leadMonthBefore => '1 mese prima';
+
+  @override
+  String get today => 'Oggi';
+
+  @override
+  String get tomorrow => 'Domani';
+
+  @override
+  String get yesterday => 'Ieri';
+
+  @override
+  String inDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'tra $count giorni',
+      one: 'tra 1 giorno',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String daysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count giorni fa',
+      one: '1 giorno fa',
+    );
+    return '$_temp0';
+  }
+}

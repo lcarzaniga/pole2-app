@@ -1,0 +1,11 @@
+# Flutter gen_l10n configuration.
+#
+# Italian (app_it.arb) is the TEMPLATE: it is the source of truth and the
+# fallback for any untranslated message in other locales. So an incomplete
+# English file (or an unsupported device language routed to Italian) always
+# shows complete Italian text.
+arb-dir: lib/l10n
+template-arb-file: app_it.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false

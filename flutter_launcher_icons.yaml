@@ -1,0 +1,26 @@
+# Pole² launcher icon generation (dev-time only; nothing here ships at runtime).
+# Source PNGs are painted by test/_branding_render_test.dart from the bundled
+# Work Sans font, so the icon and the in-app wordmark share one visual identity.
+#
+# Chosen direction: Candidate 1 — "Plain P²", warm-ivory P² on dark petrol.
+# Rationale: most legible at launcher size, adult and professional; the turtle
+# and hexagon motifs stay *inside* the product, not on the home screen.
+flutter_launcher_icons:
+  android: true
+  ios: false
+
+  # Legacy square/round icon (pre-adaptive devices) and the base image.
+  image_path: "assets/branding/icon.png"
+
+  # Adaptive icon (Android 8+): solid petrol background, P² foreground kept
+  # inside the safe zone, plus a monochrome layer for Android 13+ themed icons.
+  adaptive_icon_background: "#2E6B5E"
+  adaptive_icon_foreground: "assets/branding/icon_foreground.png"
+  adaptive_icon_monochrome: "assets/branding/icon_monochrome.png"
+  min_sdk_android: 23
+
+  web:
+    generate: true
+    image_path: "assets/branding/icon.png"
+    background_color: "#2E6B5E"
+    theme_color: "#2E6B5E"

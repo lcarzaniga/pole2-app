@@ -1,0 +1,12 @@
+{
+  "@@locale": "en",
+
+  "_comment": "FUTURE DRAFT — NOT EXPOSED. English is intentionally excluded from supportedLocales (see lib/app/app.dart: the app is pinned to Italian). This file is kept only as a starting point for a future English translation and is never shown to users. Incomplete by design; do not wire English into supportedLocales until every app_it.arb key is translated and reviewed.",
+
+  "homeEmptyTitle": "A calm home for your things",
+  "homeEmptyCta": "Tap to begin",
+  "privacyLine": "Everything stays on this device",
+  "keepItButton": "Keep",
+  "saveButton": "Save",
+  "undo": "Undo"
+}
