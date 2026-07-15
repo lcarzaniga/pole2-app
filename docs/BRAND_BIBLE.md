@@ -338,19 +338,24 @@ Three candidates were rendered and compared (`assets/branding/`):
 same movement vocabulary. First implemented on the landing
 (`pole2-landing/src/components/Kobe.astro`, M14).*
 
-**Trigger.** After a **random period of inactivity (~25–50 s)**, play the gesture
-**once**. Reset the timer on genuine user activity, so it only stirs when things
-are truly calm.
+**Trigger & timer (exact).** A single random idle delay (~25–50 s), then the
+gesture plays **once**, then a **new** random delay — repeating.
+- The timer is **NOT reset by general page/app interaction** — not by scrolling,
+  keyboard use, pointer movement, or clicks/taps on other elements.
+- It **resets only** on a **direct click/tap on Kobe's shell** (which cancels the
+  timer, plays the reaction, then starts a fresh delay).
+- **Never** run **more than one** timer at a time.
+- **Suspend** the timer while the page/app is **hidden**; reschedule when visible.
 
-**The gesture — a quiet posture adjustment.** The **shell is the fixed point**;
-the body subtly rebalances around the **shell centre**:
-1. head and tail **rotate together a few degrees to one side** (~3–4°);
-2. the four limbs **rotate slightly in the opposite direction** (~2°);
-3. a **brief pause**;
-4. the **same movement toward the opposite side**;
-5. a smooth **return to the resting pose**.
+**Canonical movement directions.** The **shell is the fixed point**; the body
+rebalances around the **shell centre** (rotation only). When Kobe moves **right**:
+- **head rotates right, tail rotates right** (head + tail are one rigid unit);
+- **all four legs rotate left** (upper *and* lower, always together);
 
-It should resemble a real turtle quietly shifting its posture.
+then it **reverses** (head/tail left, all legs right), and finally **returns to
+neutral**. All four legs always move **together, opposite to head and tail**. It
+should resemble a real turtle quietly shifting its posture — a sway to one side,
+brief pause, sway to the other, settle.
 
 **Timing.** Total **~700–900 ms**, **smooth ease-in-out**, no abrupt
 acceleration.
@@ -372,9 +377,11 @@ plays a **clearly-visible** version of the same gesture — the emotional read i
   reverse** (~−4.5° / +2.7°); then a smooth settle to rest.
 - **Timing ~650–850 ms** (we use **780 ms**), **smooth springless** easing — no
   bounce, no translation, no scale, no sound, no looping.
-- Works with **mouse, touch, and keyboard** (Enter/Space). It **stops the passive
-  idle cue** while running and **ignores repeated input until it finishes** (no
-  stacked/broken animations).
+- Triggered **only by a direct click/tap on the shell** (the head, tail, limbs
+  and the empty bounding box are **not** hit targets) or by **keyboard**
+  (Enter/Space on the focused guardian). It **cancels/stops the idle timer** while
+  running and **ignores repeated input until it finishes** (no stacked/broken
+  animations); afterwards a fresh idle delay begins.
 - **Interactivity is signalled** by a pointer cursor + an accessible label
   (role=button, name) — **no instructional text and no visible button** around
   Kobe.
