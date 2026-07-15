@@ -220,14 +220,18 @@ milestone (see “Cross-product” below).*
   / `HexTexture`): there the cells are faint texture; here the cells **are** the
   shell's structure. Never conflate the two.
 
-**Head — a rounded bullet.**
+**Head — a rounded, elongated bullet.**
 - Slightly **taller than wide**, **domed** (semicircular) top, **softly rounded**
-  base. **Never circular, never sharply pointed, no angular tip.**
+  base. **Never circular, never pointed.** The head is *rounded*; the **tail is
+  the only pointed body element**.
 
 **Limbs & tail.**
 - **Four limbs** as soft ovals peeking at the diagonals (front pair upper, back
   pair lower), tucked partly under the shell.
-- A **small rounded tail nub** at the bottom — rounded, never an angular triangle.
+- The **tail** is **short, triangular, and clearly pointed**, **centred on the
+  vertical axis** of the shell and **visually distinct from the rear limbs**.
+  **Never rounded, never leaf-shaped, never bullet-shaped.** It is the sole
+  pointed element (the head stays rounded).
 
 **Visual invariants.**
 - Geometric, calm, adult, recognizable — **never cartoonish**.
@@ -243,8 +247,9 @@ idle animation (§13a) on/off.
 **Unacceptable variations.** A circular shell; a shell that stops at the 7 core
 (a lone "flower" with empty space to the rim) instead of tessellating to the
 clipped edge; a **missing or incomplete** central 7-cell core; a circular or
-pointed head; an angular triangular tail; white outlines, drop shadows, neon
-glow, or spotlight; a cartoon face or expression.
+pointed head; a **rounded, leaf-, or bullet-shaped tail** (the tail must be a
+short pointed triangle) or a tail confusable with the rear limbs; white outlines,
+drop shadows, neon glow, or spotlight; a cartoon face or expression.
 
 **Cross-product (current discrepancy).** As of M14 the **Flutter app**
 (`lib/shared/brand/turtle_mascot.dart`) and the **old landing turtle** shared the
@@ -357,6 +362,24 @@ engagement.
 
 *(Supersedes the earlier M14 “satin shimmer” idle exploration. The static satin
 sheen on the shell remains — that is figure-ground depth, §13, not motion.)*
+
+**Reaction (click / tap).** Where Kobe is interactive, a **direct click/tap**
+plays a **clearly-visible** version of the same gesture — the emotional read is
+*“the visitor gently disturbed Kobe.”* **Never** frightened, hurt, or angry.
+
+- **Same vocabulary, larger:** shell fixed; head+tail rotate **~7–10°** (we use
+  **8.5°**) to one side, the four limbs the opposite way (~5°); a **brief
+  reverse** (~−4.5° / +2.7°); then a smooth settle to rest.
+- **Timing ~650–850 ms** (we use **780 ms**), **smooth springless** easing — no
+  bounce, no translation, no scale, no sound, no looping.
+- Works with **mouse, touch, and keyboard** (Enter/Space). It **stops the passive
+  idle cue** while running and **ignores repeated input until it finishes** (no
+  stacked/broken animations).
+- **Interactivity is signalled** by a pointer cursor + an accessible label
+  (role=button, name) — **no instructional text and no visible button** around
+  Kobe.
+- **Reduce Motion:** the rotation is replaced by a **brief, subtle shell
+  highlight** (a short satin/gold flash), not movement.
 
 ## 14. Things the brand must never become
 

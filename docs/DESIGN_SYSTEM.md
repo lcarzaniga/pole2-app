@@ -165,8 +165,10 @@ the Flutter `turtle_mascot.dart` follows in a later milestone):
   clipped edge. Not a lone 7-cell flower.
 - **Head:** a rounded **bullet** — taller than wide, domed top, softly rounded
   base. Never circular, never pointed, no angular tip.
-- **Limbs/tail:** four soft ovals at the diagonals; a small rounded tail nub
-  (never a triangle).
+- **Limbs:** four soft ovals at the diagonals.
+- **Tail:** short, **triangular, clearly pointed**, centred on the vertical axis,
+  distinct from the rear limbs — the **only** pointed element (head stays
+  rounded). Never rounded/leaf/bullet-shaped.
 - **Separation:** lift Kobe from a similar-toned background with a **soft warm
   halo**, a lighter background centre, a **satin sheen**, and/or a small tonal
   lift — **never** outlines, heavy shadows, neon glow, or spotlight.
@@ -175,6 +177,11 @@ the Flutter `turtle_mascot.dart` follows in a later milestone):
   opposite way around the *fixed* shell, sway to the other side, and settle back
   (~700–900 ms, ease-in-out). **Rotation only** — no translate/scale/bounce/loop;
   pauses on inactive tab/app; **off under Reduce Motion**. Presence, not engagement.
+- **Reaction (interactive Kobe only):** a **clearly-visible** version of the same
+  gesture on click/tap/keyboard — ~7–10° (we use 8.5°), ~780 ms, springless,
+  “gently disturbed,” never frightened/angry. Stops the idle cue, ignores input
+  until done; **Reduce Motion → a brief shell highlight** instead of rotation.
+  Signalled by pointer cursor + accessible label; no visible button/text.
 
 ### 3.5 Elevation
 Minimal. Prefer **tonal elevation** (slightly lighter/darker surface) over drop shadows. Shadows, if used, are soft and shallow. A flat, papery calm beats floating cards.
