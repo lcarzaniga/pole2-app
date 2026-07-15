@@ -237,8 +237,8 @@ milestone (see “Cross-product” below).*
   outlines, heavy shadows, or spotlight.
 
 **Acceptable variations.** Size; overall colour theming for light/dark surfaces;
-presence/absence of the warm separation halo (context-dependent); the idle
-shimmer on/off.
+presence/absence of the warm separation halo (context-dependent); the canonical
+idle animation (§13a) on/off.
 
 **Unacceptable variations.** A circular shell; a shell that stops at the 7 core
 (a lone "flower" with empty space to the rim) instead of tessellating to the
@@ -318,16 +318,45 @@ Three candidates were rendered and compared (`assets/branding/`):
   seeking, or looping-forever animation.
 - On startup, the launch surface is a **calm petrol field with the P²** — it
   flows from the tapped icon into the app with no white flash.
-- **Kobe idle presence.** When Kobe rests, it may show **one** restrained,
-  **infrequent** cue — a slow satin shimmer across the shell — to feel *quietly
-  alive*. It is **presence/discoverability, not engagement**: never continuous,
-  no bounce/wave/speech/play; it **pauses when the tab/app is inactive** and is
-  **off under Reduce Motion**. Perceptible occasionally, never busy.
+- **Kobe idle animation (canonical).** See the dedicated spec in **§13a** — one
+  calm posture adjustment after a period of inactivity. Presence, not engagement.
 - **Figure-ground (separation), not decoration.** Kobe may be lifted from a
   similar-toned background with restrained means — a **soft warm halo**, a
   slightly lighter background centre, a **satin sheen** on the shell, a small
   tonal lift on limbs. **Never** white outlines, heavy shadows, neon glow, or an
   obvious spotlight. Kobe should *emerge naturally*.
+
+## 13a. Kobe idle animation (canonical)
+
+*The one canonical idle behaviour. Kobe should occasionally look **alive**, not
+**animated**. Every implementation — Flutter, website, marketing — reuses this
+same movement vocabulary. First implemented on the landing
+(`pole2-landing/src/components/Kobe.astro`, M14).*
+
+**Trigger.** After a **random period of inactivity (~25–50 s)**, play the gesture
+**once**. Reset the timer on genuine user activity, so it only stirs when things
+are truly calm.
+
+**The gesture — a quiet posture adjustment.** The **shell is the fixed point**;
+the body subtly rebalances around the **shell centre**:
+1. head and tail **rotate together a few degrees to one side** (~3–4°);
+2. the four limbs **rotate slightly in the opposite direction** (~2°);
+3. a **brief pause**;
+4. the **same movement toward the opposite side**;
+5. a smooth **return to the resting pose**.
+
+It should resemble a real turtle quietly shifting its posture.
+
+**Timing.** Total **~700–900 ms**, **smooth ease-in-out**, no abrupt
+acceleration.
+
+**Hard rules.** **Rotation only.** **Never** translate, scale, bounce, wave,
+speak, or loop continuously. The shell never moves. **Pauses while the tab/app is
+inactive.** **Off entirely under Reduce Motion.** It supports **presence**, not
+engagement.
+
+*(Supersedes the earlier M14 “satin shimmer” idle exploration. The static satin
+sheen on the shell remains — that is figure-ground depth, §13, not motion.)*
 
 ## 14. Things the brand must never become
 

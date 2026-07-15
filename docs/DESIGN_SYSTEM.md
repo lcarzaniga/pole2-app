@@ -170,9 +170,11 @@ the Flutter `turtle_mascot.dart` follows in a later milestone):
 - **Separation:** lift Kobe from a similar-toned background with a **soft warm
   halo**, a lighter background centre, a **satin sheen**, and/or a small tonal
   lift — **never** outlines, heavy shadows, neon glow, or spotlight.
-- **Idle motion:** one **infrequent**, restrained shell shimmer; not continuous;
-  pauses on inactive tab/app; **off under Reduce Motion**. Presence, not
-  engagement.
+- **Idle motion:** the canonical posture adjustment (`BRAND_BIBLE.md §13a`) —
+  after ~25–50 s idle, head+tail rotate a few degrees one way and the limbs the
+  opposite way around the *fixed* shell, sway to the other side, and settle back
+  (~700–900 ms, ease-in-out). **Rotation only** — no translate/scale/bounce/loop;
+  pauses on inactive tab/app; **off under Reduce Motion**. Presence, not engagement.
 
 ### 3.5 Elevation
 Minimal. Prefer **tonal elevation** (slightly lighter/darker surface) over drop shadows. Shadows, if used, are soft and shallow. A flat, papery calm beats floating cards.
