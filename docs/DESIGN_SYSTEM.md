@@ -183,7 +183,7 @@ the Flutter `turtle_mascot.dart` follows in a later milestone):
   by general interaction (scroll/keys/pointer/other clicks) — only by a direct
   **shell** click, or after each idle play; single timer; **suspended while hidden**.
 - **Reaction (interactive Kobe only):** a **clearly-visible** version of the same
-  gesture on click/tap/keyboard — ~7–10° (we use 11°), ~780 ms, springless,
+  gesture on click/tap/keyboard — head/tail ±6.6°, legs ∓4.2°, ~780 ms, springless,
   “gently disturbed,” never frightened/angry. Stops the idle cue, ignores input
   until done; **Reduce Motion → a brief shell highlight** instead of rotation.
   Signalled by pointer cursor + accessible label; no visible button/text.

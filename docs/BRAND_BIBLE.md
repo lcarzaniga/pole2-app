@@ -377,11 +377,11 @@ sheen on the shell remains — that is figure-ground depth, §13, not motion.)*
 plays a **clearly-visible** version of the same gesture — the emotional read is
 *“the visitor gently disturbed Kobe.”* **Never** frightened, hurt, or angry.
 
-- **Same vocabulary, larger:** shell fixed; head+tail rotate **~7–10°** (we use
-  **+11°**) to one side, the four limbs the opposite way (**−7°**); a **brief
-  reverse** (spine **−7°** / limbs **+4.5°**); then a smooth settle to rest.
-  (Idle uses the smaller **±6°** spine / **∓4°** limbs — increased for on-screen
-  visibility; tune down later only if it reads as excessive.)
+- **Same vocabulary, larger than idle:** shell fixed; head tip & tail tip move
+  to one side (we use head **+6.6°** / tail **−6.6°**), the four legs to the
+  opposite side (**−4.2°**); a **brief reverse** (head **−4.2°** / tail **+4.2°**
+  / legs **+2.7°**); then a smooth settle to rest.
+  (Idle uses the smaller head/tail **±3.6°** / legs **∓2.4°**.)
 - **Timing ~650–850 ms** (we use **780 ms**), **smooth springless** easing — no
   bounce, no translation, no scale, no sound, no looping.
 - Triggered **only by a direct click/tap on the shell** (the head, tail, limbs
