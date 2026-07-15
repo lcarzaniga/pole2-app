@@ -176,8 +176,10 @@ the Flutter `turtle_mascot.dart` follows in a later milestone):
   after ~25–50 s idle, head+tail rotate a few degrees one way and the limbs the
   opposite way around the *fixed* shell, sway to the other side, and settle back
   (~700–900 ms, ease-in-out). **Rotation only** — no translate/scale/bounce/loop;
-  **off under Reduce Motion**. Directions: head+tail rotate right ⇒ all four legs
-  rotate left (and reverse). **Timer:** one recurring random delay; **not** reset
+  **off under Reduce Motion**. Directions: head **tip** & tail **tip** move to the
+  same side (they counter-rotate) while all four legs move to the opposite side
+  (upper/lower pairs counter-rotate), then mirror; shell fixed. **Timer:** one
+  recurring random delay; **not** reset
   by general interaction (scroll/keys/pointer/other clicks) — only by a direct
   **shell** click, or after each idle play; single timer; **suspended while hidden**.
 - **Reaction (interactive Kobe only):** a **clearly-visible** version of the same

@@ -348,14 +348,19 @@ gesture plays **once**, then a **new** random delay — repeating.
 - **Suspend** the timer while the page/app is **hidden**; reschedule when visible.
 
 **Canonical movement directions.** The **shell is the fixed point**; the body
-rebalances around the **shell centre** (rotation only). When Kobe moves **right**:
-- **head rotates right, tail rotates right** (head + tail are one rigid unit);
-- **all four legs rotate left** (upper *and* lower, always together);
+rebalances around the **shell centre** (rotation only). The **tips** move, not a
+rigid block: because head and tail sit on opposite sides of the centre, they
+**counter-rotate** so both **tips travel to the same side**; likewise the upper
+and lower leg pairs counter-rotate so **all four legs travel to the opposite
+side**. So when Kobe sways **right**:
+- the **head tip and the tail tip both move right**;
+- **all four legs (upper and lower) move left**;
 
-then it **reverses** (head/tail left, all legs right), and finally **returns to
-neutral**. All four legs always move **together, opposite to head and tail**. It
-should resemble a real turtle quietly shifting its posture — a sway to one side,
-brief pause, sway to the other, settle.
+then it **mirrors** (head+tail tips left, all legs right), and finally **returns
+to neutral**. It should resemble a real turtle quietly shifting its posture — a
+sway to one side, brief pause, mirror to the other, settle. (Implementation: four
+groups — `kobe-head`, `kobe-tail`, `kobe-legs-upper`, `kobe-legs-lower` — head +φ
+/ tail −φ; upper-legs −ψ / lower-legs +ψ, and mirrored.)
 
 **Timing.** Total **~700–900 ms**, **smooth ease-in-out**, no abrupt
 acceleration.
