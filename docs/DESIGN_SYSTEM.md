@@ -148,9 +148,10 @@ Soft, rounded — never sharp corners (sharp reads as clinical/alarming).
 ### 3.4 The hexagon is a motif, not a layout straitjacket
 The shell/hexagon is **texture and signature**, not the shape of every card. **We do not force hexagonal cards** — hex shapes hurt legibility, density, and text layout. The hexagon lives in: the signature turtle menu, subtle background texture (`shellTint`), brand marks, and empty-state art. Content containers stay rounded rectangles. *State this plainly so no one over-applies the motif.*
 
-**Decorative honeycomb vs Kobe's shell.** The background texture may contain
-*many* faint cells. **Kobe's shell is different: it is always exactly 7 hexagons**
-(1 central + 6 surrounding). Never conflate the two.
+**Decorative honeycomb vs Kobe's shell.** The background texture is *free*, faint
+cells. **Kobe's shell is a hex grid tessellated across the shell and clipped by
+its ellipse, with a recognizable 7-cell core** (1 central + 6 surrounding). The
+two are different uses — never conflate them.
 
 ### 3.4a Kobe geometry (invariants — canonical spec in `BRAND_BIBLE.md §10a`)
 Kobe is drawn from one canonical geometry (first corrected on the landing, M14;
@@ -158,8 +159,10 @@ the Flutter `turtle_mascot.dart` follows in a later milestone):
 
 - **Shell:** an ellipse, horizontal/vertical axis ratio **0.90** (taller than
   wide) — **current approved direction**, never a perfect circle.
-- **Shell scutes:** **exactly 7 hexagons** (1 + 6), edge-sharing, clipped to the
-  ellipse. Never more, never fewer.
+- **Shell scutes:** a regular hex grid **fully tessellated** across the shell and
+  **clipped by the ellipse**; the **canonical core is 7 complete cells** (1 + 6)
+  at the centre, always recognizable, with additional cells continuing to the
+  clipped edge. Not a lone 7-cell flower.
 - **Head:** a rounded **bullet** — taller than wide, domed top, softly rounded
   base. Never circular, never pointed, no angular tip.
 - **Limbs/tail:** four soft ovals at the diagonals; a small rounded tail nub

@@ -206,14 +206,19 @@ milestone (see “Cross-product” below).*
   approved direction; may be re-tuned later, but never a perfect circle.
 - The shell is a domed ellipse with a calm rim.
 
-**The 7-hexagon rule (invariant).**
-- Kobe's shell contains **exactly 7 hexagons: 1 central + 6 surrounding.**
-  **Never more, never fewer.**
-- The 6 outer hexagons are edge-sharing neighbours of the central one (a
-  honeycomb rosette), clipped to the shell ellipse.
+**The shell tessellation rule.**
+- **Kobe's shell is fully tessellated with regular hexagons. Its canonical
+  visual core is formed by 7 complete central cells: 1 central + 6 surrounding.
+  Additional cells continue toward the edge and are naturally clipped by the
+  shell boundary.**
+- One regular hex grid is centred on a cell at the shell centre, so the central
+  hexagon and its 6 complete edge-sharing neighbours (the recognizable core) are
+  always present; the *same* grid continues outward and is **clipped by the
+  ellipse**. The result reads as a **continuous structured shell**, never a
+  seven-cell flower placed inside an ellipse.
 - This is **distinct from the decorative background honeycomb** (`HexBackground`
-  / `HexTexture`), which may contain *many* faint cells. Kobe's shell is always
-  exactly 7. Never conflate the two.
+  / `HexTexture`): there the cells are faint texture; here the cells **are** the
+  shell's structure. Never conflate the two.
 
 **Head — a rounded bullet.**
 - Slightly **taller than wide**, **domed** (semicircular) top, **softly rounded**
@@ -235,9 +240,11 @@ milestone (see “Cross-product” below).*
 presence/absence of the warm separation halo (context-dependent); the idle
 shimmer on/off.
 
-**Unacceptable variations.** A circular shell; any hexagon count other than 7 in
-the shell; a circular or pointed head; an angular triangular tail; white
-outlines, drop shadows, neon glow, or spotlight; a cartoon face or expression.
+**Unacceptable variations.** A circular shell; a shell that stops at the 7 core
+(a lone "flower" with empty space to the rim) instead of tessellating to the
+clipped edge; a **missing or incomplete** central 7-cell core; a circular or
+pointed head; an angular triangular tail; white outlines, drop shadows, neon
+glow, or spotlight; a cartoon face or expression.
 
 **Cross-product (current discrepancy).** As of M14 the **Flutter app**
 (`lib/shared/brand/turtle_mascot.dart`) and the **old landing turtle** shared the
@@ -257,8 +264,9 @@ with restraint.
 - **Do not decorate every screen with hexagons.** A faint honeycomb texture and
   the shell menu are the sanctioned uses; anything else must justify itself.
 - The hexagon belongs to Kobe. Overusing it cheapens both.
-- **Decorative honeycomb ≠ Kobe's shell.** Background texture may have *many*
-  faint cells; **Kobe's shell is always exactly 7** (see §10a). Never conflate.
+- **Decorative honeycomb ≠ Kobe's shell.** Background texture is faint, free
+  cells; **Kobe's shell is a tessellated hex field clipped by its ellipse, with
+  a recognizable 7-cell core** (see §10a). Never conflate.
 
 ## 12. App icon
 
