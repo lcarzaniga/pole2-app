@@ -148,6 +148,29 @@ Soft, rounded — never sharp corners (sharp reads as clinical/alarming).
 ### 3.4 The hexagon is a motif, not a layout straitjacket
 The shell/hexagon is **texture and signature**, not the shape of every card. **We do not force hexagonal cards** — hex shapes hurt legibility, density, and text layout. The hexagon lives in: the signature turtle menu, subtle background texture (`shellTint`), brand marks, and empty-state art. Content containers stay rounded rectangles. *State this plainly so no one over-applies the motif.*
 
+**Decorative honeycomb vs Kobe's shell.** The background texture may contain
+*many* faint cells. **Kobe's shell is different: it is always exactly 7 hexagons**
+(1 central + 6 surrounding). Never conflate the two.
+
+### 3.4a Kobe geometry (invariants — canonical spec in `BRAND_BIBLE.md §10a`)
+Kobe is drawn from one canonical geometry (first corrected on the landing, M14;
+the Flutter `turtle_mascot.dart` follows in a later milestone):
+
+- **Shell:** an ellipse, horizontal/vertical axis ratio **0.90** (taller than
+  wide) — **current approved direction**, never a perfect circle.
+- **Shell scutes:** **exactly 7 hexagons** (1 + 6), edge-sharing, clipped to the
+  ellipse. Never more, never fewer.
+- **Head:** a rounded **bullet** — taller than wide, domed top, softly rounded
+  base. Never circular, never pointed, no angular tip.
+- **Limbs/tail:** four soft ovals at the diagonals; a small rounded tail nub
+  (never a triangle).
+- **Separation:** lift Kobe from a similar-toned background with a **soft warm
+  halo**, a lighter background centre, a **satin sheen**, and/or a small tonal
+  lift — **never** outlines, heavy shadows, neon glow, or spotlight.
+- **Idle motion:** one **infrequent**, restrained shell shimmer; not continuous;
+  pauses on inactive tab/app; **off under Reduce Motion**. Presence, not
+  engagement.
+
 ### 3.5 Elevation
 Minimal. Prefer **tonal elevation** (slightly lighter/darker surface) over drop shadows. Shadows, if used, are soft and shallow. A flat, papery calm beats floating cards.
 

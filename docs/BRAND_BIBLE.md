@@ -193,6 +193,59 @@ restrained secondary palette exists as tokens (`AppColors`, see
 - The turtle stays **inside the product experience** — deliberately **not** on
   the launcher icon (see §12).
 
+## 10a. Kobe Canonical Geometry
+
+*The single source of truth for how Kobe is drawn. One Kobe, everywhere —
+landing, app, icon, social images, future assets. First corrected implementation:
+the landing (`pole2-landing/src/components/Kobe.astro`, M14). The Flutter app
+still uses the older geometry and will be brought to this spec in a future
+milestone (see “Cross-product” below).*
+
+**Shell — an ellipse, not a circle.**
+- Horizontal axis / vertical axis = **0.90** (slightly taller than wide). Current
+  approved direction; may be re-tuned later, but never a perfect circle.
+- The shell is a domed ellipse with a calm rim.
+
+**The 7-hexagon rule (invariant).**
+- Kobe's shell contains **exactly 7 hexagons: 1 central + 6 surrounding.**
+  **Never more, never fewer.**
+- The 6 outer hexagons are edge-sharing neighbours of the central one (a
+  honeycomb rosette), clipped to the shell ellipse.
+- This is **distinct from the decorative background honeycomb** (`HexBackground`
+  / `HexTexture`), which may contain *many* faint cells. Kobe's shell is always
+  exactly 7. Never conflate the two.
+
+**Head — a rounded bullet.**
+- Slightly **taller than wide**, **domed** (semicircular) top, **softly rounded**
+  base. **Never circular, never sharply pointed, no angular tip.**
+
+**Limbs & tail.**
+- **Four limbs** as soft ovals peeking at the diagonals (front pair upper, back
+  pair lower), tucked partly under the shell.
+- A **small rounded tail nub** at the bottom — rounded, never an angular triangle.
+
+**Visual invariants.**
+- Geometric, calm, adult, recognizable — **never cartoonish**.
+- Colours unchanged: mint shell (`#a7ded0`), deep-teal body (`#123f34` on the
+  landing), hex lines a translucent body tone. Petrol identity untouched.
+- A subtle **satin sheen** on the shell (upper-left) for depth/figure-ground; no
+  outlines, heavy shadows, or spotlight.
+
+**Acceptable variations.** Size; overall colour theming for light/dark surfaces;
+presence/absence of the warm separation halo (context-dependent); the idle
+shimmer on/off.
+
+**Unacceptable variations.** A circular shell; any hexagon count other than 7 in
+the shell; a circular or pointed head; an angular triangular tail; white
+outlines, drop shadows, neon glow, or spotlight; a cartoon face or expression.
+
+**Cross-product (current discrepancy).** As of M14 the **Flutter app**
+(`lib/shared/brand/turtle_mascot.dart`) and the **old landing turtle** shared the
+*same non-canonical* geometry: a **circular** shell with a **many-cell** clipped
+honeycomb, a **circular** head, and a **triangular** tail. The landing is now the
+first corrected implementation of the canonical geometry above; the app is to be
+updated to match in a future milestone. Two different Kobes must not persist.
+
 ## 11. The hexagon
 
 The regular hexagon (the turtle’s shell) is the **primary visual motif** — used
@@ -204,6 +257,8 @@ with restraint.
 - **Do not decorate every screen with hexagons.** A faint honeycomb texture and
   the shell menu are the sanctioned uses; anything else must justify itself.
 - The hexagon belongs to Kobe. Overusing it cheapens both.
+- **Decorative honeycomb ≠ Kobe's shell.** Background texture may have *many*
+  faint cells; **Kobe's shell is always exactly 7** (see §10a). Never conflate.
 
 ## 12. App icon
 
@@ -255,6 +310,16 @@ Three candidates were rendered and compared (`assets/branding/`):
   seeking, or looping-forever animation.
 - On startup, the launch surface is a **calm petrol field with the P²** — it
   flows from the tapped icon into the app with no white flash.
+- **Kobe idle presence.** When Kobe rests, it may show **one** restrained,
+  **infrequent** cue — a slow satin shimmer across the shell — to feel *quietly
+  alive*. It is **presence/discoverability, not engagement**: never continuous,
+  no bounce/wave/speech/play; it **pauses when the tab/app is inactive** and is
+  **off under Reduce Motion**. Perceptible occasionally, never busy.
+- **Figure-ground (separation), not decoration.** Kobe may be lifted from a
+  similar-toned background with restrained means — a **soft warm halo**, a
+  slightly lighter background centre, a **satin sheen** on the shell, a small
+  tonal lift on limbs. **Never** white outlines, heavy shadows, neon glow, or an
+  obvious spotlight. Kobe should *emerge naturally*.
 
 ## 14. Things the brand must never become
 
