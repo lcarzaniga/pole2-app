@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/database/app_database.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../possessions/application/possession_providers.dart';
 import '../application/place_providers.dart';
+
+enum _PlaceMenu { rename, delete }
 
 /// The result of the place picker. `placeId == null` means the user chose
 /// "no place" (clear the assignment). The picker returns `null` only when
@@ -55,6 +58,66 @@ class _PlacePickerSheetState extends ConsumerState<_PlacePickerSheet> {
     if (mounted) Navigator.of(context).pop(PlaceChoice(id));
   }
 
+  Future<void> _renamePlace(Place p) async {
+    final l10n = AppLocalizations.of(context);
+    final controller = TextEditingController(text: p.name);
+    final name = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.placeRenameTitle),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.sentences,
+          onSubmitted: (v) => Navigator.of(ctx).pop(v.trim()),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(l10n.cancelButton)),
+          FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
+              child: Text(l10n.saveButton)),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (name != null && name.isNotEmpty) {
+      await ref.read(placesDaoProvider).edit(p.id, name: name);
+    }
+  }
+
+  Future<void> _deletePlace(Place p) async {
+    final l10n = AppLocalizations.of(context);
+    // How many possessions would be affected — drives the warning copy.
+    final count = await ref.read(possessionsDaoProvider).countByPlace(p.id);
+    if (!mounted) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.placeDeleteTitle(p.name)),
+        content: Text(
+            count > 0 ? l10n.placeDeleteAssigned(count) : l10n.placeDeleteNone),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(l10n.cancelButton)),
+          FilledButton(
+            style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(ctx).colorScheme.error),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.placeDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    // Soft-delete the place, then clear it from any possessions so they safely
+    // resolve to "no place" (no dangling reference, no orphaned crash).
+    await ref.read(placesDaoProvider).softDelete(p.id);
+    if (count > 0) await ref.read(possessionsDaoProvider).clearPlace(p.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -99,9 +162,32 @@ class _PlacePickerSheetState extends ConsumerState<_PlacePickerSheet> {
                     ListTile(
                       leading: Icon(Icons.place_outlined, color: scheme.primary),
                       title: Text(p.name),
-                      trailing: p.id == widget.currentPlaceId
-                          ? Icon(Icons.check, color: scheme.primary)
-                          : null,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (p.id == widget.currentPlaceId)
+                            Icon(Icons.check, color: scheme.primary),
+                          PopupMenuButton<_PlaceMenu>(
+                            icon: Icon(Icons.more_vert,
+                                color: scheme.onSurfaceVariant),
+                            tooltip: l10n.placeManageTooltip,
+                            onSelected: (m) => switch (m) {
+                              _PlaceMenu.rename => _renamePlace(p),
+                              _PlaceMenu.delete => _deletePlace(p),
+                            },
+                            itemBuilder: (_) => [
+                              PopupMenuItem(
+                                  value: _PlaceMenu.rename,
+                                  child: Text(l10n.menuRename)),
+                              PopupMenuItem(
+                                value: _PlaceMenu.delete,
+                                child: Text(l10n.placeDelete,
+                                    style: TextStyle(color: scheme.error)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                       onTap: () => choose(p.id),
                     ),
                 ],

@@ -140,5 +140,18 @@
   "placeAssignHint": "Tocca per assegnare un luogo",
   "placePickerTitle": "Dove si trova?",
   "newPlaceHint": "Nuovo luogo — es. Garage, Ufficio",
-  "addPlaceButton": "Aggiungi"
+  "addPlaceButton": "Aggiungi",
+  "placeManageTooltip": "Gestisci",
+  "placeDelete": "Elimina",
+  "placeRenameTitle": "Rinomina luogo",
+  "cancelButton": "Annulla",
+  "placeDeleteTitle": "Eliminare «{name}»?",
+  "@placeDeleteTitle": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "placeDeleteAssigned": "{count, plural, =1{È assegnato a 1 oggetto, che tornerà a «Nessun luogo».} other{È assegnato a {count} oggetti, che torneranno a «Nessun luogo».}}",
+  "@placeDeleteAssigned": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "placeDeleteNone": "Nessun oggetto usa questo luogo."
 }

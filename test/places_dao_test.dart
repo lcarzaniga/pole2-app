@@ -70,4 +70,35 @@ void main() {
     expect(reloaded!.placeId, placeId);
     expect(await db.placesDao.watchById(placeId).first, isNull);
   });
+
+  test('countByPlace counts non-deleted assigned possessions', () async {
+    final placeId = await db.placesDao.create(name: 'Garage');
+    expect(await db.possessionsDao.countByPlace(placeId), 0);
+
+    final a = await db.possessionsDao.createPossession(title: 'A');
+    final b = await db.possessionsDao.createPossession(title: 'B');
+    await db.possessionsDao.setPlace(a.id, placeId);
+    await db.possessionsDao.setPlace(b.id, placeId);
+    expect(await db.possessionsDao.countByPlace(placeId), 2);
+
+    await db.possessionsDao.softDelete(a.id); // tombstoned → not counted
+    expect(await db.possessionsDao.countByPlace(placeId), 1);
+  });
+
+  test('delete flow (softDelete + clearPlace) resolves possessions to no place',
+      () async {
+    final placeId = await db.placesDao.create(name: 'Cantina');
+    final a = await db.possessionsDao.createPossession(title: 'A');
+    final b = await db.possessionsDao.createPossession(title: 'B');
+    await db.possessionsDao.setPlace(a.id, placeId);
+    await db.possessionsDao.setPlace(b.id, placeId);
+
+    // What the management UI does on delete.
+    await db.placesDao.softDelete(placeId);
+    await db.possessionsDao.clearPlace(placeId);
+
+    expect((await db.possessionsDao.watchById(a.id).first)!.placeId, isNull);
+    expect((await db.possessionsDao.watchById(b.id).first)!.placeId, isNull);
+    expect(await db.placesDao.watchById(placeId).first, isNull);
+  });
 }

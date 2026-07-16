@@ -73,6 +73,26 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
     );
   }
 
+  /// How many non-deleted possessions are currently assigned to [placeId].
+  /// Powers the "this place is in use" warning before deleting a place.
+  Future<int> countByPlace(String placeId) async {
+    final n = possessions.id.count();
+    final q = selectOnly(possessions)
+      ..addColumns([n])
+      ..where(
+          possessions.placeId.equals(placeId) & possessions.deletedAt.isNull());
+    return (await q.getSingle()).read(n) ?? 0;
+  }
+
+  /// Clears the place on every possession that referenced [placeId] — used when
+  /// a place is deleted, so affected possessions safely resolve to "no place".
+  Future<void> clearPlace(String placeId) {
+    return (update(possessions)..where((t) => t.placeId.equals(placeId))).write(
+      PossessionsCompanion(
+          placeId: const Value(null), updatedAt: Value(DateTime.now())),
+    );
+  }
+
   /// Sets lifecycle status (e.g. archive). Preserves the record.
   Future<void> setStatus(String id, PossessionStatus status) {
     return (update(possessions)..where((t) => t.id.equals(id))).write(

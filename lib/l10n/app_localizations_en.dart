@@ -334,4 +334,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addPlaceButton => 'Aggiungi';
+
+  @override
+  String get placeManageTooltip => 'Gestisci';
+
+  @override
+  String get placeDelete => 'Elimina';
+
+  @override
+  String get placeRenameTitle => 'Rinomina luogo';
+
+  @override
+  String get cancelButton => 'Annulla';
+
+  @override
+  String placeDeleteTitle(String name) {
+    return 'Eliminare «$name»?';
+  }
+
+  @override
+  String placeDeleteAssigned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'È assegnato a $count oggetti, che torneranno a «Nessun luogo».',
+      one: 'È assegnato a 1 oggetto, che tornerà a «Nessun luogo».',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get placeDeleteNone => 'Nessun oggetto usa questo luogo.';
 }

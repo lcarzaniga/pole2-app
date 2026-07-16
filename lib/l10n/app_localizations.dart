@@ -667,6 +667,48 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Aggiungi'**
   String get addPlaceButton;
+
+  /// No description provided for @placeManageTooltip.
+  ///
+  /// In it, this message translates to:
+  /// **'Gestisci'**
+  String get placeManageTooltip;
+
+  /// No description provided for @placeDelete.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina'**
+  String get placeDelete;
+
+  /// No description provided for @placeRenameTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Rinomina luogo'**
+  String get placeRenameTitle;
+
+  /// No description provided for @cancelButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get cancelButton;
+
+  /// No description provided for @placeDeleteTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare «{name}»?'**
+  String placeDeleteTitle(String name);
+
+  /// No description provided for @placeDeleteAssigned.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =1{È assegnato a 1 oggetto, che tornerà a «Nessun luogo».} other{È assegnato a {count} oggetti, che torneranno a «Nessun luogo».}}'**
+  String placeDeleteAssigned(int count);
+
+  /// No description provided for @placeDeleteNone.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun oggetto usa questo luogo.'**
+  String get placeDeleteNone;
 }
 
 class _AppLocalizationsDelegate
