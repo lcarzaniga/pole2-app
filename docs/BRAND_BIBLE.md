@@ -193,7 +193,13 @@ restrained secondary palette exists as tokens (`AppColors`, see
 - The turtle stays **inside the product experience** — deliberately **not** on
   the launcher icon (see §12).
 
-## 10a. Kobe Canonical Geometry
+## 10a. Kobe Canonical Geometry (M14 — superseded by §10c)
+
+> **Superseded (M15).** The flat "tessellated ellipse" shell below was the M14
+> working geometry. The **permanent identity is now §10c "Canonical Kobe"**: a
+> *domed* shell of **exactly 7 hexagons** (1 central + 6 folded panels). §10a is
+> kept for history; where it conflicts with §10c, **§10c wins**. (The flat
+> 7-hex rosette is now the shell's **open** state — see the opening animation.)
 
 *The single source of truth for how Kobe is drawn. One Kobe, everywhere —
 landing, app, icon, social images, future assets. First corrected implementation:
@@ -257,6 +263,104 @@ drop shadows, neon glow, or spotlight; a cartoon face or expression.
 honeycomb, a **circular** head, and a **triangular** tail. The landing is now the
 first corrected implementation of the canonical geometry above; the app is to be
 updated to match in a future milestone. Two different Kobes must not persist.
+
+## 10c. Canonical Kobe (permanent identity)
+
+*Designed as a ten-year identity (M15). This is the single source of truth for
+Kobe across the app, landing, app icon, splash, docs, illustration and marketing.
+The **shell is the symbol of Pole²** — the goal is that Kobe is recognizable from
+the shell alone. Implementations (Flutter, landing) are brought to this spec in
+later milestones; this section defines it, code follows.*
+
+### Geometry
+
+**The shell is a domed tortoise shell — not a flat honeycomb.**
+- It is built from **exactly 7 hexagons: 1 central + 6 surrounding. Never more,
+  never fewer.**
+- The **central hexagon is dominant** — it is the **highest surface** of the
+  shell (lightest, on top, drawn last).
+- The **6 surrounding panels are folded down**: each is a regular neighbour
+  hexagon rotated down about its shared edge with the centre. In the top-down
+  mark this is a **radial foreshortening** of the panel by `cos(fold)`. So the
+  panels visually **wrap around and slope away** from the central peak.
+- The outer silhouette is therefore a soft **12-sided dome** (a rounded hexagon),
+  not a circle and not a flat hexagon.
+- It must read **clean, geometric, faceted — never cartoonish, never a rendered
+  glossy ball.** Depth comes from the foreshortening plus a *restrained* tonal
+  step (central lightest → panels one step darker, a whisper of inner-light →
+  outer-dark per panel). No highlights, no gloss, no drop shadow.
+
+### Proportions (canonical values)
+
+| Element | Canonical | Notes |
+|---|---|---|
+| Fold angle | **~50°** (46–54° ok) | dome depth; 0° = fully open (flat rosette) |
+| Shell ratio (h/v) | **~0.94** | subtly taller than wide; **never a perfect circle**; a strict-emblem icon may use up to 1.0 |
+| Central hexagon | **dominant**, on top | appears the highest surface |
+| Head | rounded **bullet**, elongated vertically | never circular, never pointed |
+| Tail | short **pointed triangle**, on the vertical axis | the **only** pointed element |
+| Legs | **front pair + rear pair**, separate groups | soft ovals peeking at the diagonals |
+
+### Two colourways
+
+- **Illustrated Kobe** (the character, with head/tail/legs): mint shell — central
+  `#cdeee1`, panels mint→teal (`#a7ded0`→`#7dbfa8`), edges & body deep teal
+  `#123f34`. Used in-app and on the landing.
+- **Monochrome shell mark** (the icon/emblem): the domed shell in **warm ivory
+  `#f6f1e7`** on petrol — central ivory solid, panels translucent ivory (recede),
+  crisp ivory rim. This is the app-icon direction (see below).
+
+### Movement (animation compatibility)
+
+- **The shell never moves.** It is the visual anchor. Only **head, tail, front
+  legs, rear legs** move.
+- Directions (canonical): head **tip** and tail **tip** move to the **same** side
+  (they counter-rotate about the shell centre); the **front and rear leg pairs**
+  move to the **opposite** side (they counter-rotate too); then mirror; then
+  settle. A slow idle after inactivity; a larger, clearly-visible reaction on a
+  direct shell click/tap. Springless ease, no bounce, Reduce-Motion safe. (See
+  §13a for timing/degrees.)
+- **The opening animation is explained by the geometry.** At rest the six panels
+  are folded down (fold ≈ 50°). Opening rotates them **up to coplanar** with the
+  central hexagon (fold → 0°), i.e. the shell **unfolds** into the flat 7-hex
+  rosette — the six "keep something" panels. It must feel like a shell opening,
+  **not** six menu buttons appearing.
+
+### The icon
+
+**Canonical icon direction: the pure ivory domed shell, no marking** (explored as
+concept **A2**). The shell *is* the icon. Chosen over: **C** integrated `P²`
+(fails — mush at small size, neither a clean P² nor a clean shell), **B** engraved
+`²` (adds clutter), **D** a minimal hex glyph (reads as a generic spoked hexagon).
+The existing `P²` launcher icon (§12) may continue for now; whether to move the
+app icon to the shell is an implementation decision — but the shell mark is strong
+enough to become **the** icon and is the recommended long-term direction.
+
+### Invariants (always true)
+
+1. Shell = **exactly 7 hexagons** (1 central + 6), central **dominant/highest**.
+2. Shell is a **dome** (folded panels), ratio ~0.94, **never a circle, never a
+   flat honeycomb** in the resting mark.
+3. Head = rounded elongated **bullet**; tail = short **pointed triangle** (the
+   only pointed element); legs = **front + rear** separate groups.
+4. **The shell never moves**; only head/tail/legs do (directions above).
+5. The **open** state is the flat 7-hex rosette; the shell unfolds into it.
+6. Two colourways only: illustrated mint (character) and monochrome ivory (mark).
+
+### Prohibited variations
+
+- A circular shell, a flat honeycomb resting shell, or a shell "field" clipped to
+  an outline (the M14 tessellation — retired).
+- **Any** hexagon count in the shell other than 7 (1 + 6).
+- A non-dominant / non-central peak, or merely enlarging the centre without the
+  fold (the dome must come from folding, not scaling).
+- A circular or pointed **head**; a rounded/leaf/bullet **tail**, or a tail
+  confusable with the legs.
+- Glossy/3D-rendered shading, highlights, drop shadows, neon, outlines, spotlight
+  — Kobe is faceted and geometric, not rendered.
+- A moving shell; legs or head/tail moving the wrong way (see directions).
+- A cartoon face, eyes, or expression.
+- Forcing `P²` (or any letter) onto the shell as the icon.
 
 ## 11. The hexagon
 
