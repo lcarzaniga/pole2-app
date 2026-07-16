@@ -34,6 +34,7 @@ class Files extends Table {
 
 /// The anchor. Only `title` is required — nothing else may block a save.
 @DataClassName('Possession')
+@TableIndex(name: 'idx_possession_place', columns: {#placeId})
 class Possessions extends Table {
   TextColumn get id => text()();
   TextColumn get title => text().withLength(min: 1, max: 200)();
@@ -43,6 +44,28 @@ class Possessions extends Table {
       textEnum<PossessionStatus>().withDefault(const Constant('active'))();
   TextColumn get coverFileId =>
       text().nullable().references(Files, #id)();
+
+  /// Where this thing lives (M2 Places). **Null = "no place"** — there is never
+  /// a physical placeholder record; the UI shows "no place" for null. Flat only:
+  /// no hierarchy/parentId in R1.0 (DOMAIN_MODEL §3.11).
+  TextColumn get placeId => text().nullable().references(Places, #id)();
+
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// A user-defined, **reusable** place where possessions live ("Garage",
+/// "Ufficio", "Cantina"). Flat by design — no hierarchy/parentId in R1.0
+/// (DOMAIN_MODEL §3.11). Soft-deleted like its siblings.
+@DataClassName('Place')
+class Places extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text().withLength(min: 1, max: 120)();
+  TextColumn get notes => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();

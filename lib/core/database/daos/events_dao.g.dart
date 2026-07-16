@@ -5,6 +5,7 @@ part of 'events_dao.dart';
 // ignore_for_file: type=lint
 mixin _$EventsDaoMixin on DatabaseAccessor<AppDatabase> {
   $FilesTable get files => attachedDatabase.files;
+  $PlacesTable get places => attachedDatabase.places;
   $PossessionsTable get possessions => attachedDatabase.possessions;
   $PartiesTable get parties => attachedDatabase.parties;
   $EvidenceItemsTable get evidenceItems => attachedDatabase.evidenceItems;
@@ -17,6 +18,8 @@ class EventsDaoManager {
   EventsDaoManager(this._db);
   $$FilesTableTableManager get files =>
       $$FilesTableTableManager(_db.attachedDatabase, _db.files);
+  $$PlacesTableTableManager get places =>
+      $$PlacesTableTableManager(_db.attachedDatabase, _db.places);
   $$PossessionsTableTableManager get possessions =>
       $$PossessionsTableTableManager(_db.attachedDatabase, _db.possessions);
   $$PartiesTableTableManager get parties =>

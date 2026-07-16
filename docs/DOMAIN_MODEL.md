@@ -74,7 +74,7 @@ Bytes never enter the database. A **File** is metadata: portable relative path, 
 
 ### 3.10 What survives after the object is gone? — **Almost everything.** The object leaving is a **status change, not a deletion.** The dossier persists, because its value is proof and history *after the fact*.
 
-### 3.11 Grouping — deferred. Sets / rooms / house — a soft many-to-many lens, not in MVP. ("Room" can start as an Attribute.)
+### 3.11 Grouping / Places — R1.0 (M2) ships a **flat Place**: one optional, reusable place per possession (`placeId` null = "no place", never a placeholder record). Hierarchy (sets / rooms / house, `parentId`) and many-to-many grouping remain **deferred**.
 
 ---
 
@@ -105,7 +105,7 @@ Status is *current state*; a matching **Event** records *when & why*. **`status`
 
 ---
 
-## 6. Drift schema (frozen proposal — 8 tables)
+## 6. Drift schema (9 tables — Places added in R1.0 M2)
 
 Enums (stored by **name** via `textEnum`; additively extensible):
 
@@ -143,6 +143,19 @@ class Possessions extends Table {
   TextColumn get status =>
       textEnum<PossessionStatus>().withDefault(const Constant('active'))();
   TextColumn get coverFileId => text().nullable().references(Files, #id)();
+  TextColumn get placeId => text().nullable().references(Places, #id)(); // M2; null = "no place"
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  @override Set<Column> get primaryKey => {id};
+}
+
+// M2 (R1.0): a flat, reusable place. null placeId = "no place" (no placeholder
+// record). No hierarchy / parentId in R1.0 (§3.11).
+class Places extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text().withLength(min: 1, max: 120)();
+  TextColumn get notes => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
@@ -232,8 +245,8 @@ class Parties extends Table {
 
 Supporting details:
 - **DB option:** `storeDateTimeAsText: true` (ISO-8601 UTC).
-- **Indexes:** `identifiers.possessionId`, `attributes.possessionId`, `events.possessionId`, `events.partyId`, `events.at`, `evidenceItems.fileId`, `possessions.coverFileId`, `possessions.status`.
-- **Migration:** `schemaVersion` 1 → 2; `onUpgrade` creates all eight tables; keep a v1→v2 snapshot test.
+- **Indexes:** `identifiers.possessionId`, `attributes.possessionId`, `events.possessionId`, `events.partyId`, `events.at`, `evidenceItems.fileId`, `possessions.coverFileId`, `possessions.status`, `possessions.placeId`.
+- **Migration:** `schemaVersion` is now **4**; `onUpgrade` applies additive per-version steps (v2→v3 Event columns; **v3→v4** create `Places` + nullable `possessions.placeId` + index). Snapshot tests cover v2→v3 and v3→v4.
 
 **Maps cleanly to the five quick-actions:** New Possession → `Possession`; Add Document / Scan → `Evidence` (+`File`); Reminder → `Event(reminder, pending)`; Note → `Event(note)`. Identifiers/Attributes are progressive enrichment on the detail screen.
 

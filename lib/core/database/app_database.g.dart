@@ -416,6 +416,417 @@ class FilesCompanion extends UpdateCompanion<StoredFile> {
   }
 }
 
+class $PlacesTable extends Places with TableInfo<$PlacesTable, Place> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PlacesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 120,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    notes,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'places';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Place> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Place map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Place(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $PlacesTable createAlias(String alias) {
+    return $PlacesTable(attachedDatabase, alias);
+  }
+}
+
+class Place extends DataClass implements Insertable<Place> {
+  final String id;
+  final String name;
+  final String? notes;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  const Place({
+    required this.id,
+    required this.name,
+    this.notes,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  PlacesCompanion toCompanion(bool nullToAbsent) {
+    return PlacesCompanion(
+      id: Value(id),
+      name: Value(name),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory Place.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Place(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'notes': serializer.toJson<String?>(notes),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  Place copyWith({
+    String? id,
+    String? name,
+    Value<String?> notes = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => Place(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    notes: notes.present ? notes.value : this.notes,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  Place copyWithCompanion(PlacesCompanion data) {
+    return Place(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Place(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('notes: $notes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, notes, createdAt, updatedAt, deletedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Place &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.notes == this.notes &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class PlacesCompanion extends UpdateCompanion<Place> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String?> notes;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const PlacesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PlacesCompanion.insert({
+    required String id,
+    required String name,
+    this.notes = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<Place> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? notes,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (notes != null) 'notes': notes,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PlacesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String?>? notes,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return PlacesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlacesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('notes: $notes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $PossessionsTable extends Possessions
     with TableInfo<$PossessionsTable, Possession> {
   @override
@@ -488,6 +899,20 @@ class $PossessionsTable extends Possessions
       'REFERENCES files (id)',
     ),
   );
+  static const VerificationMeta _placeIdMeta = const VerificationMeta(
+    'placeId',
+  );
+  @override
+  late final GeneratedColumn<String> placeId = GeneratedColumn<String>(
+    'place_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES places (id)',
+    ),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -529,6 +954,7 @@ class $PossessionsTable extends Possessions
     notes,
     status,
     coverFileId,
+    placeId,
     createdAt,
     updatedAt,
     deletedAt,
@@ -577,6 +1003,12 @@ class $PossessionsTable extends Possessions
           data['cover_file_id']!,
           _coverFileIdMeta,
         ),
+      );
+    }
+    if (data.containsKey('place_id')) {
+      context.handle(
+        _placeIdMeta,
+        placeId.isAcceptableOrUnknown(data['place_id']!, _placeIdMeta),
       );
     }
     if (data.containsKey('created_at')) {
@@ -636,6 +1068,10 @@ class $PossessionsTable extends Possessions
         DriftSqlType.string,
         data['${effectivePrefix}cover_file_id'],
       ),
+      placeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}place_id'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -667,6 +1103,11 @@ class Possession extends DataClass implements Insertable<Possession> {
   final String? notes;
   final PossessionStatus status;
   final String? coverFileId;
+
+  /// Where this thing lives (M2 Places). **Null = "no place"** — there is never
+  /// a physical placeholder record; the UI shows "no place" for null. Flat only:
+  /// no hierarchy/parentId in R1.0 (DOMAIN_MODEL §3.11).
+  final String? placeId;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -677,6 +1118,7 @@ class Possession extends DataClass implements Insertable<Possession> {
     this.notes,
     required this.status,
     this.coverFileId,
+    this.placeId,
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
@@ -700,6 +1142,9 @@ class Possession extends DataClass implements Insertable<Possession> {
     if (!nullToAbsent || coverFileId != null) {
       map['cover_file_id'] = Variable<String>(coverFileId);
     }
+    if (!nullToAbsent || placeId != null) {
+      map['place_id'] = Variable<String>(placeId);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
@@ -722,6 +1167,9 @@ class Possession extends DataClass implements Insertable<Possession> {
       coverFileId: coverFileId == null && nullToAbsent
           ? const Value.absent()
           : Value(coverFileId),
+      placeId: placeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(placeId),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       deletedAt: deletedAt == null && nullToAbsent
@@ -744,6 +1192,7 @@ class Possession extends DataClass implements Insertable<Possession> {
         serializer.fromJson<String>(json['status']),
       ),
       coverFileId: serializer.fromJson<String?>(json['coverFileId']),
+      placeId: serializer.fromJson<String?>(json['placeId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
@@ -761,6 +1210,7 @@ class Possession extends DataClass implements Insertable<Possession> {
         $PossessionsTable.$converterstatus.toJson(status),
       ),
       'coverFileId': serializer.toJson<String?>(coverFileId),
+      'placeId': serializer.toJson<String?>(placeId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
@@ -774,6 +1224,7 @@ class Possession extends DataClass implements Insertable<Possession> {
     Value<String?> notes = const Value.absent(),
     PossessionStatus? status,
     Value<String?> coverFileId = const Value.absent(),
+    Value<String?> placeId = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
     Value<DateTime?> deletedAt = const Value.absent(),
@@ -784,6 +1235,7 @@ class Possession extends DataClass implements Insertable<Possession> {
     notes: notes.present ? notes.value : this.notes,
     status: status ?? this.status,
     coverFileId: coverFileId.present ? coverFileId.value : this.coverFileId,
+    placeId: placeId.present ? placeId.value : this.placeId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
@@ -798,6 +1250,7 @@ class Possession extends DataClass implements Insertable<Possession> {
       coverFileId: data.coverFileId.present
           ? data.coverFileId.value
           : this.coverFileId,
+      placeId: data.placeId.present ? data.placeId.value : this.placeId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
@@ -813,6 +1266,7 @@ class Possession extends DataClass implements Insertable<Possession> {
           ..write('notes: $notes, ')
           ..write('status: $status, ')
           ..write('coverFileId: $coverFileId, ')
+          ..write('placeId: $placeId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt')
@@ -828,6 +1282,7 @@ class Possession extends DataClass implements Insertable<Possession> {
     notes,
     status,
     coverFileId,
+    placeId,
     createdAt,
     updatedAt,
     deletedAt,
@@ -842,6 +1297,7 @@ class Possession extends DataClass implements Insertable<Possession> {
           other.notes == this.notes &&
           other.status == this.status &&
           other.coverFileId == this.coverFileId &&
+          other.placeId == this.placeId &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt);
@@ -854,6 +1310,7 @@ class PossessionsCompanion extends UpdateCompanion<Possession> {
   final Value<String?> notes;
   final Value<PossessionStatus> status;
   final Value<String?> coverFileId;
+  final Value<String?> placeId;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> deletedAt;
@@ -865,6 +1322,7 @@ class PossessionsCompanion extends UpdateCompanion<Possession> {
     this.notes = const Value.absent(),
     this.status = const Value.absent(),
     this.coverFileId = const Value.absent(),
+    this.placeId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -877,6 +1335,7 @@ class PossessionsCompanion extends UpdateCompanion<Possession> {
     this.notes = const Value.absent(),
     this.status = const Value.absent(),
     this.coverFileId = const Value.absent(),
+    this.placeId = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.deletedAt = const Value.absent(),
@@ -892,6 +1351,7 @@ class PossessionsCompanion extends UpdateCompanion<Possession> {
     Expression<String>? notes,
     Expression<String>? status,
     Expression<String>? coverFileId,
+    Expression<String>? placeId,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
@@ -904,6 +1364,7 @@ class PossessionsCompanion extends UpdateCompanion<Possession> {
       if (notes != null) 'notes': notes,
       if (status != null) 'status': status,
       if (coverFileId != null) 'cover_file_id': coverFileId,
+      if (placeId != null) 'place_id': placeId,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
@@ -918,6 +1379,7 @@ class PossessionsCompanion extends UpdateCompanion<Possession> {
     Value<String?>? notes,
     Value<PossessionStatus>? status,
     Value<String?>? coverFileId,
+    Value<String?>? placeId,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? deletedAt,
@@ -930,6 +1392,7 @@ class PossessionsCompanion extends UpdateCompanion<Possession> {
       notes: notes ?? this.notes,
       status: status ?? this.status,
       coverFileId: coverFileId ?? this.coverFileId,
+      placeId: placeId ?? this.placeId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
@@ -960,6 +1423,9 @@ class PossessionsCompanion extends UpdateCompanion<Possession> {
     if (coverFileId.present) {
       map['cover_file_id'] = Variable<String>(coverFileId.value);
     }
+    if (placeId.present) {
+      map['place_id'] = Variable<String>(placeId.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -984,6 +1450,7 @@ class PossessionsCompanion extends UpdateCompanion<Possession> {
           ..write('notes: $notes, ')
           ..write('status: $status, ')
           ..write('coverFileId: $coverFileId, ')
+          ..write('placeId: $placeId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
@@ -4404,6 +4871,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $FilesTable files = $FilesTable(this);
+  late final $PlacesTable places = $PlacesTable(this);
   late final $PossessionsTable possessions = $PossessionsTable(this);
   late final $IdentifiersTable identifiers = $IdentifiersTable(this);
   late final $AttributesTable attributes = $AttributesTable(this);
@@ -4412,6 +4880,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $PossessionEvidenceTable(this);
   late final $PartiesTable parties = $PartiesTable(this);
   late final $EventsTable events = $EventsTable(this);
+  late final Index idxPossessionPlace = Index(
+    'idx_possession_place',
+    'CREATE INDEX idx_possession_place ON possessions (place_id)',
+  );
   late final Index idxIdentifierPossession = Index(
     'idx_identifier_possession',
     'CREATE INDEX idx_identifier_possession ON identifiers (possession_id)',
@@ -4432,12 +4904,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final EventsDao eventsDao = EventsDao(this as AppDatabase);
+  late final PlacesDao placesDao = PlacesDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     files,
+    places,
     possessions,
     identifiers,
     attributes,
@@ -4445,6 +4919,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     possessionEvidence,
     parties,
     events,
+    idxPossessionPlace,
     idxIdentifierPossession,
     idxAttributePossession,
     idxEventPossession,
@@ -4869,6 +5344,319 @@ typedef $$FilesTableProcessedTableManager =
       StoredFile,
       PrefetchHooks Function({bool possessionsRefs, bool evidenceItemsRefs})
     >;
+typedef $$PlacesTableCreateCompanionBuilder =
+    PlacesCompanion Function({
+      required String id,
+      required String name,
+      Value<String?> notes,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$PlacesTableUpdateCompanionBuilder =
+    PlacesCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String?> notes,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+
+final class $$PlacesTableReferences
+    extends BaseReferences<_$AppDatabase, $PlacesTable, Place> {
+  $$PlacesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$PossessionsTable, List<Possession>>
+  _possessionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.possessions,
+    aliasName: 'places__id__possessions__place_id',
+  );
+
+  $$PossessionsTableProcessedTableManager get possessionsRefs {
+    final manager = $$PossessionsTableTableManager(
+      $_db,
+      $_db.possessions,
+    ).filter((f) => f.placeId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_possessionsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$PlacesTableFilterComposer
+    extends Composer<_$AppDatabase, $PlacesTable> {
+  $$PlacesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> possessionsRefs(
+    Expression<bool> Function($$PossessionsTableFilterComposer f) f,
+  ) {
+    final $$PossessionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.possessions,
+      getReferencedColumn: (t) => t.placeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PossessionsTableFilterComposer(
+            $db: $db,
+            $table: $db.possessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$PlacesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PlacesTable> {
+  $$PlacesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PlacesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PlacesTable> {
+  $$PlacesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  Expression<T> possessionsRefs<T extends Object>(
+    Expression<T> Function($$PossessionsTableAnnotationComposer a) f,
+  ) {
+    final $$PossessionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.possessions,
+      getReferencedColumn: (t) => t.placeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PossessionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.possessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$PlacesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PlacesTable,
+          Place,
+          $$PlacesTableFilterComposer,
+          $$PlacesTableOrderingComposer,
+          $$PlacesTableAnnotationComposer,
+          $$PlacesTableCreateCompanionBuilder,
+          $$PlacesTableUpdateCompanionBuilder,
+          (Place, $$PlacesTableReferences),
+          Place,
+          PrefetchHooks Function({bool possessionsRefs})
+        > {
+  $$PlacesTableTableManager(_$AppDatabase db, $PlacesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PlacesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PlacesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PlacesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PlacesCompanion(
+                id: id,
+                name: name,
+                notes: notes,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                Value<String?> notes = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PlacesCompanion.insert(
+                id: id,
+                name: name,
+                notes: notes,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) =>
+                    (e.readTable(table), $$PlacesTableReferences(db, table, e)),
+              )
+              .toList(),
+          prefetchHooksCallback: ({possessionsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (possessionsRefs) db.possessions],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (possessionsRefs)
+                    await $_getPrefetchedData<Place, $PlacesTable, Possession>(
+                      currentTable: table,
+                      referencedTable: $$PlacesTableReferences
+                          ._possessionsRefsTable(db),
+                      managerFromTypedResult: (p0) => $$PlacesTableReferences(
+                        db,
+                        table,
+                        p0,
+                      ).possessionsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.placeId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PlacesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PlacesTable,
+      Place,
+      $$PlacesTableFilterComposer,
+      $$PlacesTableOrderingComposer,
+      $$PlacesTableAnnotationComposer,
+      $$PlacesTableCreateCompanionBuilder,
+      $$PlacesTableUpdateCompanionBuilder,
+      (Place, $$PlacesTableReferences),
+      Place,
+      PrefetchHooks Function({bool possessionsRefs})
+    >;
 typedef $$PossessionsTableCreateCompanionBuilder =
     PossessionsCompanion Function({
       required String id,
@@ -4877,6 +5665,7 @@ typedef $$PossessionsTableCreateCompanionBuilder =
       Value<String?> notes,
       Value<PossessionStatus> status,
       Value<String?> coverFileId,
+      Value<String?> placeId,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<DateTime?> deletedAt,
@@ -4890,6 +5679,7 @@ typedef $$PossessionsTableUpdateCompanionBuilder =
       Value<String?> notes,
       Value<PossessionStatus> status,
       Value<String?> coverFileId,
+      Value<String?> placeId,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<DateTime?> deletedAt,
@@ -4911,6 +5701,23 @@ final class $$PossessionsTableReferences
       $_db.files,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_coverFileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $PlacesTable _placeIdTable(_$AppDatabase db) =>
+      db.places.createAlias('possessions__place_id__places__id');
+
+  $$PlacesTableProcessedTableManager? get placeId {
+    final $_column = $_itemColumn<String>('place_id');
+    if ($_column == null) return null;
+    final manager = $$PlacesTableTableManager(
+      $_db,
+      $_db.places,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_placeIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -5060,6 +5867,29 @@ class $$PossessionsTableFilterComposer
           }) => $$FilesTableFilterComposer(
             $db: $db,
             $table: $db.files,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PlacesTableFilterComposer get placeId {
+    final $$PlacesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.placeId,
+      referencedTable: $db.places,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlacesTableFilterComposer(
+            $db: $db,
+            $table: $db.places,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5241,6 +6071,29 @@ class $$PossessionsTableOrderingComposer
     );
     return composer;
   }
+
+  $$PlacesTableOrderingComposer get placeId {
+    final $$PlacesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.placeId,
+      referencedTable: $db.places,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlacesTableOrderingComposer(
+            $db: $db,
+            $table: $db.places,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$PossessionsTableAnnotationComposer
@@ -5290,6 +6143,29 @@ class $$PossessionsTableAnnotationComposer
           }) => $$FilesTableAnnotationComposer(
             $db: $db,
             $table: $db.files,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PlacesTableAnnotationComposer get placeId {
+    final $$PlacesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.placeId,
+      referencedTable: $db.places,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlacesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.places,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5416,6 +6292,7 @@ class $$PossessionsTableTableManager
           Possession,
           PrefetchHooks Function({
             bool coverFileId,
+            bool placeId,
             bool identifiersRefs,
             bool attributesRefs,
             bool possessionEvidenceRefs,
@@ -5441,6 +6318,7 @@ class $$PossessionsTableTableManager
                 Value<String?> notes = const Value.absent(),
                 Value<PossessionStatus> status = const Value.absent(),
                 Value<String?> coverFileId = const Value.absent(),
+                Value<String?> placeId = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -5452,6 +6330,7 @@ class $$PossessionsTableTableManager
                 notes: notes,
                 status: status,
                 coverFileId: coverFileId,
+                placeId: placeId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
@@ -5465,6 +6344,7 @@ class $$PossessionsTableTableManager
                 Value<String?> notes = const Value.absent(),
                 Value<PossessionStatus> status = const Value.absent(),
                 Value<String?> coverFileId = const Value.absent(),
+                Value<String?> placeId = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -5476,6 +6356,7 @@ class $$PossessionsTableTableManager
                 notes: notes,
                 status: status,
                 coverFileId: coverFileId,
+                placeId: placeId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
@@ -5492,6 +6373,7 @@ class $$PossessionsTableTableManager
           prefetchHooksCallback:
               ({
                 coverFileId = false,
+                placeId = false,
                 identifiersRefs = false,
                 attributesRefs = false,
                 possessionEvidenceRefs = false,
@@ -5532,6 +6414,21 @@ class $$PossessionsTableTableManager
                                     referencedColumn:
                                         $$PossessionsTableReferences
                                             ._coverFileIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (placeId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.placeId,
+                                    referencedTable:
+                                        $$PossessionsTableReferences
+                                            ._placeIdTable(db),
+                                    referencedColumn:
+                                        $$PossessionsTableReferences
+                                            ._placeIdTable(db)
                                             .id,
                                   )
                                   as T;
@@ -5647,6 +6544,7 @@ typedef $$PossessionsTableProcessedTableManager =
       Possession,
       PrefetchHooks Function({
         bool coverFileId,
+        bool placeId,
         bool identifiersRefs,
         bool attributesRefs,
         bool possessionEvidenceRefs,
@@ -8489,6 +9387,8 @@ class $AppDatabaseManager {
   $AppDatabaseManager(this._db);
   $$FilesTableTableManager get files =>
       $$FilesTableTableManager(_db, _db.files);
+  $$PlacesTableTableManager get places =>
+      $$PlacesTableTableManager(_db, _db.places);
   $$PossessionsTableTableManager get possessions =>
       $$PossessionsTableTableManager(_db, _db.possessions);
   $$IdentifiersTableTableManager get identifiers =>

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:project_kobe/core/database/app_database.dart';
@@ -60,5 +61,47 @@ void main() {
         .saveAcquisition(possessionId: 'p1', type: AcquisitionType.gift);
     final updated = await db.eventsDao.watchAcquisition('p1').first;
     expect(updated!.acquisitionType, AcquisitionType.gift);
+  });
+
+  test('v3 data survives migration to v4 (Places + nullable placeId)', () async {
+    final dir = Directory.systemTemp.createTempSync('pole2_migration_v4');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final path = '${dir.path}/app.db';
+
+    // Build a real v3 database: the v2 schema plus the three additive Event
+    // columns the v2→v3 migration appended, then real data.
+    final raw = sqlite3.open(path);
+    raw.execute(_v2Schema);
+    raw.execute('ALTER TABLE events ADD COLUMN purchased_on TEXT NULL');
+    raw.execute('ALTER TABLE events ADD COLUMN acquisition_type TEXT NULL');
+    raw.execute('ALTER TABLE events ADD COLUMN remind_lead TEXT NULL');
+    raw.execute('PRAGMA user_version = 3');
+    final now = DateTime.now().toUtc().toIso8601String();
+    raw.execute(
+        "INSERT INTO possessions (id,title,status,created_at,updated_at) "
+        "VALUES ('p1','Old Camera','active','$now','$now')");
+    raw.close();
+
+    // Open with the current app — the v3 → v4 migration runs on open.
+    final db = AppDatabase.forTesting(NativeDatabase(File(path)));
+    addTearDown(db.close);
+
+    // The existing possession survived untouched, with no place assigned.
+    final possession = await db.possessionsDao.watchById('p1').first;
+    expect(possession, isNotNull);
+    expect(possession!.title, 'Old Camera');
+    expect(possession.placeId, isNull); // "no place" — never a placeholder row
+
+    // The new Places table is fully usable after migration.
+    final placeId = await db.placesDao.create(name: 'Garage');
+    final place = await db.placesDao.findById(placeId);
+    expect(place, isNotNull);
+    expect(place!.name, 'Garage');
+
+    // The nullable placeId is settable and round-trips.
+    await (db.update(db.possessions)..where((t) => t.id.equals('p1')))
+        .write(PossessionsCompanion(placeId: Value(placeId)));
+    final reloaded = await db.possessionsDao.watchById('p1').first;
+    expect(reloaded!.placeId, placeId);
   });
 }

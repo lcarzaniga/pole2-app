@@ -5,6 +5,7 @@ part of 'possessions_dao.dart';
 // ignore_for_file: type=lint
 mixin _$PossessionsDaoMixin on DatabaseAccessor<AppDatabase> {
   $FilesTable get files => attachedDatabase.files;
+  $PlacesTable get places => attachedDatabase.places;
   $PossessionsTable get possessions => attachedDatabase.possessions;
   PossessionsDaoManager get managers => PossessionsDaoManager(this);
 }
@@ -14,6 +15,8 @@ class PossessionsDaoManager {
   PossessionsDaoManager(this._db);
   $$FilesTableTableManager get files =>
       $$FilesTableTableManager(_db.attachedDatabase, _db.files);
+  $$PlacesTableTableManager get places =>
+      $$PlacesTableTableManager(_db.attachedDatabase, _db.places);
   $$PossessionsTableTableManager get possessions =>
       $$PossessionsTableTableManager(_db.attachedDatabase, _db.possessions);
 }

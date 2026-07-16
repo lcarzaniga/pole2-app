@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 import 'daos/events_dao.dart';
+import 'daos/places_dao.dart';
 import 'daos/possessions_dao.dart';
 // Imported so the generated part (which references the enum types directly)
 // has them in scope, even though this library uses them only via the tables.
@@ -29,8 +30,9 @@ part 'app_database.g.dart';
     PossessionEvidence,
     Events,
     Parties,
+    Places,
   ],
-  daos: [PossessionsDao, EventsDao],
+  daos: [PossessionsDao, EventsDao, PlacesDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
@@ -42,7 +44,7 @@ class AppDatabase extends _$AppDatabase {
   static const String _databaseName = 'project_kobe';
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -62,6 +64,17 @@ class AppDatabase extends _$AppDatabase {
               await m.addColumn(events, events.purchasedOn);
               await m.addColumn(events, events.acquisitionType);
               await m.addColumn(events, events.remindLead);
+            }
+            // v3 → v4 (M2 Places): a flat Places table + a nullable
+            // possessions.placeId. Existing possessions keep placeId = NULL
+            // ("no place") — no data touched, no placeholder record created.
+            if (from < 4) {
+              await m.createTable(places);
+              await m.addColumn(possessions, possessions.placeId);
+              await customStatement(
+                'CREATE INDEX IF NOT EXISTS idx_possession_place '
+                'ON possessions (place_id)',
+              );
             }
           }
         },
