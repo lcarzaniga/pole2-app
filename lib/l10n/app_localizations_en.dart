@@ -316,4 +316,22 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get noPlace => 'Nessun luogo';
+
+  @override
+  String get placeLabel => 'Luogo';
+
+  @override
+  String get placeAssignHint => 'Tocca per assegnare un luogo';
+
+  @override
+  String get placePickerTitle => 'Dove si trova?';
+
+  @override
+  String get newPlaceHint => 'Nuovo luogo — es. Garage, Ufficio';
+
+  @override
+  String get addPlaceButton => 'Aggiungi';
 }

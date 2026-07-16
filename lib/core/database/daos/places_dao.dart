@@ -27,12 +27,16 @@ class PlacesDao extends DatabaseAccessor<AppDatabase> with _$PlacesDaoMixin {
         .watch();
   }
 
-  /// A single place by id, reactive.
+  /// A single **non-deleted** place by id, reactive. A soft-deleted or missing
+  /// place yields null, so the UI resolves it to "no place".
   Stream<Place?> watchById(String id) {
-    return (select(places)..where((t) => t.id.equals(id))).watchSingleOrNull();
+    return (select(places)
+          ..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
+        .watchSingleOrNull();
   }
 
-  /// One-shot fetch (non-reactive) — handy right after creating a place.
+  /// One-shot raw fetch (includes soft-deleted rows) — handy right after
+  /// creating a place, or to confirm a tombstone exists.
   Future<Place?> findById(String id) {
     return (select(places)..where((t) => t.id.equals(id))).getSingleOrNull();
   }

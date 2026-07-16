@@ -133,5 +133,12 @@
   "daysAgo": "{count, plural, =1{1 giorno fa} other{{count} giorni fa}}",
   "@daysAgo": {
     "placeholders": { "count": { "type": "int" } }
-  }
+  },
+
+  "noPlace": "Nessun luogo",
+  "placeLabel": "Luogo",
+  "placeAssignHint": "Tocca per assegnare un luogo",
+  "placePickerTitle": "Dove si trova?",
+  "newPlaceHint": "Nuovo luogo — es. Garage, Ufficio",
+  "addPlaceButton": "Aggiungi"
 }

@@ -15,6 +15,8 @@ import '../../../shared/format.dart';
 import '../../../shared/photo_capture.dart';
 import '../../../shared/phrasing.dart';
 import '../../../shared/platform/photo_store.dart';
+import '../../places/application/place_providers.dart';
+import '../../places/presentation/place_picker.dart';
 import '../application/event_providers.dart';
 import '../application/possession_providers.dart';
 
@@ -94,6 +96,8 @@ class _Dossier extends ConsumerWidget {
                       ?.copyWith(color: scheme.onSurfaceVariant)),
               _NextGlance(id: id),
               const SizedBox(height: AppSpacing.xl),
+              _PlaceCard(possession: possession),
+              const SizedBox(height: AppSpacing.md),
               _DetailsCard(id: id),
               const SizedBox(height: AppSpacing.md),
               _Placeholder(
@@ -190,6 +194,36 @@ class _DetailsCard extends ConsumerWidget {
       subtitle: meta.isEmpty ? l10n.tapToAddMore : meta,
       onTap: onTap,
       trailing: Icons.edit_outlined,
+    );
+  }
+}
+
+/// Where this thing lives — assign a place, change it, or clear it ("no place").
+/// Always shown, so every object surfaces its place at a glance.
+class _PlaceCard extends ConsumerWidget {
+  const _PlaceCard({required this.possession});
+
+  final Possession possession;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final placeId = possession.placeId;
+    final place =
+        placeId == null ? null : ref.watch(placeByIdProvider(placeId)).value;
+    final hasPlace = place != null;
+    return _TapCard(
+      icon: Icons.place_outlined,
+      title: hasPlace ? place.name : l10n.noPlace,
+      subtitle: hasPlace ? l10n.placeLabel : l10n.placeAssignHint,
+      trailing: Icons.edit_outlined,
+      onTap: () async {
+        final choice = await showPlacePicker(context, currentPlaceId: placeId);
+        if (choice == null) return;
+        await ref
+            .read(possessionsDaoProvider)
+            .setPlace(possession.id, choice.placeId);
+      },
     );
   }
 }

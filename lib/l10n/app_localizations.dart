@@ -631,6 +631,42 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{count, plural, =1{1 giorno fa} other{{count} giorni fa}}'**
   String daysAgo(int count);
+
+  /// No description provided for @noPlace.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun luogo'**
+  String get noPlace;
+
+  /// No description provided for @placeLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Luogo'**
+  String get placeLabel;
+
+  /// No description provided for @placeAssignHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca per assegnare un luogo'**
+  String get placeAssignHint;
+
+  /// No description provided for @placePickerTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Dove si trova?'**
+  String get placePickerTitle;
+
+  /// No description provided for @newPlaceHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo luogo — es. Garage, Ufficio'**
+  String get newPlaceHint;
+
+  /// No description provided for @addPlaceButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi'**
+  String get addPlaceButton;
 }
 
 class _AppLocalizationsDelegate

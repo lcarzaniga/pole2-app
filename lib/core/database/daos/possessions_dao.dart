@@ -64,6 +64,15 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
     );
   }
 
+  /// Assigns (or clears, when [placeId] is null) the possession's place.
+  /// "No place" is simply a null value — never a placeholder record.
+  Future<void> setPlace(String id, String? placeId) {
+    return (update(possessions)..where((t) => t.id.equals(id))).write(
+      PossessionsCompanion(
+          placeId: Value(placeId), updatedAt: Value(DateTime.now())),
+    );
+  }
+
   /// Sets lifecycle status (e.g. archive). Preserves the record.
   Future<void> setStatus(String id, PossessionStatus status) {
     return (update(possessions)..where((t) => t.id.equals(id))).write(
