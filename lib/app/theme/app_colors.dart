@@ -34,8 +34,10 @@ abstract final class AppColors {
   // landing (pole2.it). The illustrated (character) colourway. These are fixed
   // brand values, not theme-derived, so Kobe reads identically everywhere.
 
-  /// Kobe shell — one continuous light-mint surface.
-  static const Color kobeShell = Color(0xFFCFE8DB);
+  /// Kobe shell — one continuous light-mint surface (darkened ~8% from the
+  /// original #CFE8DB for stronger contrast on white; still clearly lighter than
+  /// the body).
+  static const Color kobeShell = Color(0xFFBFDACD);
 
   /// Kobe body + all dark joint edges + shell border (dark petrol).
   static const Color kobeBody = Color(0xFF1F4638);

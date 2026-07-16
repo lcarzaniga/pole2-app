@@ -249,12 +249,12 @@ class _KobePainter extends CustomPainter {
     // Body groups (dark), UNDER the shell. Front+rear legs one way; head+tail
     // the other. Rear legs closer to the tail, front legs closer to the head.
     _group(canvas, rearRad, () {
-      _leg(canvas, _cx - _rx * 0.90, _cy + _ry * 0.52, 150, bodyP);
-      _leg(canvas, _cx + _rx * 0.90, _cy + _ry * 0.52, 30, bodyP);
+      _leg(canvas, _cx - _rx * 0.86, _cy + _ry * 0.64, 150, bodyP);
+      _leg(canvas, _cx + _rx * 0.86, _cy + _ry * 0.64, 30, bodyP);
     });
     _group(canvas, frontRad, () {
-      _leg(canvas, _cx - _rx * 0.92, _cy - _ry * 0.42, 208, bodyP);
-      _leg(canvas, _cx + _rx * 0.92, _cy - _ry * 0.42, -28, bodyP);
+      _leg(canvas, _cx - _rx * 0.86, _cy - _ry * 0.56, 208, bodyP);
+      _leg(canvas, _cx + _rx * 0.86, _cy - _ry * 0.56, -28, bodyP);
     });
     _group(canvas, tailRad, () => canvas.drawPath(_tailPath(), bodyP));
     _group(canvas, headRad, () => canvas.drawPath(_headPath(1.4), bodyP));
