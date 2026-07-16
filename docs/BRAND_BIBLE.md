@@ -304,8 +304,9 @@ test: engraved into one ceramic disc, the joint network makes sense.
 Scutes are **never filled as separate colours** — the shell is one continuous
 light surface. Separation comes **only** from the engraved joint, built as
 **dark edge · light groove · dark edge** (a wider dark band with a narrow
-light-groove band centred on it). The **outer border uses the same construction**,
-so the shell edge reads as a real physical rim, not a single stroke. Grooves
+light-groove band centred on it). The **outer border is one thick dark ellipse**
+(≈2× the grout) — the frame that defines Kobe, so the shell is the strongest
+element. Visual hierarchy: **outer border > grout joints > body**. Grooves
 **taper**: narrowest at the centre, imperceptibly wider toward the rim (a subtle
 dome cue, never decorative). Never rely on the background colour for the groove.
 
@@ -322,7 +323,7 @@ dome cue, never decorative). Never rely on the background colour for the groove.
 
 ### Colours (two colourways — exact published values)
 
-- **Illustrated Kobe** (character, with head/tail/legs): shell fill **`#cfe8db`**;
+- **Illustrated Kobe** (character, with head/tail/legs): shell fill **`#bfdacd`**;
   body + all dark joint edges + border **`#1f4638`**; grout light groove
   **`#e7f4ee`**. Nearly flat; a very restrained rim shadow only — no gloss, no
   highlight, no drop shadow, no body outline.
@@ -359,7 +360,8 @@ an implementation decision.
 1. Shell = a **vertical ellipse** (w/h ≈ 0.86) engraved with **exactly 7 scutes**
    (1 central + 6); the central a **true regular flat-top hexagon** at **0.70**.
 2. **One continuous surface** — no per-scute fills; separation only via the
-   **grout joint** (dark · light · dark), same construction on the outer border.
+   **grout joint** (dark · light · dark); the **outer border is a single thick
+   dark ellipse** (the frame — hierarchy: border > grout > body).
 3. Front & rear scutes are **single**; **no spine groove**; six joints reach the
    edge; bilaterally symmetric.
 4. Head = **elongated teardrop** (clearly larger than the legs); tail = short
