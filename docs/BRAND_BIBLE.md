@@ -195,11 +195,11 @@ restrained secondary palette exists as tokens (`AppColors`, see
 
 ## 10a. Kobe Canonical Geometry (M14 — superseded by §10c)
 
-> **Superseded (M15).** The flat "tessellated ellipse" shell below was the M14
-> working geometry. The **permanent identity is now §10c "Canonical Kobe"**: a
-> *domed* shell of **exactly 7 hexagons** (1 central + 6 folded panels). §10a is
-> kept for history; where it conflicts with §10c, **§10c wins**. (The flat
-> 7-hex rosette is now the shell's **open** state — see the opening animation.)
+> **Superseded.** The flat "tessellated ellipse" shell below was the M14 working
+> geometry. The **permanent identity is now §10c "Canonical Kobe"** (frozen from
+> the published landing): a **flat top-down ellipse engraved with exactly 7
+> scutes** (1 central true-hexagon + 6 surrounding), separated by grout joints.
+> §10a is kept for history; where it conflicts with §10c, **§10c wins**.
 
 *The single source of truth for how Kobe is drawn. One Kobe, everywhere —
 landing, app, icon, social images, future assets. First corrected implementation:
@@ -264,103 +264,126 @@ honeycomb, a **circular** head, and a **triangular** tail. The landing is now th
 first corrected implementation of the canonical geometry above; the app is to be
 updated to match in a future milestone. Two different Kobes must not persist.
 
-## 10c. Canonical Kobe (permanent identity)
+## 10c. Canonical Kobe (permanent identity — matches the published landing)
 
-*Designed as a ten-year identity (M15). This is the single source of truth for
-Kobe across the app, landing, app icon, splash, docs, illustration and marketing.
-The **shell is the symbol of Pole²** — the goal is that Kobe is recognizable from
-the shell alone. Implementations (Flutter, landing) are brought to this spec in
-later milestones; this section defines it, code follows.*
+*The single source of truth for Kobe across app, landing, icon, splash, docs and
+marketing. **Frozen from the geometry published live at pole2.it** (landing
+component `src/components/Kobe.astro`, released 2026-07-16). The **shell is the
+symbol of Pole²** — the goal is that Kobe is recognizable from the shell alone.
+This supersedes the earlier domed-panel description of §10c; where they conflict,
+this section wins.*
 
-### Geometry
+### Construction (build the shell in this order)
 
-**The shell is a domed tortoise shell — not a flat honeycomb.**
-- It is built from **exactly 7 hexagons: 1 central + 6 surrounding. Never more,
-  never fewer.**
-- The **central hexagon is dominant** — it is the **highest surface** of the
-  shell (lightest, on top, drawn last).
-- The **6 surrounding panels are folded down**: each is a regular neighbour
-  hexagon rotated down about its shared edge with the centre. In the top-down
-  mark this is a **radial foreshortening** of the panel by `cos(fold)`. So the
-  panels visually **wrap around and slope away** from the central peak.
-- The outer silhouette is therefore a soft **12-sided dome** (a rounded hexagon),
-  not a circle and not a flat hexagon.
-- It must read **clean, geometric, faceted — never cartoonish, never a rendered
-  glossy ball.** Depth comes from the foreshortening plus a *restrained* tonal
-  step (central lightest → panels one step darker, a whisper of inner-light →
-  outer-dark per panel). No highlights, no gloss, no drop shadow.
+The shell is a **flat, top-down tortoise carapace** — one continuous surface,
+engraved with seven scutes. It is **not** a domed/foreshortened shell and **not** a
+honeycomb field.
 
-### Proportions (canonical values)
+1. **Ellipse.** A clearly **vertical ellipse** is the outer silhouette:
+   width / height ≈ **0.86** (compact, calm, slightly chubby; never a circle,
+   never horizontal). The silhouette is a **pure ellipse** (no taper) — its
+   identity comes from the engraving, not the outline.
+2. **Central hexagon.** A **true regular flat-top hexagon**, centred on the shell,
+   circumradius **R = 0.70 × (shell half-width `rx`)**. Undistorted — exactly six
+   equal sides, never rounded into an octagon.
+3. **Six radial joints.** One straight joint through **each** of the six hexagon
+   vertices, continued outward to the ellipse edge (only the portion outside the
+   hexagon is drawn).
+4. This yields **exactly 7 scutes: 1 central + 6 surrounding** — **front, rear,
+   front-left, front-right, rear-left, rear-right.** The **front and rear scutes
+   are single** (no vertical spine groove, never split). Bilaterally symmetric
+   about the vertical axis.
+
+Golden rule: hide the joints and the silhouette still reads as a tortoise shell;
+hide the outline and the joints still describe exactly seven scutes. Laser-cut
+test: engraved into one ceramic disc, the joint network makes sense.
+
+### The grout joint (how scutes are separated)
+
+Scutes are **never filled as separate colours** — the shell is one continuous
+light surface. Separation comes **only** from the engraved joint, built as
+**dark edge · light groove · dark edge** (a wider dark band with a narrow
+light-groove band centred on it). The **outer border uses the same construction**,
+so the shell edge reads as a real physical rim, not a single stroke. Grooves
+**taper**: narrowest at the centre, imperceptibly wider toward the rim (a subtle
+dome cue, never decorative). Never rely on the background colour for the groove.
+
+### Proportions (canonical, as published)
 
 | Element | Canonical | Notes |
 |---|---|---|
-| Fold angle | **~50°** (46–54° ok) | dome depth; 0° = fully open (flat rosette) |
-| Shell ratio (h/v) | **~0.94** | subtly taller than wide; **never a perfect circle**; a strict-emblem icon may use up to 1.0 |
-| Central hexagon | **dominant**, on top | appears the highest surface |
-| Head | rounded **bullet**, elongated vertically | never circular, never pointed |
-| Tail | short **pointed triangle**, on the vertical axis | the **only** pointed element |
-| Legs | **front pair + rear pair**, separate groups | soft ovals peeking at the diagonals |
+| Shell ratio (w/h) | **≈ 0.86** | vertical ellipse; never a circle |
+| Central hexagon | **R = 0.70 × shell half-width**, flat-top, centred | dominant; leaves room for a possible future small mark (`²`, `P²`) — none added now |
+| Surrounding scutes | **6** (front, rear, four corners) | front & rear single; all joints reach the edge |
+| Head | **elongated teardrop**, enlarged to read clearly as the head | rounded nose, narrows at the neck; never circular, never pointed |
+| Tail | short **pointed triangle**, on the vertical axis, under the rear | the **only** pointed element; separate from the shell outline |
+| Legs | **front pair + rear pair**, equal size | front pulled toward the head, rear toward the tail |
 
-### Two colourways
+### Colours (two colourways — exact published values)
 
-- **Illustrated Kobe** (the character, with head/tail/legs): mint shell — central
-  `#cdeee1`, panels mint→teal (`#a7ded0`→`#7dbfa8`), edges & body deep teal
-  `#123f34`. Used in-app and on the landing.
-- **Monochrome shell mark** (the icon/emblem): the domed shell in **warm ivory
-  `#f6f1e7`** on petrol — central ivory solid, panels translucent ivory (recede),
-  crisp ivory rim. This is the app-icon direction (see below).
+- **Illustrated Kobe** (character, with head/tail/legs): shell fill **`#cfe8db`**;
+  body + all dark joint edges + border **`#1f4638`**; grout light groove
+  **`#e7f4ee`**. Nearly flat; a very restrained rim shadow only — no gloss, no
+  highlight, no drop shadow, no body outline.
+- **Monochrome shell mark** (icon/emblem, shell only, no body): shell fill
+  **`#f2ecdf`** (warm ivory, not beige); grout **`#fbf8f1`**; edges **`#234a40`**.
+  The shell *is* the icon.
+- **Contrast:** Kobe must stay legible on light *and* dark surfaces on its own. On
+  a true near-black surface the dark body may pass a lighter `body` value; the
+  geometry never changes.
 
-### Movement (animation compatibility)
+### Movement (animation groups)
 
-- **The shell never moves.** It is the visual anchor. Only **head, tail, front
-  legs, rear legs** move.
-- Directions (canonical): head **tip** and tail **tip** move to the **same** side
-  (they counter-rotate about the shell centre); the **front and rear leg pairs**
-  move to the **opposite** side (they counter-rotate too); then mirror; then
-  settle. A slow idle after inactivity; a larger, clearly-visible reaction on a
-  direct shell click/tap. Springless ease, no bounce, Reduce-Motion safe. (See
-  §13a for timing/degrees.)
-- **The opening animation is explained by the geometry.** At rest the six panels
-  are folded down (fold ≈ 50°). Opening rotates them **up to coplanar** with the
-  central hexagon (fold → 0°), i.e. the shell **unfolds** into the flat 7-hex
-  rosette — the six "keep something" panels. It must feel like a shell opening,
-  **not** six menu buttons appearing.
+- **The shell is the fixed anchor — it never moves.** Only **head, tail, front
+  legs, rear legs** move, as independent groups: `kobe-shell` (anchor) +
+  `kobe-head`, `kobe-tail`, `kobe-front-legs`, `kobe-rear-legs`.
+- Directions: head **tip** and tail **tip** go to the **same** side (they
+  counter-rotate about the shell centre); the **front and rear leg pairs** go to
+  the **opposite** side; then mirror; then settle. Rotation only — no
+  translate/scale/bounce/loop.
+- A slow **idle** after ~25–50 s of inactivity (reset only by a direct shell
+  click); a larger, clearly-visible **reaction** on a direct shell click/tap.
+  Suspended on a hidden tab. **Reduce-Motion:** rotation is replaced by a brief
+  shell highlight. (See §13a for exact timing/degrees.)
 
 ### The icon
 
-**Canonical icon direction: the pure ivory domed shell, no marking** (explored as
-concept **A2**). The shell *is* the icon. Chosen over: **C** integrated `P²`
-(fails — mush at small size, neither a clean P² nor a clean shell), **B** engraved
-`²` (adds clutter), **D** a minimal hex glyph (reads as a generic spoked hexagon).
-The existing `P²` launcher icon (§12) may continue for now; whether to move the
-app icon to the shell is an implementation decision — but the shell mark is strong
-enough to become **the** icon and is the recommended long-term direction.
+Recommended long-term icon direction: the **pure ivory shell mark** (shell only,
+no body, colours above) — the shell is strong enough to *be* the icon. The current
+launcher icon (§12, "Plain P²") may continue; moving the app icon to the shell is
+an implementation decision.
 
 ### Invariants (always true)
 
-1. Shell = **exactly 7 hexagons** (1 central + 6), central **dominant/highest**.
-2. Shell is a **dome** (folded panels), ratio ~0.94, **never a circle, never a
-   flat honeycomb** in the resting mark.
-3. Head = rounded elongated **bullet**; tail = short **pointed triangle** (the
-   only pointed element); legs = **front + rear** separate groups.
-4. **The shell never moves**; only head/tail/legs do (directions above).
-5. The **open** state is the flat 7-hex rosette; the shell unfolds into it.
+1. Shell = a **vertical ellipse** (w/h ≈ 0.86) engraved with **exactly 7 scutes**
+   (1 central + 6); the central a **true regular flat-top hexagon** at **0.70**.
+2. **One continuous surface** — no per-scute fills; separation only via the
+   **grout joint** (dark · light · dark), same construction on the outer border.
+3. Front & rear scutes are **single**; **no spine groove**; six joints reach the
+   edge; bilaterally symmetric.
+4. Head = **elongated teardrop** (clearly larger than the legs); tail = short
+   **pointed triangle** (the only pointed element); legs = **front + rear** equal
+   pairs.
+5. **The shell never moves**; only head/tail/legs do (directions above).
 6. Two colourways only: illustrated mint (character) and monochrome ivory (mark).
+7. The **shell alone** must work as the brand mark.
 
 ### Prohibited variations
 
-- A circular shell, a flat honeycomb resting shell, or a shell "field" clipped to
-  an outline (the M14 tessellation — retired).
-- **Any** hexagon count in the shell other than 7 (1 + 6).
-- A non-dominant / non-central peak, or merely enlarging the centre without the
-  fold (the dome must come from folding, not scaling).
-- A circular or pointed **head**; a rounded/leaf/bullet **tail**, or a tail
-  confusable with the legs.
-- Glossy/3D-rendered shading, highlights, drop shadows, neon, outlines, spotlight
-  — Kobe is faceted and geometric, not rendered.
-- A moving shell; legs or head/tail moving the wrong way (see directions).
+- A **domed / foreshortened** shell, folded panels, or perspective wedges (the
+  M15 iteration-1 dome — retired); a **circular** or horizontal shell.
+- A **honeycomb / tessellated** shell field (the M14 tessellation — retired).
+- **Any** scute count other than 7 (1 + 6); a **split** front or rear scute, or a
+  continuous **spine** groove.
+- A hexagon that is distorted, rounded into an octagon, or off-centre.
+- **Per-scute colour fills**, or a single-line joint (the joint is always
+  dark · light · dark); relying on the background colour for the groove.
+- A circular or pointed **head**; a rounded/leaf **tail** or one confusable with
+  the legs.
+- Gloss, 3D shading, highlights, drop shadows, neon, or a body outline — Kobe is
+  calm, flat, geometric.
 - A cartoon face, eyes, or expression.
-- Forcing `P²` (or any letter) onto the shell as the icon.
+- A moving shell; legs or head/tail moving the wrong way.
 
 ## 11. The hexagon
 
@@ -374,8 +397,8 @@ with restraint.
   the shell menu are the sanctioned uses; anything else must justify itself.
 - The hexagon belongs to Kobe. Overusing it cheapens both.
 - **Decorative honeycomb ≠ Kobe's shell.** Background texture is faint, free
-  cells; **Kobe's shell is a tessellated hex field clipped by its ellipse, with
-  a recognizable 7-cell core** (see §10a). Never conflate.
+  cells; **Kobe's shell is a vertical ellipse engraved with exactly 7 scutes**
+  (1 central hexagon + 6), separated by grout joints (see §10c). Never conflate.
 
 ## 12. App icon
 
