@@ -144,7 +144,7 @@ class _KobePainter extends CustomPainter {
   // grout widths (half-widths), scaled with the shell
   static const double _dIn = 1.0 * _sc, _dOut = 1.3 * _sc;
   static const double _lIn = 0.5 * _sc, _lOut = 0.78 * _sc;
-  static const double _bw = 3.2 * _sc, _biw = 1.4 * _sc;
+  static const double _bw = 3.6 * _sc; // single dark rim (simplified border)
 
   static const Color _shell = AppColors.kobeShell;
   static const Color _body = AppColors.kobeBody;
@@ -323,22 +323,14 @@ class _KobePainter extends CustomPainter {
     }
     canvas.restore();
 
-    // outer border — same physical-edge construction (dark · light · dark)
+    // outer border — one confident dark ellipse (simplified: reads as a clean
+    // brand symbol, not a detailed drawing). Internal grout is unchanged.
     canvas.drawOval(
         ellipse,
         Paint()
           ..color = _body
           ..style = PaintingStyle.stroke
           ..strokeWidth = _bw
-          ..strokeJoin = StrokeJoin.round
-          ..isAntiAlias = true);
-    canvas.drawOval(
-        ellipse,
-        Paint()
-          ..color = _grout
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = _biw
-          ..strokeJoin = StrokeJoin.round
           ..isAntiAlias = true);
   }
 
