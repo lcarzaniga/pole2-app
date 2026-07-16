@@ -50,6 +50,12 @@ dependencies:
   # Local, offline key–value store for the launcher familiarity counter (how
   # many times the shell has been opened). No analytics, no cloud.
   shared_preferences: ^2.3.2
+  # Self-update (M-Update): fetch latest.json over HTTPS, read the installed
+  # build, and verify the downloaded APK's SHA-256 before launching the system
+  # installer. No auto-install, no data access — see features/update.
+  http: ^1.2.2
+  crypto: ^3.0.5
+  package_info_plus: ^8.1.1
 
 dev_dependencies:
   flutter_test:
