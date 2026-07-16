@@ -144,7 +144,7 @@ class _KobePainter extends CustomPainter {
   // grout widths (half-widths), scaled with the shell
   static const double _dIn = 1.0 * _sc, _dOut = 1.3 * _sc;
   static const double _lIn = 0.5 * _sc, _lOut = 0.78 * _sc;
-  static const double _bw = 3.6 * _sc; // single dark rim (simplified border)
+  static const double _bw = 6.8 * _sc; // single dark rim — the frame that defines Kobe (~2× the grout)
 
   static const Color _shell = AppColors.kobeShell;
   static const Color _body = AppColors.kobeBody;
