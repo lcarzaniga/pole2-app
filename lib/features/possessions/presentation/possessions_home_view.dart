@@ -55,7 +55,7 @@ class PossessionsHomeView extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.xxxxl * 2),
                     child: Center(
-                      child: TurtleLauncher(size: 84, onAction: onQuickAction),
+                      child: TurtleLauncher(size: 100, onAction: onQuickAction),
                     ),
                   ),
                 ),

@@ -83,8 +83,11 @@ class TurtleShellMenu extends StatelessWidget {
     // The most horizontal cells sit 30° off vertical (cos30 ≈ 0.866).
     final maxByWidth =
         (viewport.width / 2 - labelHalf - AppSpacing.md) / math.cos(math.pi / 6);
-    final ideal = turtleSize * 1.18;
-    return math.max(turtleSize * 0.8, math.min(ideal, maxByWidth));
+    // Closer to the shell so the cells read as scutes emerging from it (was
+    // 1.18·turtleSize). Floored by the label width (~hexSize + xl) so adjacent
+    // labels never overlap and the top cell's label clears the head.
+    final ideal = math.max(turtleSize * 0.90, _hexSize + AppSpacing.xl);
+    return math.max(turtleSize * 0.80, math.min(ideal, maxByWidth));
   }
 
   /// The optical centre of the screen (a touch above true centre reads as
