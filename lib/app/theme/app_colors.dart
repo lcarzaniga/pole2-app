@@ -29,4 +29,17 @@ abstract final class AppColors {
 
   /// Warm ivory — the P² on the icon and the wordmark on petrol.
   static const Color warmIvory = Color(0xFFF6F1E7);
+
+  // --- Canonical Kobe (docs/BRAND_BIBLE.md §10c) — exact values published on the
+  // landing (pole2.it). The illustrated (character) colourway. These are fixed
+  // brand values, not theme-derived, so Kobe reads identically everywhere.
+
+  /// Kobe shell — one continuous light-mint surface.
+  static const Color kobeShell = Color(0xFFCFE8DB);
+
+  /// Kobe body + all dark joint edges + shell border (dark petrol).
+  static const Color kobeBody = Color(0xFF1F4638);
+
+  /// Kobe grout — the light groove channel between the dark joint edges.
+  static const Color kobeGrout = Color(0xFFE7F4EE);
 }

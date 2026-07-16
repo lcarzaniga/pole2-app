@@ -268,7 +268,8 @@ updated to match in a future milestone. Two different Kobes must not persist.
 
 *The single source of truth for Kobe across app, landing, icon, splash, docs and
 marketing. **Frozen from the geometry published live at pole2.it** (landing
-component `src/components/Kobe.astro`, released 2026-07-16). The **shell is the
+component `src/components/Kobe.astro`). Implemented identically in the Flutter app
+at `lib/shared/brand/turtle_mascot.dart` (R1.0). The **shell is the
 symbol of Pole²** — the goal is that Kobe is recognizable from the shell alone.
 This supersedes the earlier domed-panel description of §10c; where they conflict,
 this section wins.*
