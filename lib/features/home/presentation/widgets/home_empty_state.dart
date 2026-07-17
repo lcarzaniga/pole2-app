@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../../app/theme/app_icon_size.dart';
@@ -26,9 +28,17 @@ class HomeEmptyState extends StatefulWidget {
 }
 
 class _HomeEmptyStateState extends State<HomeEmptyState> {
-  /// The turtle leads the composition, so it is a touch larger than the base
-  /// mascot — enough presence to read as the hero and an easy tap target.
-  static const double _turtleSize = 132;
+  /// The turtle leads the first-run composition as the hero — now roughly twice
+  /// its former presence. It is a visual target, not a fixed number: capped by
+  /// the screen width, by an absolute maximum, and by the size whose bloomed
+  /// shell still fits (so opening it never clips), then floored so it always
+  /// reads big. Head, legs and tail are never clipped because the Spacer-based
+  /// column and the mascot's own square box scale together.
+  double _heroSize(double screenWidth) {
+    final byShell = TurtleShellMenu.maxTurtleForWidth(screenWidth);
+    return math.max(
+        132.0, math.min(280.0, math.min(screenWidth * 0.66, byShell)));
+  }
 
   bool _shellOpen = false;
 
@@ -46,6 +56,7 @@ class _HomeEmptyStateState extends State<HomeEmptyState> {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
+    final turtleSize = _heroSize(MediaQuery.of(context).size.width);
 
     return SafeArea(
       child: Padding(
@@ -76,7 +87,7 @@ class _HomeEmptyStateState extends State<HomeEmptyState> {
               // one calm cluster rather than two drifting halves.
               const SizedBox(height: AppSpacing.xxxl),
               TurtleLauncher(
-                size: _turtleSize,
+                size: turtleSize,
                 onOpenChanged: (open) => setState(() => _shellOpen = open),
                 onAction: widget.onQuickAction,
               ),

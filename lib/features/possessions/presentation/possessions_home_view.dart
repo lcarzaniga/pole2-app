@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -52,6 +54,17 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
     final places = ref.watch(placeListProvider).value ?? const <Place>[];
     final visible = applyPossessionQuery(widget.possessions, _query);
 
+    // Kobe the persistent anchor, now ~2× — a visual target with responsive
+    // caps so it never dominates a narrow screen and its bloomed shell always
+    // fits. The list reserves clearance below itself equal to the turtle plus a
+    // gap, so items never sit under it.
+    final width = MediaQuery.of(context).size.width;
+    final turtleSize = math.max(
+        130.0,
+        math.min(
+            200.0, math.min(width * 0.5, TurtleShellMenu.maxTurtleForWidth(width))));
+    final listBottomPad = turtleSize + AppSpacing.xxxxl;
+
     return Column(
       children: [
         const _DeadlineSummary(),
@@ -79,11 +92,11 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
                 )
               else
                 ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(
+                  padding: EdgeInsets.fromLTRB(
                     AppSpacing.lg,
                     AppSpacing.lg,
                     AppSpacing.lg,
-                    AppSpacing.xxxxl * 3,
+                    listBottomPad,
                   ),
                   itemCount: visible.length,
                   separatorBuilder: (_, _) =>
@@ -97,10 +110,10 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
                 bottom: 0,
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.xxxxl * 2),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
                     child: Center(
                       child: TurtleLauncher(
-                          size: 100, onAction: widget.onQuickAction),
+                          size: turtleSize, onAction: widget.onQuickAction),
                     ),
                   ),
                 ),

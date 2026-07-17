@@ -75,19 +75,35 @@ class TurtleShellMenu extends StatelessWidget {
 
   static const double _hexSize = 64;
 
-  /// The radius of the six-cell ring, clamped so labels never leave safe bounds
-  /// on narrow phones. Derived from tokens + the live viewport — no per-screen
-  /// magic numbers.
+  /// Half the height of a cell's icon-tile-plus-label stack, with a little
+  /// margin. The top cell's label sits between the cell and the turtle, so the
+  /// ring must clear the turtle's footprint by at least this much for the label
+  /// to stay tappable (and to read as unfolding from the shell, not under it).
+  static const double _columnClear = 52;
+
+  /// The label width is the hard minimum radius: adjacent cells sit 60° apart,
+  /// so their centre distance equals the radius, and two half-labels must fit.
+  static double get _labelSafe => _hexSize + AppSpacing.xl;
+
+  /// The widest ring [width] allows before the most-horizontal labels leave
+  /// safe bounds (those cells sit 30° off vertical, cos30 ≈ 0.866).
+  static double _maxByWidth(double width) =>
+      (width / 2 - _labelSafe / 2 - AppSpacing.md) / math.cos(math.pi / 6);
+
+  /// The largest turtle whose bloomed shell still fits within [width] — six
+  /// labelled cells around it, each clearing the turtle. Kobe is a visual
+  /// target, so callers cap its size with this on narrow screens rather than
+  /// letting the shell clip.
+  static double maxTurtleForWidth(double width) =>
+      2 * (_maxByWidth(width) - _columnClear);
+
+  /// The radius of the six-cell ring. Hugs the shell so the cells read as
+  /// scutes unfolding from it, but never so tight that the top label falls
+  /// inside the turtle (which would make it untappable), never below the
+  /// label-safe minimum, and never wider than the viewport allows.
   double _radius(Size viewport) {
-    final labelHalf = (_hexSize + AppSpacing.xl) / 2;
-    // The most horizontal cells sit 30° off vertical (cos30 ≈ 0.866).
-    final maxByWidth =
-        (viewport.width / 2 - labelHalf - AppSpacing.md) / math.cos(math.pi / 6);
-    // Closer to the shell so the cells read as scutes emerging from it (was
-    // 1.18·turtleSize). Floored by the label width (~hexSize + xl) so adjacent
-    // labels never overlap and the top cell's label clears the head.
-    final ideal = math.max(turtleSize * 0.90, _hexSize + AppSpacing.xl);
-    return math.max(turtleSize * 0.80, math.min(ideal, maxByWidth));
+    final hug = turtleSize / 2 + _columnClear;
+    return math.max(_labelSafe, math.min(hug, _maxByWidth(viewport.width)));
   }
 
   /// The optical centre of the screen (a touch above true centre reads as
