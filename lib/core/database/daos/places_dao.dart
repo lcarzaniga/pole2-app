@@ -11,7 +11,7 @@ part 'places_dao.g.dart';
 /// Reads are **reactive** (Drift `Stream`s), like [PossessionsDao]. Places are
 /// flat (no hierarchy in R1.0) and never auto-created: "no place" is simply a
 /// null `placeId` on a possession, never a placeholder row here.
-@DriftAccessor(tables: [Places])
+@DriftAccessor(tables: [Places, Possessions])
 class PlacesDao extends DatabaseAccessor<AppDatabase> with _$PlacesDaoMixin {
   PlacesDao(super.db);
 
@@ -73,5 +73,22 @@ class PlacesDao extends DatabaseAccessor<AppDatabase> with _$PlacesDaoMixin {
     return (update(places)..where((t) => t.id.equals(id))).write(
       PlacesCompanion(deletedAt: Value(DateTime.now().toUtc())),
     );
+  }
+
+  /// Delete a place and unassign it from every possession that referenced it,
+  /// **atomically**. The possessions are never touched beyond their `placeId`
+  /// (which returns to null = "no place"); nothing is deleted or archived. Doing
+  /// both in one transaction means a place can never be left half-deleted with
+  /// possessions still pointing at a tombstone.
+  Future<void> deleteAndUnassign(String id) {
+    return transaction(() async {
+      await softDelete(id);
+      await (update(possessions)..where((t) => t.placeId.equals(id))).write(
+        PossessionsCompanion(
+          placeId: const Value(null),
+          updatedAt: Value(DateTime.now().toUtc()),
+        ),
+      );
+    });
   }
 }

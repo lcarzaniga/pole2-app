@@ -797,8 +797,50 @@ abstract class AppLocalizations {
   /// No description provided for @placeContentsEmpty.
   ///
   /// In it, this message translates to:
-  /// **'Ancora niente qui'**
+  /// **'Qui non c\'è ancora niente.'**
   String get placeContentsEmpty;
+
+  /// No description provided for @placeEmptyHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Puoi assegnare un oggetto a questo luogo dalla sua scheda.'**
+  String get placeEmptyHint;
+
+  /// No description provided for @placeItemCount.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =0{Nessun oggetto} =1{1 oggetto} other{{count} oggetti}}'**
+  String placeItemCount(int count);
+
+  /// No description provided for @placeMoveAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta in un altro luogo'**
+  String get placeMoveAction;
+
+  /// No description provided for @placeRemoveAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi dal luogo'**
+  String get placeRemoveAction;
+
+  /// No description provided for @placeMovedSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'Oggetto spostato.'**
+  String get placeMovedSnack;
+
+  /// No description provided for @placeRemovedFromSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimosso dal luogo.'**
+  String get placeRemovedFromSnack;
+
+  /// No description provided for @itemActionsTooltip.
+  ///
+  /// In it, this message translates to:
+  /// **'Opzioni'**
+  String get itemActionsTooltip;
 
   /// No description provided for @placeEditTooltip.
   ///

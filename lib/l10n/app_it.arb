@@ -171,7 +171,17 @@
   "updateErrorSha": "File di aggiornamento non valido.",
   "updateErrorInstall": "Installazione non riuscita.",
   "closeButton": "Chiudi",
-  "placeContentsEmpty": "Ancora niente qui",
+  "placeContentsEmpty": "Qui non c'è ancora niente.",
+  "placeEmptyHint": "Puoi assegnare un oggetto a questo luogo dalla sua scheda.",
+  "placeItemCount": "{count, plural, =0{Nessun oggetto} =1{1 oggetto} other{{count} oggetti}}",
+  "@placeItemCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "placeMoveAction": "Sposta in un altro luogo",
+  "placeRemoveAction": "Rimuovi dal luogo",
+  "placeMovedSnack": "Oggetto spostato.",
+  "placeRemovedFromSnack": "Rimosso dal luogo.",
+  "itemActionsTooltip": "Opzioni",
   "placeEditTooltip": "Cambia luogo",
   "noteEditorTitle": "Aggiungi una nota",
   "noteHint": "Scrivi una nota…",

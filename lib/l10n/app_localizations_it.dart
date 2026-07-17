@@ -412,7 +412,38 @@ class AppLocalizationsIt extends AppLocalizations {
   String get closeButton => 'Chiudi';
 
   @override
-  String get placeContentsEmpty => 'Ancora niente qui';
+  String get placeContentsEmpty => 'Qui non c\'è ancora niente.';
+
+  @override
+  String get placeEmptyHint =>
+      'Puoi assegnare un oggetto a questo luogo dalla sua scheda.';
+
+  @override
+  String placeItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count oggetti',
+      one: '1 oggetto',
+      zero: 'Nessun oggetto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get placeMoveAction => 'Sposta in un altro luogo';
+
+  @override
+  String get placeRemoveAction => 'Rimuovi dal luogo';
+
+  @override
+  String get placeMovedSnack => 'Oggetto spostato.';
+
+  @override
+  String get placeRemovedFromSnack => 'Rimosso dal luogo.';
+
+  @override
+  String get itemActionsTooltip => 'Opzioni';
 
   @override
   String get placeEditTooltip => 'Cambia luogo';

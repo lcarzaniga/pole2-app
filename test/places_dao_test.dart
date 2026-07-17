@@ -162,4 +162,48 @@ void main() {
 
     expect(counts, containsAllInOrder([0, 1, 0]));
   });
+
+  test(
+    'deleteAndUnassign preserves possessions and leaves no active assignment',
+    () async {
+      final placeId = await db.placesDao.create(name: 'Cantina');
+      final a = await db.possessionsDao.createPossession(title: 'A');
+      final b = await db.possessionsDao.createPossession(title: 'B');
+      await db.possessionsDao.setPlace(a.id, placeId);
+      await db.possessionsDao.setPlace(b.id, placeId);
+
+      await db.placesDao.deleteAndUnassign(placeId);
+
+      // The place is gone (soft-deleted → resolves to null in the UI)...
+      expect(await db.placesDao.watchById(placeId).first, isNull);
+      // ...but both possessions are intact, active, and simply "no place".
+      final ra = await db.possessionsDao.watchById(a.id).first;
+      final rb = await db.possessionsDao.watchById(b.id).first;
+      expect(ra, isNotNull);
+      expect(rb, isNotNull);
+      expect(ra!.placeId, isNull);
+      expect(rb!.placeId, isNull);
+      expect(ra.deletedAt, isNull); // not deleted
+      // No possession is left pointing at the tombstoned place.
+      expect(await db.possessionsDao.watchByPlace(placeId).first, isEmpty);
+      // Still on the Home list.
+      expect((await db.possessionsDao.watchAll().first).length, 2);
+    },
+  );
+
+  test('removing a place assignment keeps the possession on Home', () async {
+    final placeId = await db.placesDao.create(name: 'Garage');
+    final p = await db.possessionsDao.createPossession(title: 'Trapano');
+    await db.possessionsDao.setPlace(p.id, placeId);
+    expect((await db.possessionsDao.watchByPlace(placeId).first).length, 1);
+
+    // What the "Rimuovi dal luogo" action does.
+    await db.possessionsDao.setPlace(p.id, null);
+
+    expect(await db.possessionsDao.watchByPlace(placeId).first, isEmpty);
+    final reloaded = await db.possessionsDao.watchById(p.id).first;
+    expect(reloaded, isNotNull); // not deleted
+    expect(reloaded!.placeId, isNull);
+    expect((await db.possessionsDao.watchAll().first).length, 1);
+  });
 }

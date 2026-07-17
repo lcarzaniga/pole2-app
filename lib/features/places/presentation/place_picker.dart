@@ -19,22 +19,31 @@ class PlaceChoice {
 
 /// A calm bottom sheet to assign a place: choose an existing one, clear it
 /// ("no place"), or create a new one inline. Reusable across screens.
+///
+/// When [disableCurrent] is true, the [currentPlaceId] row is shown but not
+/// selectable — used by "move", so choosing the place a thing is already in
+/// can't produce a confusing no-op.
 Future<PlaceChoice?> showPlacePicker(
   BuildContext context, {
   String? currentPlaceId,
+  bool disableCurrent = false,
 }) {
   return showModalBottomSheet<PlaceChoice>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (_) => _PlacePickerSheet(currentPlaceId: currentPlaceId),
+    builder: (_) => _PlacePickerSheet(
+      currentPlaceId: currentPlaceId,
+      disableCurrent: disableCurrent,
+    ),
   );
 }
 
 class _PlacePickerSheet extends ConsumerStatefulWidget {
-  const _PlacePickerSheet({this.currentPlaceId});
+  const _PlacePickerSheet({this.currentPlaceId, this.disableCurrent = false});
 
   final String? currentPlaceId;
+  final bool disableCurrent;
 
   @override
   ConsumerState<_PlacePickerSheet> createState() => _PlacePickerSheetState();
@@ -112,10 +121,54 @@ class _PlacePickerSheetState extends ConsumerState<_PlacePickerSheet> {
       ),
     );
     if (confirmed != true) return;
-    // Soft-delete the place, then clear it from any possessions so they safely
-    // resolve to "no place" (no dangling reference, no orphaned crash).
-    await ref.read(placesDaoProvider).softDelete(p.id);
-    if (count > 0) await ref.read(possessionsDaoProvider).clearPlace(p.id);
+    // Soft-delete the place and clear it from any possessions atomically, so
+    // they safely resolve to "no place" (no dangling reference, no orphaned
+    // crash, no half-deleted state).
+    await ref.read(placesDaoProvider).deleteAndUnassign(p.id);
+  }
+
+  /// One place row. When the picker was opened to *move* and this is the place
+  /// the thing is already in, the row is shown (with its check) but not
+  /// selectable — so it can never be a confusing no-op.
+  Widget _buildPlaceRow(
+    BuildContext context,
+    ColorScheme scheme,
+    AppLocalizations l10n,
+    Place p,
+    void Function(String?) choose,
+  ) {
+    final isCurrent = p.id == widget.currentPlaceId;
+    final locked = isCurrent && widget.disableCurrent;
+    return ListTile(
+      enabled: !locked,
+      leading: Icon(Icons.place_outlined,
+          color: locked ? scheme.onSurfaceVariant : scheme.primary),
+      title: Text(p.name),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isCurrent) Icon(Icons.check, color: scheme.primary),
+          PopupMenuButton<_PlaceMenu>(
+            icon: Icon(Icons.more_vert, color: scheme.onSurfaceVariant),
+            tooltip: l10n.placeManageTooltip,
+            onSelected: (m) => switch (m) {
+              _PlaceMenu.rename => _renamePlace(p),
+              _PlaceMenu.delete => _deletePlace(p),
+            },
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                  value: _PlaceMenu.rename, child: Text(l10n.menuRename)),
+              PopupMenuItem(
+                value: _PlaceMenu.delete,
+                child: Text(l10n.placeDelete,
+                    style: TextStyle(color: scheme.error)),
+              ),
+            ],
+          ),
+        ],
+      ),
+      onTap: locked ? null : () => choose(p.id),
+    );
   }
 
   @override
@@ -159,37 +212,7 @@ class _PlacePickerSheetState extends ConsumerState<_PlacePickerSheet> {
                   ),
                   const Divider(height: 1),
                   for (final p in places)
-                    ListTile(
-                      leading: Icon(Icons.place_outlined, color: scheme.primary),
-                      title: Text(p.name),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (p.id == widget.currentPlaceId)
-                            Icon(Icons.check, color: scheme.primary),
-                          PopupMenuButton<_PlaceMenu>(
-                            icon: Icon(Icons.more_vert,
-                                color: scheme.onSurfaceVariant),
-                            tooltip: l10n.placeManageTooltip,
-                            onSelected: (m) => switch (m) {
-                              _PlaceMenu.rename => _renamePlace(p),
-                              _PlaceMenu.delete => _deletePlace(p),
-                            },
-                            itemBuilder: (_) => [
-                              PopupMenuItem(
-                                  value: _PlaceMenu.rename,
-                                  child: Text(l10n.menuRename)),
-                              PopupMenuItem(
-                                value: _PlaceMenu.delete,
-                                child: Text(l10n.placeDelete,
-                                    style: TextStyle(color: scheme.error)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      onTap: () => choose(p.id),
-                    ),
+                    _buildPlaceRow(context, scheme, l10n, p, choose),
                 ],
               ),
             ),
