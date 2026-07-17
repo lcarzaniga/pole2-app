@@ -172,5 +172,8 @@
   "updateErrorInstall": "Installazione non riuscita.",
   "closeButton": "Chiudi",
   "placeContentsEmpty": "Ancora niente qui",
-  "placeEditTooltip": "Cambia luogo"
+  "placeEditTooltip": "Cambia luogo",
+  "noteEditorTitle": "Aggiungi una nota",
+  "noteHint": "Scrivi una nota…",
+  "addNote": "Aggiungi una nota"
 }

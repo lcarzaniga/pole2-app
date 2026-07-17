@@ -805,6 +805,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Cambia luogo'**
   String get placeEditTooltip;
+
+  /// No description provided for @noteEditorTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi una nota'**
+  String get noteEditorTitle;
+
+  /// No description provided for @noteHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi una nota…'**
+  String get noteHint;
+
+  /// No description provided for @addNote.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi una nota'**
+  String get addNote;
 }
 
 class _AppLocalizationsDelegate

@@ -96,4 +96,24 @@ void main() {
     await events.restoreEvent(r.id);
     expect((await events.watchTimeline(p.id).first).length, 1);
   });
+
+  test('createNote stores a note on the timeline and can be removed', () async {
+    final p = await db.possessionsDao.createPossession(title: 'Bici');
+    final events = db.eventsDao;
+
+    final note = await events.createNote(
+        possessionId: p.id, body: 'Chiavi di scorta nel cassetto');
+    expect(note.kind, EventKind.note);
+    expect(note.notes, 'Chiavi di scorta nel cassetto');
+
+    final timeline = await events.watchTimeline(p.id).first;
+    expect(timeline.single.id, note.id);
+    expect(timeline.single.kind, EventKind.note);
+
+    // Notes are soft-deletable and restorable like any other event.
+    await events.deleteEvent(note.id);
+    expect(await events.watchTimeline(p.id).first, isEmpty);
+    await events.restoreEvent(note.id);
+    expect((await events.watchTimeline(p.id).first).length, 1);
+  });
 }

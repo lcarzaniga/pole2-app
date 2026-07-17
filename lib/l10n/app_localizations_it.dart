@@ -416,4 +416,13 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get placeEditTooltip => 'Cambia luogo';
+
+  @override
+  String get noteEditorTitle => 'Aggiungi una nota';
+
+  @override
+  String get noteHint => 'Scrivi una nota…';
+
+  @override
+  String get addNote => 'Aggiungi una nota';
 }

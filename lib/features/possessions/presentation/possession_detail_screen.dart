@@ -371,6 +371,18 @@ class _EventRow extends ConsumerWidget {
             style: theme.textTheme.bodySmall
                 ?.copyWith(color: scheme.onSurfaceVariant));
       }
+    } else if (event.kind == EventKind.note) {
+      icon = Icons.sticky_note_2_outlined;
+      // The note's body is the headline; its title (if any) is rarely used.
+      title = event.notes ?? event.title ?? l10n.addNote;
+      whenLine = Text(l10n.onDate(formatDate(event.at, l10n.localeName)),
+          style: theme.textTheme.bodySmall
+              ?.copyWith(color: scheme.onSurfaceVariant));
+      trailing = IconButton(
+        tooltip: l10n.menuRemove,
+        icon: Icon(Icons.close, size: AppIconSize.sm, color: scheme.onSurfaceVariant),
+        onPressed: () => _removeEvent(context, ref, event.id),
+      );
     } else {
       icon = Icons.event_outlined;
       title = event.title ?? l10n.addDate;

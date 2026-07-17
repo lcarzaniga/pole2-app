@@ -30,6 +30,10 @@ abstract final class Routes {
   static const String reminderName = 'reminder';
   static const String reminderPath = '/possession/:id/reminder';
 
+  /// New free-text note editor. Path param: `id`.
+  static const String noteName = 'note';
+  static const String notePath = '/possession/:id/note';
+
   /// A single place's contents (the possessions kept there). Path param: `id`.
   static const String placeName = 'place';
   static const String placePath = '/place/:id';

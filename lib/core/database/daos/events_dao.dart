@@ -148,6 +148,26 @@ class EventsDao extends DatabaseAccessor<AppDatabase> with _$EventsDaoMixin {
     ));
   }
 
+  /// Creates a free-text note attached to a thing, anchored on the timeline at
+  /// "now". [body] is the note itself; [title] is an optional short heading.
+  Future<PossessionEvent> createNote({
+    required String possessionId,
+    required String body,
+    String? title,
+  }) {
+    final now = DateTime.now();
+    return into(events).insertReturning(EventsCompanion.insert(
+      id: _uuid.v4(),
+      possessionId: possessionId,
+      kind: EventKind.note,
+      at: now,
+      title: Value(title),
+      notes: Value(body),
+      createdAt: now,
+      updatedAt: now,
+    ));
+  }
+
   Future<void> deleteEvent(String id) {
     return (update(events)..where((t) => t.id.equals(id))).write(EventsCompanion(
         deletedAt: Value(DateTime.now()), updatedAt: Value(DateTime.now())));
