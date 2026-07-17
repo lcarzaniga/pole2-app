@@ -2,7 +2,6 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 import 'daos/events_dao.dart';
-import 'daos/evidence_dao.dart';
 import 'daos/places_dao.dart';
 import 'daos/possessions_dao.dart';
 // Imported so the generated part (which references the enum types directly)
@@ -33,7 +32,7 @@ part 'app_database.g.dart';
     Parties,
     Places,
   ],
-  daos: [PossessionsDao, EventsDao, PlacesDao, EvidenceDao],
+  daos: [PossessionsDao, EventsDao, PlacesDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])

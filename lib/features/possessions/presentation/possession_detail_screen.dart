@@ -8,19 +8,16 @@ import '../../../app/theme/app_radii.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/brand_colors.dart';
 import '../../../core/database/app_database.dart';
-import '../../../core/database/daos/evidence_dao.dart';
 import '../../../core/database/tables/enums.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/brand/hex_background.dart';
 import '../../../shared/format.dart';
 import '../../../shared/photo_capture.dart';
 import '../../../shared/phrasing.dart';
-import '../../../shared/platform/document_store.dart';
 import '../../../shared/platform/photo_store.dart';
 import '../../places/application/place_providers.dart';
 import '../../places/presentation/place_picker.dart';
 import '../application/event_providers.dart';
-import '../application/evidence_providers.dart';
 import '../application/possession_providers.dart';
 
 /// A single thing, living inside Pole² — its dossier.
@@ -105,8 +102,6 @@ class _Dossier extends ConsumerWidget {
               const SizedBox(height: AppSpacing.md),
               _DetailsCard(id: id),
               const SizedBox(height: AppSpacing.md),
-              _DocumentsCard(id: id),
-              const SizedBox(height: AppSpacing.md),
               _HistoryCard(id: id),
             ],
           ),
@@ -180,11 +175,6 @@ class _ActionHub extends ConsumerWidget {
           label: l10n.hubNote,
           onTap: () =>
               context.pushNamed(Routes.noteName, pathParameters: {'id': id}),
-        ),
-        _HubAction(
-          icon: Icons.description_outlined,
-          label: l10n.hubDocument,
-          onTap: () => _addDocument(context, ref, id),
         ),
         _HubAction(
           icon: Icons.event_outlined,
@@ -651,91 +641,6 @@ class _AddPhotoHint extends StatelessWidget {
   }
 }
 
-/// Documents — receipts, manuals and warranties attached to a thing. Adding
-/// one is a visible action in the section header (never hidden in a menu); each
-/// document lists by its name and can be removed with an undo.
-class _DocumentsCard extends ConsumerWidget {
-  const _DocumentsCard({required this.id});
-
-  final String id;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context);
-    final docs = ref.watch(documentsByPossessionProvider(id)).value ?? const [];
-
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
-        borderRadius: AppRadii.borderLg,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.documentsTitle, style: theme.textTheme.titleMedium),
-          if (docs.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-              child: Text(l10n.documentsSubtitle,
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: scheme.onSurfaceVariant)),
-            )
-          else
-            for (final d in docs) _DocumentRow(document: d),
-        ],
-      ),
-    );
-  }
-}
-
-class _DocumentRow extends ConsumerWidget {
-  const _DocumentRow({required this.document});
-
-  final PossessionDocument document;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context);
-    final name = document.evidence.label ?? l10n.documentsTitle;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-      child: Row(
-        children: [
-          Icon(_documentIcon(document.file.mimeType),
-              size: AppIconSize.md, color: scheme.primary),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Text(name,
-                style: theme.textTheme.bodyLarge,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis),
-          ),
-          IconButton(
-            tooltip: l10n.menuRemove,
-            icon: Icon(Icons.close,
-                size: AppIconSize.sm, color: scheme.onSurfaceVariant),
-            onPressed: () =>
-                _removeDocument(context, ref, document.evidence.id),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// A calm icon for a document, chosen from its stored MIME type.
-IconData _documentIcon(String mimeType) {
-  if (mimeType == 'application/pdf') return Icons.picture_as_pdf_outlined;
-  if (mimeType.startsWith('image/')) return Icons.image_outlined;
-  return Icons.description_outlined;
-}
-
 class _MoreMenu extends ConsumerWidget {
   const _MoreMenu({required this.id, required this.possession});
 
@@ -875,50 +780,6 @@ Future<void> _pickPlace(
   await ref
       .read(possessionsDaoProvider)
       .setPlace(possession.id, choice.placeId);
-}
-
-Future<void> _addDocument(
-    BuildContext context, WidgetRef ref, String id) async {
-  final messenger = ScaffoldMessenger.of(context);
-  final l10n = AppLocalizations.of(context);
-  final result = await pickDocument();
-  switch (result.outcome) {
-    case DocumentOutcome.cancelled:
-      return; // dismissed — silent, nothing changed.
-    case DocumentOutcome.failed:
-      messenger
-        ..clearSnackBars()
-        ..showSnackBar(SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(l10n.documentAddFailed),
-        ));
-      return;
-    case DocumentOutcome.success:
-      final doc = result.document!;
-      await ref.read(evidenceDaoProvider).addDocument(
-            possessionId: id,
-            relativePath: doc.relativePath,
-            mimeType: doc.mimeType,
-            byteSize: doc.byteSize,
-            label: doc.name,
-          );
-  }
-}
-
-Future<void> _removeDocument(
-    BuildContext context, WidgetRef ref, String evidenceId) async {
-  final l10n = AppLocalizations.of(context);
-  final dao = ref.read(evidenceDaoProvider);
-  await dao.removeDocument(evidenceId);
-  if (!context.mounted) return;
-  ScaffoldMessenger.of(context)
-    ..clearSnackBars()
-    ..showSnackBar(SnackBar(
-      behavior: SnackBarBehavior.floating,
-      content: Text(l10n.documentRemovedSnack),
-      action: SnackBarAction(
-          label: l10n.undo, onPressed: () => dao.restoreDocument(evidenceId)),
-    ));
 }
 
 class _Calm extends StatelessWidget {
