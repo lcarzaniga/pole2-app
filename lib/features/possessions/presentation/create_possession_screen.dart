@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/router/routes.dart';
 import '../../../app/theme/app_icon_size.dart';
 import '../../../app/theme/app_radii.dart';
 import '../../../app/theme/app_spacing.dart';
@@ -58,7 +59,15 @@ class _CreatePossessionScreenState
     }
     // A single gentle confirmation — definitive, never celebratory.
     HapticFeedback.lightImpact();
-    if (mounted) context.pop();
+    // Open the new thing straight away, so adding a photo (or anything else) is
+    // one tap, not a hunt back through the list. Replacing this screen keeps the
+    // stack clean: Back from the detail returns to Home, not to this form.
+    if (mounted) {
+      context.pushReplacementNamed(
+        Routes.possessionName,
+        pathParameters: {'id': created.id},
+      );
+    }
   }
 
   @override
