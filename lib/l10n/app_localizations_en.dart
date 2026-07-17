@@ -425,4 +425,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addNote => 'Aggiungi una nota';
+
+  @override
+  String get addDocument => 'Aggiungi un documento';
+
+  @override
+  String get documentAdd => 'Aggiungi';
+
+  @override
+  String get documentRemovedSnack => 'Documento rimosso.';
+
+  @override
+  String get documentAddFailed => 'Nulla è andato perso. Riprova quando vuoi.';
 }

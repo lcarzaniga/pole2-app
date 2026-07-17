@@ -175,5 +175,9 @@
   "placeEditTooltip": "Cambia luogo",
   "noteEditorTitle": "Aggiungi una nota",
   "noteHint": "Scrivi una nota…",
-  "addNote": "Aggiungi una nota"
+  "addNote": "Aggiungi una nota",
+  "addDocument": "Aggiungi un documento",
+  "documentAdd": "Aggiungi",
+  "documentRemovedSnack": "Documento rimosso.",
+  "documentAddFailed": "Nulla è andato perso. Riprova quando vuoi."
 }

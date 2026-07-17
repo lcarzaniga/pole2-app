@@ -823,6 +823,30 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Aggiungi una nota'**
   String get addNote;
+
+  /// No description provided for @addDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi un documento'**
+  String get addDocument;
+
+  /// No description provided for @documentAdd.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi'**
+  String get documentAdd;
+
+  /// No description provided for @documentRemovedSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'Documento rimosso.'**
+  String get documentRemovedSnack;
+
+  /// No description provided for @documentAddFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Nulla è andato perso. Riprova quando vuoi.'**
+  String get documentAddFailed;
 }
 
 class _AppLocalizationsDelegate
