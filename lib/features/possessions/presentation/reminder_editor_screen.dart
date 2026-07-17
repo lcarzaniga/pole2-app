@@ -9,6 +9,8 @@ import '../../../l10n/app_localizations.dart';
 import '../../../shared/format.dart';
 import '../../../shared/phrasing.dart';
 import '../application/event_providers.dart';
+import '../application/possession_providers.dart';
+import 'widgets/entity_context_title.dart';
 
 /// Create one simple deadline connected to a thing. Title and a date are all
 /// that's needed; the note and advance notice are optional.
@@ -74,9 +76,14 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
       l10n.suggFilter,
     ];
 
+    final possession = ref.watch(possessionByIdProvider(widget.possessionId));
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.reminderTitle),
+        title: EntityContextTitle(
+          objectName: possession.value?.title,
+          action: l10n.reminderTitle,
+        ),
         actions: [
           TextButton(
             onPressed: _canSave ? _save : null,

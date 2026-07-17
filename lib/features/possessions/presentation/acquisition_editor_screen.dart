@@ -9,6 +9,8 @@ import '../../../l10n/app_localizations.dart';
 import '../../../shared/format.dart';
 import '../../../shared/phrasing.dart';
 import '../application/event_providers.dart';
+import '../application/possession_providers.dart';
+import 'widgets/entity_context_title.dart';
 
 /// Where the user records how they got a thing. Everything is optional; saving
 /// partial information is always valid. No required-field pressure, no
@@ -113,9 +115,14 @@ class _AcquisitionEditorScreenState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    final possession = ref.watch(possessionByIdProvider(widget.possessionId));
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.acquisitionTitle),
+        title: EntityContextTitle(
+          objectName: possession.value?.title,
+          action: l10n.acquisitionTitle,
+        ),
         actions: [
           TextButton(onPressed: _save, child: Text(l10n.saveButton)),
         ],
