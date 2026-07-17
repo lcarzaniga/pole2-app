@@ -709,6 +709,90 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Nessun oggetto usa questo luogo.'**
   String get placeDeleteNone;
+
+  /// No description provided for @updateAvailableTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiornamento disponibile'**
+  String get updateAvailableTitle;
+
+  /// No description provided for @updateAvailableBody.
+  ///
+  /// In it, this message translates to:
+  /// **'È disponibile la versione {version}.'**
+  String updateAvailableBody(String version);
+
+  /// No description provided for @updateNow.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiorna'**
+  String get updateNow;
+
+  /// No description provided for @updateLater.
+  ///
+  /// In it, this message translates to:
+  /// **'Più tardi'**
+  String get updateLater;
+
+  /// No description provided for @updateDownloading.
+  ///
+  /// In it, this message translates to:
+  /// **'Scaricamento…'**
+  String get updateDownloading;
+
+  /// No description provided for @updateVerifying.
+  ///
+  /// In it, this message translates to:
+  /// **'Verifica…'**
+  String get updateVerifying;
+
+  /// No description provided for @updateInstalling.
+  ///
+  /// In it, this message translates to:
+  /// **'Avvio installazione…'**
+  String get updateInstalling;
+
+  /// No description provided for @updatePermissionNeeded.
+  ///
+  /// In it, this message translates to:
+  /// **'Per installare l\'aggiornamento, consenti l\'installazione di app da questa sorgente.'**
+  String get updatePermissionNeeded;
+
+  /// No description provided for @updateAllow.
+  ///
+  /// In it, this message translates to:
+  /// **'Consenti'**
+  String get updateAllow;
+
+  /// No description provided for @updateRetry.
+  ///
+  /// In it, this message translates to:
+  /// **'Riprova'**
+  String get updateRetry;
+
+  /// No description provided for @updateErrorDownload.
+  ///
+  /// In it, this message translates to:
+  /// **'Scaricamento non riuscito.'**
+  String get updateErrorDownload;
+
+  /// No description provided for @updateErrorSha.
+  ///
+  /// In it, this message translates to:
+  /// **'File di aggiornamento non valido.'**
+  String get updateErrorSha;
+
+  /// No description provided for @updateErrorInstall.
+  ///
+  /// In it, this message translates to:
+  /// **'Installazione non riuscita.'**
+  String get updateErrorInstall;
+
+  /// No description provided for @closeButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiudi'**
+  String get closeButton;
 }
 
 class _AppLocalizationsDelegate

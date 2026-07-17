@@ -153,5 +153,22 @@
   "@placeDeleteAssigned": {
     "placeholders": { "count": { "type": "int" } }
   },
-  "placeDeleteNone": "Nessun oggetto usa questo luogo."
+  "placeDeleteNone": "Nessun oggetto usa questo luogo.",
+  "updateAvailableTitle": "Aggiornamento disponibile",
+  "updateAvailableBody": "È disponibile la versione {version}.",
+  "@updateAvailableBody": {
+    "placeholders": { "version": { "type": "String" } }
+  },
+  "updateNow": "Aggiorna",
+  "updateLater": "Più tardi",
+  "updateDownloading": "Scaricamento…",
+  "updateVerifying": "Verifica…",
+  "updateInstalling": "Avvio installazione…",
+  "updatePermissionNeeded": "Per installare l'aggiornamento, consenti l'installazione di app da questa sorgente.",
+  "updateAllow": "Consenti",
+  "updateRetry": "Riprova",
+  "updateErrorDownload": "Scaricamento non riuscito.",
+  "updateErrorSha": "File di aggiornamento non valido.",
+  "updateErrorInstall": "Installazione non riuscita.",
+  "closeButton": "Chiudi"
 }

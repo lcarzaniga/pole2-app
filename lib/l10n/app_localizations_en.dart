@@ -365,4 +365,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get placeDeleteNone => 'Nessun oggetto usa questo luogo.';
+
+  @override
+  String get updateAvailableTitle => 'Aggiornamento disponibile';
+
+  @override
+  String updateAvailableBody(String version) {
+    return 'È disponibile la versione $version.';
+  }
+
+  @override
+  String get updateNow => 'Aggiorna';
+
+  @override
+  String get updateLater => 'Più tardi';
+
+  @override
+  String get updateDownloading => 'Scaricamento…';
+
+  @override
+  String get updateVerifying => 'Verifica…';
+
+  @override
+  String get updateInstalling => 'Avvio installazione…';
+
+  @override
+  String get updatePermissionNeeded =>
+      'Per installare l\'aggiornamento, consenti l\'installazione di app da questa sorgente.';
+
+  @override
+  String get updateAllow => 'Consenti';
+
+  @override
+  String get updateRetry => 'Riprova';
+
+  @override
+  String get updateErrorDownload => 'Scaricamento non riuscito.';
+
+  @override
+  String get updateErrorSha => 'File di aggiornamento non valido.';
+
+  @override
+  String get updateErrorInstall => 'Installazione non riuscita.';
+
+  @override
+  String get closeButton => 'Chiudi';
 }

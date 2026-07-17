@@ -11,6 +11,7 @@ import '../../../shared/brand/turtle_shell_menu.dart';
 import '../../../shared/photo_capture.dart';
 import '../../possessions/application/possession_providers.dart';
 import '../../possessions/presentation/possessions_home_view.dart';
+import '../../update/update_gate.dart';
 import 'widgets/home_empty_state.dart';
 
 /// The home screen — the digital home's front door.
@@ -54,17 +55,21 @@ class HomeScreen extends ConsumerWidget {
       }
     }
 
-    return AppShell(
-      body: HexBackground(
-        child: possessions.when(
-          loading: () => const _CalmCenter(),
-          error: (_, _) => _CalmCenter(message: l10n.errorNothingLost),
-          data: (list) => list.isEmpty
-              ? HomeEmptyState(onQuickAction: handleQuickAction)
-              : PossessionsHomeView(
-                  possessions: list,
-                  onQuickAction: handleQuickAction,
-                ),
+    // Non-blocking self-update check runs once here (below the navigator, so the
+    // optional prompt can be shown). The gate renders its child unchanged.
+    return UpdateGate(
+      child: AppShell(
+        body: HexBackground(
+          child: possessions.when(
+            loading: () => const _CalmCenter(),
+            error: (_, _) => _CalmCenter(message: l10n.errorNothingLost),
+            data: (list) => list.isEmpty
+                ? HomeEmptyState(onQuickAction: handleQuickAction)
+                : PossessionsHomeView(
+                    possessions: list,
+                    onQuickAction: handleQuickAction,
+                  ),
+          ),
         ),
       ),
     );
