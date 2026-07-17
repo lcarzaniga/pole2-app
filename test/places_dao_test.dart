@@ -101,4 +101,65 @@ void main() {
     expect((await db.possessionsDao.watchById(b.id).first)!.placeId, isNull);
     expect(await db.placesDao.watchById(placeId).first, isNull);
   });
+
+  test('watchByPlace: filters, orders newest-first, reacts to changes', () async {
+    final dao = db.possessionsDao;
+    final garage = await db.placesDao.create(name: 'Garage');
+    final cantina = await db.placesDao.create(name: 'Cantina');
+
+    expect(await dao.watchByPlace(garage).first, isEmpty);
+
+    final a = await dao.createPossession(title: 'A');
+    await Future<void>.delayed(const Duration(milliseconds: 5));
+    final b = await dao.createPossession(title: 'B');
+    final c = await dao.createPossession(title: 'C');
+
+    await dao.setPlace(a.id, garage);
+    await dao.setPlace(b.id, cantina); // another place → excluded
+    // c keeps placeId == null → excluded
+
+    expect((await dao.watchByPlace(garage).first).map((p) => p.id), [a.id]);
+
+    // newest-first: a later item in the same place sorts ahead of an older one
+    await Future<void>.delayed(const Duration(milliseconds: 5));
+    final d = await dao.createPossession(title: 'D');
+    await dao.setPlace(d.id, garage);
+    expect(
+      (await dao.watchByPlace(garage).first).map((p) => p.id),
+      [d.id, a.id],
+    );
+
+    // reacts to an assignment change (move a away)
+    await dao.setPlace(a.id, cantina);
+    expect((await dao.watchByPlace(garage).first).map((p) => p.id), [d.id]);
+
+    // reacts to soft-delete
+    await dao.softDelete(d.id);
+    expect(await dao.watchByPlace(garage).first, isEmpty);
+
+    // reacts to restore (placeId survives restore)
+    await dao.restore(d.id);
+    expect((await dao.watchByPlace(garage).first).map((p) => p.id), [d.id]);
+
+    // isolated from unrelated places: a change in cantina doesn't touch garage
+    await dao.setPlace(c.id, cantina);
+    expect((await dao.watchByPlace(garage).first).map((p) => p.id), [d.id]);
+  });
+
+  test('watchByPlace emits updates on a single subscription', () async {
+    final dao = db.possessionsDao;
+    final garage = await db.placesDao.create(name: 'Garage');
+    final a = await dao.createPossession(title: 'A');
+
+    final counts = <int>[];
+    final sub = dao.watchByPlace(garage).listen((l) => counts.add(l.length));
+    await Future<void>.delayed(const Duration(milliseconds: 10)); // 0 (empty)
+    await dao.setPlace(a.id, garage);
+    await Future<void>.delayed(const Duration(milliseconds: 10)); // 1 (assigned)
+    await dao.softDelete(a.id);
+    await Future<void>.delayed(const Duration(milliseconds: 10)); // 0 (removed)
+    await sub.cancel();
+
+    expect(counts, containsAllInOrder([0, 1, 0]));
+  });
 }

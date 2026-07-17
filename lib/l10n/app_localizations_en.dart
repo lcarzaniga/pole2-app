@@ -410,4 +410,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get closeButton => 'Chiudi';
+
+  @override
+  String get placeContentsEmpty => 'Ancora niente qui';
+
+  @override
+  String get placeEditTooltip => 'Cambia luogo';
 }

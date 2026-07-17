@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/places/presentation/place_contents_screen.dart';
 import '../../features/possessions/presentation/acquisition_editor_screen.dart';
 import '../../features/possessions/presentation/create_possession_screen.dart';
 import '../../features/possessions/presentation/possession_detail_screen.dart';
@@ -56,6 +57,13 @@ GoRouter appRouter(Ref ref) {
         name: Routes.reminderName,
         builder: (context, state) => ReminderEditorScreen(
           possessionId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: Routes.placePath,
+        name: Routes.placeName,
+        builder: (context, state) => PlaceContentsScreen(
+          placeId: state.pathParameters['id']!,
         ),
       ),
     ],

@@ -198,32 +198,90 @@ class _DetailsCard extends ConsumerWidget {
   }
 }
 
-/// Where this thing lives — assign a place, change it, or clear it ("no place").
-/// Always shown, so every object surfaces its place at a glance.
+/// Where this thing lives — always shown. When a place is assigned, tapping the
+/// card opens that place's contents; a separate edit control changes / creates /
+/// clears the place. When none is assigned, the card invites choosing one.
 class _PlaceCard extends ConsumerWidget {
   const _PlaceCard({required this.possession});
 
   final Possession possession;
 
+  Future<void> _openPicker(BuildContext context, WidgetRef ref) async {
+    final choice = await showPlacePicker(
+      context,
+      currentPlaceId: possession.placeId,
+    );
+    if (choice == null) return;
+    await ref
+        .read(possessionsDaoProvider)
+        .setPlace(possession.id, choice.placeId);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final placeId = possession.placeId;
+    // A deleted place resolves to null → treated as "no place" (invite choosing).
     final place =
         placeId == null ? null : ref.watch(placeByIdProvider(placeId)).value;
-    final hasPlace = place != null;
-    return _TapCard(
-      icon: Icons.place_outlined,
-      title: hasPlace ? place.name : l10n.noPlace,
-      subtitle: hasPlace ? l10n.placeLabel : l10n.placeAssignHint,
-      trailing: Icons.edit_outlined,
-      onTap: () async {
-        final choice = await showPlacePicker(context, currentPlaceId: placeId);
-        if (choice == null) return;
-        await ref
-            .read(possessionsDaoProvider)
-            .setPlace(possession.id, choice.placeId);
-      },
+
+    if (place == null) {
+      return _TapCard(
+        icon: Icons.place_outlined,
+        title: l10n.noPlace,
+        subtitle: l10n.placeAssignHint,
+        trailing: Icons.edit_outlined,
+        onTap: () => _openPicker(context, ref),
+      );
+    }
+
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Material(
+      color: scheme.surfaceContainerLow,
+      borderRadius: AppRadii.borderLg,
+      child: InkWell(
+        onTap: () => context.pushNamed(
+          Routes.placeName,
+          pathParameters: {'id': placeId!},
+        ),
+        borderRadius: AppRadii.borderLg,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Row(
+            children: [
+              Icon(
+                Icons.place_outlined,
+                size: AppIconSize.md,
+                color: scheme.primary,
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(place.name, style: theme.textTheme.titleMedium),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      l10n.placeLabel,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                iconSize: AppIconSize.md,
+                color: scheme.onSurfaceVariant,
+                tooltip: l10n.placeEditTooltip,
+                onPressed: () => _openPicker(context, ref),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

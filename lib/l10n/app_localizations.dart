@@ -793,6 +793,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Chiudi'**
   String get closeButton;
+
+  /// No description provided for @placeContentsEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Ancora niente qui'**
+  String get placeContentsEmpty;
+
+  /// No description provided for @placeEditTooltip.
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia luogo'**
+  String get placeEditTooltip;
 }
 
 class _AppLocalizationsDelegate

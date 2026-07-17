@@ -170,5 +170,7 @@
   "updateErrorDownload": "Scaricamento non riuscito.",
   "updateErrorSha": "File di aggiornamento non valido.",
   "updateErrorInstall": "Installazione non riuscita.",
-  "closeButton": "Chiudi"
+  "closeButton": "Chiudi",
+  "placeContentsEmpty": "Ancora niente qui",
+  "placeEditTooltip": "Cambia luogo"
 }

@@ -29,4 +29,11 @@ abstract final class Routes {
   /// New deadline / reminder editor. Path param: `id`.
   static const String reminderName = 'reminder';
   static const String reminderPath = '/possession/:id/reminder';
+
+  /// A single place's contents (the possessions kept there). Path param: `id`.
+  static const String placeName = 'place';
+  static const String placePath = '/place/:id';
+
+  /// Builds the concrete contents path for place [id].
+  static String place(String id) => '/place/$id';
 }

@@ -29,6 +29,19 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
         .watch();
   }
 
+  /// Active (non-deleted) possessions kept in [placeId], newest first — powers
+  /// the place-contents screen. Same "active" definition and ordering as
+  /// [watchAll]; reactive to assignment, removal, soft-delete and restore.
+  Stream<List<Possession>> watchByPlace(String placeId) {
+    return (select(possessions)
+          ..where((t) =>
+              t.placeId.equals(placeId) &
+              t.deletedAt.isNull() &
+              t.status.equalsValue(PossessionStatus.active))
+          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+        .watch();
+  }
+
   /// A single possession by id, reactive — powers the detail screen.
   Stream<Possession?> watchById(String id) {
     return (select(possessions)..where((t) => t.id.equals(id)))
