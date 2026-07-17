@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- The downloaded APK lives in the app's private cache under updates/. -->
+    <cache-path name="updates" path="updates/" />
+</paths>
