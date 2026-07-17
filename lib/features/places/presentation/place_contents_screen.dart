@@ -10,8 +10,9 @@ import '../../../shared/brand/hex_background.dart';
 import '../application/place_providers.dart';
 
 /// The contents of one place: the active possessions currently kept there.
-/// Read-only — a calm answer to "what did I put here?". Tapping an item opens
-/// its existing detail screen. No management actions live here.
+/// A calm answer to "what did I put here?". Tapping an item opens its existing
+/// detail screen. Editing the place (rename) is deliberately a secondary,
+/// clearly separated action in the app bar — the contents are the focus.
 class PlaceContentsScreen extends ConsumerWidget {
   const PlaceContentsScreen({super.key, required this.placeId});
 
@@ -21,9 +22,20 @@ class PlaceContentsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final place = ref.watch(placeByIdProvider(placeId));
     final l10n = AppLocalizations.of(context);
+    final current = place.value;
 
     return Scaffold(
-      appBar: AppBar(title: Text(place.value?.name ?? l10n.placeLabel)),
+      appBar: AppBar(
+        title: Text(current?.name ?? l10n.placeLabel),
+        actions: [
+          if (current != null)
+            IconButton(
+              tooltip: l10n.menuRename,
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () => _renamePlace(context, ref, current),
+            ),
+        ],
+      ),
       body: HexBackground(
         child: place.when(
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -34,6 +46,41 @@ class PlaceContentsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+/// A calm rename dialog for the place — the one editing action offered here,
+/// kept secondary. Deleting a place stays in the assignment picker, where its
+/// consequences (possessions resolving to "no place") are explained.
+Future<void> _renamePlace(
+    BuildContext context, WidgetRef ref, Place place) async {
+  final l10n = AppLocalizations.of(context);
+  final controller = TextEditingController(text: place.name);
+  final name = await showDialog<String>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(l10n.placeRenameTitle),
+      content: TextField(
+        controller: controller,
+        autofocus: true,
+        textCapitalization: TextCapitalization.sentences,
+        onSubmitted: (v) => Navigator.of(ctx).pop(v.trim()),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(),
+          child: Text(l10n.cancelButton),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
+          child: Text(l10n.saveButton),
+        ),
+      ],
+    ),
+  );
+  controller.dispose();
+  if (name != null && name.isNotEmpty) {
+    await ref.read(placesDaoProvider).edit(place.id, name: name);
   }
 }
 
