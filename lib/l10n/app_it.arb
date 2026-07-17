@@ -205,5 +205,17 @@
   "filterAllPlaces": "Tutti i luoghi",
   "filterNoPlace": "Senza luogo",
   "photoEditTooltip": "Cambia foto",
-  "photoView": "Vedi la foto"
+  "photoView": "Vedi la foto",
+
+  "placeReviewStart": "Riordina questo luogo",
+  "placeReviewKeep": "Tieni qui",
+  "placeReviewMove": "Sposta",
+  "placeReviewUnassign": "Togli dal luogo",
+  "placeReviewArchive": "Metti da parte",
+  "placeReviewDone": "Fine",
+  "placeReviewAllSeen": "Hai guardato tutto quello che c'è qui.",
+  "placeReviewGentleCount": "{count, plural, =0{Niente qui} =1{1 cosa qui} other{{count} cose qui}}",
+  "@placeReviewGentleCount": {
+    "placeholders": { "count": { "type": "int" } }
+  }
 }

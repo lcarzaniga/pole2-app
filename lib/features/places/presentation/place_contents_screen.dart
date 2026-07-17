@@ -87,23 +87,52 @@ class _Contents extends ConsumerWidget {
       error: (_, _) => _Calm(l10n.errorNothingLost),
       data: (list) => list.isEmpty
           ? const _EmptyPlace()
-          : ListView.separated(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              itemCount: list.length,
-              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
-              itemBuilder: (context, i) {
-                final possession = list[i];
-                return PossessionPlaceTile(
-                  possession: possession,
-                  onOpen: () => context.pushNamed(
-                    Routes.possessionName,
-                    pathParameters: {'id': possession.id},
+          : Column(
+              children: [
+                // A calm, secondary entry into the guided walk — offered only
+                // when there's something here to go through.
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.lg,
+                    AppSpacing.lg,
+                    0,
                   ),
-                  onMove: () => _moveItem(context, ref, possession, placeId),
-                  onRemove: () =>
-                      _removeItem(context, ref, possession, placeId),
-                );
-              },
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: () => context.pushNamed(
+                        Routes.placeReviewName,
+                        pathParameters: {'id': placeId},
+                      ),
+                      icon: const Icon(Icons.checklist),
+                      label: Text(l10n.placeReviewStart),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    itemCount: list.length,
+                    separatorBuilder: (_, _) =>
+                        const SizedBox(height: AppSpacing.md),
+                    itemBuilder: (context, i) {
+                      final possession = list[i];
+                      return PossessionPlaceTile(
+                        possession: possession,
+                        onOpen: () => context.pushNamed(
+                          Routes.possessionName,
+                          pathParameters: {'id': possession.id},
+                        ),
+                        onMove: () =>
+                            _moveItem(context, ref, possession, placeId),
+                        onRemove: () =>
+                            _removeItem(context, ref, possession, placeId),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
     );
   }

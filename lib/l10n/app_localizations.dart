@@ -985,6 +985,54 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Vedi la foto'**
   String get photoView;
+
+  /// No description provided for @placeReviewStart.
+  ///
+  /// In it, this message translates to:
+  /// **'Riordina questo luogo'**
+  String get placeReviewStart;
+
+  /// No description provided for @placeReviewKeep.
+  ///
+  /// In it, this message translates to:
+  /// **'Tieni qui'**
+  String get placeReviewKeep;
+
+  /// No description provided for @placeReviewMove.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta'**
+  String get placeReviewMove;
+
+  /// No description provided for @placeReviewUnassign.
+  ///
+  /// In it, this message translates to:
+  /// **'Togli dal luogo'**
+  String get placeReviewUnassign;
+
+  /// No description provided for @placeReviewArchive.
+  ///
+  /// In it, this message translates to:
+  /// **'Metti da parte'**
+  String get placeReviewArchive;
+
+  /// No description provided for @placeReviewDone.
+  ///
+  /// In it, this message translates to:
+  /// **'Fine'**
+  String get placeReviewDone;
+
+  /// No description provided for @placeReviewAllSeen.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai guardato tutto quello che c\'è qui.'**
+  String get placeReviewAllSeen;
+
+  /// No description provided for @placeReviewGentleCount.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =0{Niente qui} =1{1 cosa qui} other{{count} cose qui}}'**
+  String placeReviewGentleCount(int count);
 }
 
 class _AppLocalizationsDelegate

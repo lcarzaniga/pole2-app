@@ -516,4 +516,37 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get photoView => 'Vedi la foto';
+
+  @override
+  String get placeReviewStart => 'Riordina questo luogo';
+
+  @override
+  String get placeReviewKeep => 'Tieni qui';
+
+  @override
+  String get placeReviewMove => 'Sposta';
+
+  @override
+  String get placeReviewUnassign => 'Togli dal luogo';
+
+  @override
+  String get placeReviewArchive => 'Metti da parte';
+
+  @override
+  String get placeReviewDone => 'Fine';
+
+  @override
+  String get placeReviewAllSeen => 'Hai guardato tutto quello che c\'è qui.';
+
+  @override
+  String placeReviewGentleCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cose qui',
+      one: '1 cosa qui',
+      zero: 'Niente qui',
+    );
+    return '$_temp0';
+  }
 }

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../app/theme/app_radii.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../core/database/app_database.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../../shared/platform/photo_store.dart';
-import '../../../possessions/application/possession_providers.dart';
+import 'possession_thumb.dart';
 
 enum _TileAction { move, remove }
 
@@ -40,7 +38,7 @@ class PossessionPlaceTile extends ConsumerWidget {
           horizontal: AppSpacing.lg,
           vertical: AppSpacing.sm,
         ),
-        leading: _Thumb(possession: possession),
+        leading: PossessionThumb(possession: possession),
         title: Text(possession.title, style: theme.textTheme.titleMedium),
         subtitle: possession.category == null
             ? null
@@ -70,51 +68,6 @@ class PossessionPlaceTile extends ConsumerWidget {
         ),
         onTap: onOpen,
       ),
-    );
-  }
-}
-
-/// A small square cover thumbnail when the possession has one, else a calm
-/// neutral placeholder — never an error or a broken image.
-class _Thumb extends ConsumerWidget {
-  const _Thumb({required this.possession});
-
-  final Possession possession;
-
-  static const double _size = 48;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
-    final fileId = possession.coverFileId;
-    final file = fileId == null
-        ? null
-        : ref.watch(fileByIdProvider(fileId)).value;
-    final docs = ref.watch(appDocumentsPathProvider).value;
-
-    if (file != null && docs != null) {
-      return ClipRRect(
-        borderRadius: AppRadii.borderSm,
-        child: SizedBox(
-          width: _size,
-          height: _size,
-          child: coverImage(
-            docsPath: docs,
-            relativePath: file.relativePath,
-            height: _size,
-          ),
-        ),
-      );
-    }
-
-    return Container(
-      width: _size,
-      height: _size,
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest,
-        borderRadius: AppRadii.borderSm,
-      ),
-      child: Icon(Icons.inventory_2_outlined, color: scheme.onSurfaceVariant),
     );
   }
 }

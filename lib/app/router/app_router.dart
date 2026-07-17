@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/places/presentation/place_contents_screen.dart';
+import '../../features/places/presentation/place_review_screen.dart';
 import '../../features/possessions/presentation/acquisition_editor_screen.dart';
 import '../../features/possessions/presentation/create_possession_screen.dart';
 import '../../features/possessions/presentation/note_editor_screen.dart';
@@ -79,6 +80,13 @@ GoRouter appRouter(Ref ref) {
         path: Routes.placePath,
         name: Routes.placeName,
         builder: (context, state) => PlaceContentsScreen(
+          placeId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: Routes.placeReviewPath,
+        name: Routes.placeReviewName,
+        builder: (context, state) => PlaceReviewScreen(
           placeId: state.pathParameters['id']!,
         ),
       ),

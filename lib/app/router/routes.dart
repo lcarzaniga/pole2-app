@@ -44,4 +44,11 @@ abstract final class Routes {
 
   /// Builds the concrete contents path for place [id].
   static String place(String id) => '/place/$id';
+
+  /// The guided "Riordina questo luogo" walk for a place. Path param: `id`.
+  static const String placeReviewName = 'place-review';
+  static const String placeReviewPath = '/place/:id/review';
+
+  /// Builds the concrete review path for place [id].
+  static String placeReview(String id) => '/place/$id/review';
 }
