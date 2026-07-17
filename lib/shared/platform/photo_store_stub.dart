@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'photo_types.dart';
@@ -17,3 +19,15 @@ Widget coverImage({
   required double height,
 }) =>
     const SizedBox.shrink();
+
+/// Web has no on-disk photo, so this is a 1×1 transparent placeholder — the
+/// viewer is a native-only surface in practice and never reaches here with a
+/// real cover.
+ImageProvider coverImageProvider({
+  required String docsPath,
+  required String relativePath,
+}) =>
+    MemoryImage(base64Decode(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk'
+      'YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+    ));

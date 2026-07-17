@@ -34,6 +34,10 @@ abstract final class Routes {
   static const String noteName = 'note';
   static const String notePath = '/possession/:id/note';
 
+  /// Full-screen viewer for a possession's cover photo. Path param: `id`.
+  static const String photoName = 'photo';
+  static const String photoPath = '/possession/:id/photo';
+
   /// A single place's contents (the possessions kept there). Path param: `id`.
   static const String placeName = 'place';
   static const String placePath = '/place/:id';

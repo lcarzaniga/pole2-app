@@ -193,5 +193,7 @@
   "sortName": "Nome",
   "filterTooltip": "Filtra per luogo",
   "filterAllPlaces": "Tutti i luoghi",
-  "filterNoPlace": "Senza luogo"
+  "filterNoPlace": "Senza luogo",
+  "photoEditTooltip": "Cambia foto",
+  "photoView": "Vedi la foto"
 }

@@ -19,6 +19,7 @@ import '../../places/application/place_providers.dart';
 import '../../places/presentation/place_picker.dart';
 import '../application/event_providers.dart';
 import '../application/possession_providers.dart';
+import 'widgets/cover_area.dart';
 
 /// A single thing, living inside Pole² — its dossier.
 ///
@@ -571,7 +572,9 @@ class _TapCard extends StatelessWidget {
   }
 }
 
-/// Cover photo — tap to add or change.
+/// Cover photo. With no cover, the area invites adding one. With a cover,
+/// tapping the image opens it full-screen and a pencil replaces it — the two
+/// actions are deliberately separate (see [CoverArea]).
 class _Cover extends ConsumerWidget {
   const _Cover({required this.possession});
 
@@ -581,62 +584,47 @@ class _Cover extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final fileId = possession.coverFileId;
 
-    Widget content;
+    // No cover yet → the calm "add a photo" invitation.
     if (fileId == null) {
-      content =
-          _AddPhotoHint(onTap: () => _pickPhoto(context, ref, possession.id));
-    } else {
-      final file = ref.watch(fileByIdProvider(fileId)).value;
-      final docs = ref.watch(appDocumentsPathProvider).value;
-      if (file != null && docs != null) {
-        content = GestureDetector(
-          onTap: () => _pickPhoto(context, ref, possession.id),
-          child: coverImage(
-            docsPath: docs,
-            relativePath: file.relativePath,
-            height: _height,
-          ),
-        );
-      } else {
-        content = const SizedBox.shrink();
-      }
+      return CoverArea(
+        height: _height,
+        image: null,
+        addLabel: l10n.addPhoto,
+        editTooltip: l10n.photoEditTooltip,
+        onAdd: () => _pickPhoto(context, ref, possession.id),
+      );
     }
 
-    return SizedBox(
+    final file = ref.watch(fileByIdProvider(fileId)).value;
+    final docs = ref.watch(appDocumentsPathProvider).value;
+
+    // Still resolving the file/path → a plain calm surface, no flicker.
+    if (file == null || docs == null) {
+      return SizedBox(
+        height: _height,
+        width: double.infinity,
+        child: ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerLow),
+      );
+    }
+
+    return CoverArea(
       height: _height,
-      width: double.infinity,
-      child: ColoredBox(color: scheme.surfaceContainerLow, child: content),
-    );
-  }
-}
-
-class _AddPhotoHint extends StatelessWidget {
-  const _AddPhotoHint({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    return InkWell(
-      onTap: onTap,
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.add_a_photo_outlined,
-                size: AppIconSize.lg, color: scheme.primary),
-            const SizedBox(height: AppSpacing.sm),
-            Text(AppLocalizations.of(context).addPhoto,
-                style: theme.textTheme.labelLarge
-                    ?.copyWith(color: scheme.onSurfaceVariant)),
-          ],
-        ),
+      image: coverImage(
+        docsPath: docs,
+        relativePath: file.relativePath,
+        height: _height,
       ),
+      addLabel: l10n.addPhoto,
+      editTooltip: l10n.photoEditTooltip,
+      viewLabel: l10n.photoView,
+      onView: () => context.pushNamed(
+        Routes.photoName,
+        pathParameters: {'id': possession.id},
+      ),
+      onEdit: () => _pickPhoto(context, ref, possession.id),
     );
   }
 }

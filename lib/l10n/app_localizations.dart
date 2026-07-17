@@ -931,6 +931,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Senza luogo'**
   String get filterNoPlace;
+
+  /// No description provided for @photoEditTooltip.
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia foto'**
+  String get photoEditTooltip;
+
+  /// No description provided for @photoView.
+  ///
+  /// In it, this message translates to:
+  /// **'Vedi la foto'**
+  String get photoView;
 }
 
 class _AppLocalizationsDelegate

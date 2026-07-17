@@ -479,4 +479,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterNoPlace => 'Senza luogo';
+
+  @override
+  String get photoEditTooltip => 'Cambia foto';
+
+  @override
+  String get photoView => 'Vedi la foto';
 }

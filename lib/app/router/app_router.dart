@@ -6,6 +6,7 @@ import '../../features/places/presentation/place_contents_screen.dart';
 import '../../features/possessions/presentation/acquisition_editor_screen.dart';
 import '../../features/possessions/presentation/create_possession_screen.dart';
 import '../../features/possessions/presentation/note_editor_screen.dart';
+import '../../features/possessions/presentation/photo_viewer_screen.dart';
 import '../../features/possessions/presentation/possession_detail_screen.dart';
 import '../../features/possessions/presentation/reminder_editor_screen.dart';
 import '../../shared/platform/photo_store.dart';
@@ -64,6 +65,13 @@ GoRouter appRouter(Ref ref) {
         path: Routes.notePath,
         name: Routes.noteName,
         builder: (context, state) => NoteEditorScreen(
+          possessionId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: Routes.photoPath,
+        name: Routes.photoName,
+        builder: (context, state) => PhotoViewerScreen(
           possessionId: state.pathParameters['id']!,
         ),
       ),

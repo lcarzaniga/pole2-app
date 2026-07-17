@@ -68,3 +68,11 @@ Widget coverImage({
     fit: BoxFit.cover,
   );
 }
+
+/// An [ImageProvider] for a stored photo — used by the full-screen viewer, which
+/// needs the raw provider (not a pre-sized widget) to fit and zoom the image.
+ImageProvider coverImageProvider({
+  required String docsPath,
+  required String relativePath,
+}) =>
+    FileImage(File(p.join(docsPath, relativePath)));
