@@ -877,6 +877,60 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Luogo'**
   String get hubPlace;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca'**
+  String get searchHint;
+
+  /// No description provided for @searchClear.
+  ///
+  /// In it, this message translates to:
+  /// **'Cancella'**
+  String get searchClear;
+
+  /// No description provided for @searchNoResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun risultato'**
+  String get searchNoResults;
+
+  /// No description provided for @sortTooltip.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordina'**
+  String get sortTooltip;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In it, this message translates to:
+  /// **'Più recenti'**
+  String get sortNewest;
+
+  /// No description provided for @sortName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome'**
+  String get sortName;
+
+  /// No description provided for @filterTooltip.
+  ///
+  /// In it, this message translates to:
+  /// **'Filtra per luogo'**
+  String get filterTooltip;
+
+  /// No description provided for @filterAllPlaces.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutti i luoghi'**
+  String get filterAllPlaces;
+
+  /// No description provided for @filterNoPlace.
+  ///
+  /// In it, this message translates to:
+  /// **'Senza luogo'**
+  String get filterNoPlace;
 }
 
 class _AppLocalizationsDelegate

@@ -184,5 +184,14 @@
   "hubNote": "Nota",
   "hubDocument": "Documento",
   "hubDate": "Data",
-  "hubPlace": "Luogo"
+  "hubPlace": "Luogo",
+  "searchHint": "Cerca",
+  "searchClear": "Cancella",
+  "searchNoResults": "Nessun risultato",
+  "sortTooltip": "Ordina",
+  "sortNewest": "Più recenti",
+  "sortName": "Nome",
+  "filterTooltip": "Filtra per luogo",
+  "filterAllPlaces": "Tutti i luoghi",
+  "filterNoPlace": "Senza luogo"
 }

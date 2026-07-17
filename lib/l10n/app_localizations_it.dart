@@ -452,4 +452,31 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get hubPlace => 'Luogo';
+
+  @override
+  String get searchHint => 'Cerca';
+
+  @override
+  String get searchClear => 'Cancella';
+
+  @override
+  String get searchNoResults => 'Nessun risultato';
+
+  @override
+  String get sortTooltip => 'Ordina';
+
+  @override
+  String get sortNewest => 'Più recenti';
+
+  @override
+  String get sortName => 'Nome';
+
+  @override
+  String get filterTooltip => 'Filtra per luogo';
+
+  @override
+  String get filterAllPlaces => 'Tutti i luoghi';
+
+  @override
+  String get filterNoPlace => 'Senza luogo';
 }
