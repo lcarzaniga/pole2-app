@@ -98,6 +98,8 @@ class _Dossier extends ConsumerWidget {
                   style: theme.textTheme.bodyMedium
                       ?.copyWith(color: scheme.onSurfaceVariant)),
               _NextGlance(id: id),
+              const SizedBox(height: AppSpacing.lg),
+              _ActionHub(possession: possession),
               const SizedBox(height: AppSpacing.xl),
               _PlaceCard(possession: possession),
               const SizedBox(height: AppSpacing.md),
@@ -154,6 +156,104 @@ class _NextGlance extends ConsumerWidget {
   }
 }
 
+/// The object detail's action hub: the most frequent things you do to a thing,
+/// kept visible in one calm row so none hide behind a menu and each is a single
+/// tap. The sections below are where those things are then seen.
+class _ActionHub extends ConsumerWidget {
+  const _ActionHub({required this.possession});
+
+  final Possession possession;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final id = possession.id;
+    return Row(
+      children: [
+        _HubAction(
+          icon: Icons.add_a_photo_outlined,
+          label: l10n.hubPhoto,
+          onTap: () => _pickPhoto(context, ref, id),
+        ),
+        _HubAction(
+          icon: Icons.sticky_note_2_outlined,
+          label: l10n.hubNote,
+          onTap: () =>
+              context.pushNamed(Routes.noteName, pathParameters: {'id': id}),
+        ),
+        _HubAction(
+          icon: Icons.description_outlined,
+          label: l10n.hubDocument,
+          onTap: () => _addDocument(context, ref, id),
+        ),
+        _HubAction(
+          icon: Icons.event_outlined,
+          label: l10n.hubDate,
+          onTap: () =>
+              context.pushNamed(Routes.reminderName, pathParameters: {'id': id}),
+        ),
+        _HubAction(
+          icon: Icons.place_outlined,
+          label: l10n.hubPlace,
+          onTap: () => _pickPlace(context, ref, possession),
+        ),
+      ],
+    );
+  }
+}
+
+class _HubAction extends StatelessWidget {
+  const _HubAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Expanded(
+      child: Semantics(
+        button: true,
+        label: label,
+        child: InkWell(
+          borderRadius: AppRadii.borderMd,
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+            child: Column(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: scheme.surfaceContainerHigh,
+                    shape: BoxShape.circle,
+                  ),
+                  child:
+                      Icon(icon, size: AppIconSize.md, color: scheme.primary),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall
+                        ?.copyWith(color: scheme.onSurfaceVariant)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// The Details section — now the acquisition, in human words.
 class _DetailsCard extends ConsumerWidget {
   const _DetailsCard({required this.id});
@@ -205,17 +305,6 @@ class _PlaceCard extends ConsumerWidget {
 
   final Possession possession;
 
-  Future<void> _openPicker(BuildContext context, WidgetRef ref) async {
-    final choice = await showPlacePicker(
-      context,
-      currentPlaceId: possession.placeId,
-    );
-    if (choice == null) return;
-    await ref
-        .read(possessionsDaoProvider)
-        .setPlace(possession.id, choice.placeId);
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -230,7 +319,7 @@ class _PlaceCard extends ConsumerWidget {
         title: l10n.noPlace,
         subtitle: l10n.placeAssignHint,
         trailing: Icons.edit_outlined,
-        onTap: () => _openPicker(context, ref),
+        onTap: () => _pickPlace(context, ref, possession),
       );
     }
 
@@ -275,7 +364,7 @@ class _PlaceCard extends ConsumerWidget {
                 iconSize: AppIconSize.md,
                 color: scheme.onSurfaceVariant,
                 tooltip: l10n.placeEditTooltip,
-                onPressed: () => _openPicker(context, ref),
+                onPressed: () => _pickPlace(context, ref, possession),
               ),
             ],
           ),
@@ -307,19 +396,7 @@ class _HistoryCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(l10n.historyTitle, style: theme.textTheme.titleMedium),
-              ),
-              TextButton.icon(
-                onPressed: () => context.pushNamed(Routes.reminderName,
-                    pathParameters: {'id': id}),
-                icon: const Icon(Icons.add, size: AppIconSize.sm),
-                label: Text(l10n.addDate),
-              ),
-            ],
-          ),
+          Text(l10n.historyTitle, style: theme.textTheme.titleMedium),
           if (events.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
@@ -598,19 +675,7 @@ class _DocumentsCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(l10n.documentsTitle,
-                    style: theme.textTheme.titleMedium),
-              ),
-              TextButton.icon(
-                onPressed: () => _addDocument(context, ref, id),
-                icon: const Icon(Icons.add, size: AppIconSize.sm),
-                label: Text(l10n.documentAdd),
-              ),
-            ],
-          ),
+          Text(l10n.documentsTitle, style: theme.textTheme.titleMedium),
           if (docs.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
@@ -797,6 +862,19 @@ Future<void> _pickPhoto(
         mimeType: photo.mimeType,
         byteSize: photo.byteSize,
       );
+}
+
+/// Assign or change a thing's place via the picker. Shared by the action hub
+/// and the place card, so "assign a place" behaves identically wherever it is
+/// reached.
+Future<void> _pickPlace(
+    BuildContext context, WidgetRef ref, Possession possession) async {
+  final choice =
+      await showPlacePicker(context, currentPlaceId: possession.placeId);
+  if (choice == null) return;
+  await ref
+      .read(possessionsDaoProvider)
+      .setPlace(possession.id, choice.placeId);
 }
 
 Future<void> _addDocument(

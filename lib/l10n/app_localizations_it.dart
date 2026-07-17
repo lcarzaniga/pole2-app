@@ -437,4 +437,19 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get documentAddFailed => 'Nulla è andato perso. Riprova quando vuoi.';
+
+  @override
+  String get hubPhoto => 'Foto';
+
+  @override
+  String get hubNote => 'Nota';
+
+  @override
+  String get hubDocument => 'Documento';
+
+  @override
+  String get hubDate => 'Data';
+
+  @override
+  String get hubPlace => 'Luogo';
 }

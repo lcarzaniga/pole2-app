@@ -847,6 +847,36 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Nulla è andato perso. Riprova quando vuoi.'**
   String get documentAddFailed;
+
+  /// No description provided for @hubPhoto.
+  ///
+  /// In it, this message translates to:
+  /// **'Foto'**
+  String get hubPhoto;
+
+  /// No description provided for @hubNote.
+  ///
+  /// In it, this message translates to:
+  /// **'Nota'**
+  String get hubNote;
+
+  /// No description provided for @hubDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Documento'**
+  String get hubDocument;
+
+  /// No description provided for @hubDate.
+  ///
+  /// In it, this message translates to:
+  /// **'Data'**
+  String get hubDate;
+
+  /// No description provided for @hubPlace.
+  ///
+  /// In it, this message translates to:
+  /// **'Luogo'**
+  String get hubPlace;
 }
 
 class _AppLocalizationsDelegate

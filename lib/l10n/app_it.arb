@@ -179,5 +179,10 @@
   "addDocument": "Aggiungi un documento",
   "documentAdd": "Aggiungi",
   "documentRemovedSnack": "Documento rimosso.",
-  "documentAddFailed": "Nulla è andato perso. Riprova quando vuoi."
+  "documentAddFailed": "Nulla è andato perso. Riprova quando vuoi.",
+  "hubPhoto": "Foto",
+  "hubNote": "Nota",
+  "hubDocument": "Documento",
+  "hubDate": "Data",
+  "hubPlace": "Luogo"
 }
