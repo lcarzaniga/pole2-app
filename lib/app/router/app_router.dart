@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../features/archive/presentation/archive_screen.dart';
+import '../../features/backup/presentation/backup_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/places/presentation/place_contents_screen.dart';
 import '../../features/places/presentation/place_review_screen.dart';
@@ -47,6 +48,11 @@ GoRouter appRouter(Ref ref) {
         path: Routes.placesPath,
         name: Routes.placesName,
         builder: (context, state) => const PlacesBrowserScreen(),
+      ),
+      GoRoute(
+        path: Routes.backupPath,
+        name: Routes.backupName,
+        builder: (context, state) => const BackupScreen(),
       ),
       GoRoute(
         path: Routes.newPossessionPath,

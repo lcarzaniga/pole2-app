@@ -373,5 +373,38 @@
   "reacquireDateLabel": "Quando è tornato",
   "reacquiredTimeline": "Tornato tra i tuoi oggetti",
   "reacquiredSnack": "Bentornato tra le tue cose.",
-  "reacquireBeforeTransferError": "Non può essere prima di quando l'hai dato."
+  "reacquireBeforeTransferError": "Non può essere prima di quando l'hai dato.",
+
+  "backupMenu": "Backup e ripristino",
+  "backupTitle": "Backup e ripristino",
+  "backupIntro": "I tuoi dati restano sul dispositivo. Puoi creare un file che contiene il database e le foto di Pole².",
+  "backupReassure": "Il backup resta a te: nessun cloud, nessun account. Custodiscilo dove preferisci.",
+  "backupSectionTitle": "Backup",
+  "backupCreate": "Crea backup",
+  "backupEncryptToggle": "Proteggi con password (consigliato)",
+  "backupPasswordLabel": "Password",
+  "backupPasswordConfirmLabel": "Conferma password",
+  "backupPasswordWarning": "Questa password protegge il backup. Se la dimentichi, non sarà possibile recuperarlo.",
+  "backupPasswordTooShort": "Usa almeno 10 caratteri.",
+  "backupPasswordMismatch": "Le password non coincidono.",
+  "backupPlaintextToggle": "Crea un backup senza password",
+  "backupPlaintextWarning": "Questo backup non è protetto: chi ha il file può vederne il contenuto.",
+  "backupWorking": "Sto preparando il backup…",
+  "backupSaving": "Sto salvando…",
+  "backupSuccess": "Backup creato. Ora è al sicuro dove hai scelto di conservarlo.",
+  "backupFailure": "Non siamo riusciti a creare il backup. I tuoi dati sono rimasti al loro posto.",
+  "backupIncomplete": "Manca la foto di «{object}». Aggiungila o rimuovila, poi riprova.",
+  "@backupIncomplete": {
+    "placeholders": { "object": { "type": "String" } }
+  },
+  "backupLowSpace": "Spazio insufficiente per creare il backup.",
+  "backupDormantMissingWarning": "Alcune foto non più presenti non sono state incluse.",
+  "backupLastDate": "Ultimo backup: {date}",
+  "@backupLastDate": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "backupNever": "Nessun backup ancora.",
+  "restoreSectionTitle": "Ripristino",
+  "restoreAction": "Ripristina da backup",
+  "restoreComingSoon": "Disponibile nel prossimo aggiornamento."
 }

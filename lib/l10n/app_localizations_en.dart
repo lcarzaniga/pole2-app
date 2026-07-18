@@ -930,4 +930,93 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reacquireBeforeTransferError =>
       'Non può essere prima di quando l\'hai dato.';
+
+  @override
+  String get backupMenu => 'Backup e ripristino';
+
+  @override
+  String get backupTitle => 'Backup e ripristino';
+
+  @override
+  String get backupIntro =>
+      'I tuoi dati restano sul dispositivo. Puoi creare un file che contiene il database e le foto di Pole².';
+
+  @override
+  String get backupReassure =>
+      'Il backup resta a te: nessun cloud, nessun account. Custodiscilo dove preferisci.';
+
+  @override
+  String get backupSectionTitle => 'Backup';
+
+  @override
+  String get backupCreate => 'Crea backup';
+
+  @override
+  String get backupEncryptToggle => 'Proteggi con password (consigliato)';
+
+  @override
+  String get backupPasswordLabel => 'Password';
+
+  @override
+  String get backupPasswordConfirmLabel => 'Conferma password';
+
+  @override
+  String get backupPasswordWarning =>
+      'Questa password protegge il backup. Se la dimentichi, non sarà possibile recuperarlo.';
+
+  @override
+  String get backupPasswordTooShort => 'Usa almeno 10 caratteri.';
+
+  @override
+  String get backupPasswordMismatch => 'Le password non coincidono.';
+
+  @override
+  String get backupPlaintextToggle => 'Crea un backup senza password';
+
+  @override
+  String get backupPlaintextWarning =>
+      'Questo backup non è protetto: chi ha il file può vederne il contenuto.';
+
+  @override
+  String get backupWorking => 'Sto preparando il backup…';
+
+  @override
+  String get backupSaving => 'Sto salvando…';
+
+  @override
+  String get backupSuccess =>
+      'Backup creato. Ora è al sicuro dove hai scelto di conservarlo.';
+
+  @override
+  String get backupFailure =>
+      'Non siamo riusciti a creare il backup. I tuoi dati sono rimasti al loro posto.';
+
+  @override
+  String backupIncomplete(String object) {
+    return 'Manca la foto di «$object». Aggiungila o rimuovila, poi riprova.';
+  }
+
+  @override
+  String get backupLowSpace => 'Spazio insufficiente per creare il backup.';
+
+  @override
+  String get backupDormantMissingWarning =>
+      'Alcune foto non più presenti non sono state incluse.';
+
+  @override
+  String backupLastDate(String date) {
+    return 'Ultimo backup: $date';
+  }
+
+  @override
+  String get backupNever => 'Nessun backup ancora.';
+
+  @override
+  String get restoreSectionTitle => 'Ripristino';
+
+  @override
+  String get restoreAction => 'Ripristina da backup';
+
+  @override
+  String get restoreComingSoon => 'Disponibile nel prossimo aggiornamento.';
 }

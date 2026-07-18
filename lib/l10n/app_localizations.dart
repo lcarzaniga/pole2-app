@@ -1669,6 +1669,162 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Non può essere prima di quando l\'hai dato.'**
   String get reacquireBeforeTransferError;
+
+  /// No description provided for @backupMenu.
+  ///
+  /// In it, this message translates to:
+  /// **'Backup e ripristino'**
+  String get backupMenu;
+
+  /// No description provided for @backupTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Backup e ripristino'**
+  String get backupTitle;
+
+  /// No description provided for @backupIntro.
+  ///
+  /// In it, this message translates to:
+  /// **'I tuoi dati restano sul dispositivo. Puoi creare un file che contiene il database e le foto di Pole².'**
+  String get backupIntro;
+
+  /// No description provided for @backupReassure.
+  ///
+  /// In it, this message translates to:
+  /// **'Il backup resta a te: nessun cloud, nessun account. Custodiscilo dove preferisci.'**
+  String get backupReassure;
+
+  /// No description provided for @backupSectionTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Backup'**
+  String get backupSectionTitle;
+
+  /// No description provided for @backupCreate.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea backup'**
+  String get backupCreate;
+
+  /// No description provided for @backupEncryptToggle.
+  ///
+  /// In it, this message translates to:
+  /// **'Proteggi con password (consigliato)'**
+  String get backupEncryptToggle;
+
+  /// No description provided for @backupPasswordLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Password'**
+  String get backupPasswordLabel;
+
+  /// No description provided for @backupPasswordConfirmLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Conferma password'**
+  String get backupPasswordConfirmLabel;
+
+  /// No description provided for @backupPasswordWarning.
+  ///
+  /// In it, this message translates to:
+  /// **'Questa password protegge il backup. Se la dimentichi, non sarà possibile recuperarlo.'**
+  String get backupPasswordWarning;
+
+  /// No description provided for @backupPasswordTooShort.
+  ///
+  /// In it, this message translates to:
+  /// **'Usa almeno 10 caratteri.'**
+  String get backupPasswordTooShort;
+
+  /// No description provided for @backupPasswordMismatch.
+  ///
+  /// In it, this message translates to:
+  /// **'Le password non coincidono.'**
+  String get backupPasswordMismatch;
+
+  /// No description provided for @backupPlaintextToggle.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea un backup senza password'**
+  String get backupPlaintextToggle;
+
+  /// No description provided for @backupPlaintextWarning.
+  ///
+  /// In it, this message translates to:
+  /// **'Questo backup non è protetto: chi ha il file può vederne il contenuto.'**
+  String get backupPlaintextWarning;
+
+  /// No description provided for @backupWorking.
+  ///
+  /// In it, this message translates to:
+  /// **'Sto preparando il backup…'**
+  String get backupWorking;
+
+  /// No description provided for @backupSaving.
+  ///
+  /// In it, this message translates to:
+  /// **'Sto salvando…'**
+  String get backupSaving;
+
+  /// No description provided for @backupSuccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Backup creato. Ora è al sicuro dove hai scelto di conservarlo.'**
+  String get backupSuccess;
+
+  /// No description provided for @backupFailure.
+  ///
+  /// In it, this message translates to:
+  /// **'Non siamo riusciti a creare il backup. I tuoi dati sono rimasti al loro posto.'**
+  String get backupFailure;
+
+  /// No description provided for @backupIncomplete.
+  ///
+  /// In it, this message translates to:
+  /// **'Manca la foto di «{object}». Aggiungila o rimuovila, poi riprova.'**
+  String backupIncomplete(String object);
+
+  /// No description provided for @backupLowSpace.
+  ///
+  /// In it, this message translates to:
+  /// **'Spazio insufficiente per creare il backup.'**
+  String get backupLowSpace;
+
+  /// No description provided for @backupDormantMissingWarning.
+  ///
+  /// In it, this message translates to:
+  /// **'Alcune foto non più presenti non sono state incluse.'**
+  String get backupDormantMissingWarning;
+
+  /// No description provided for @backupLastDate.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultimo backup: {date}'**
+  String backupLastDate(String date);
+
+  /// No description provided for @backupNever.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun backup ancora.'**
+  String get backupNever;
+
+  /// No description provided for @restoreSectionTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristino'**
+  String get restoreSectionTitle;
+
+  /// No description provided for @restoreAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristina da backup'**
+  String get restoreAction;
+
+  /// No description provided for @restoreComingSoon.
+  ///
+  /// In it, this message translates to:
+  /// **'Disponibile nel prossimo aggiornamento.'**
+  String get restoreComingSoon;
 }
 
 class _AppLocalizationsDelegate

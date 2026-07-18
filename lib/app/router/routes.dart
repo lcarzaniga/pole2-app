@@ -19,6 +19,10 @@ abstract final class Routes {
   static const String placesName = 'places';
   static const String placesPath = '/places';
 
+  /// Backup e ripristino.
+  static const String backupName = 'backup';
+  static const String backupPath = '/backup';
+
   /// Create a new possession.
   static const String newPossessionName = 'new-possession';
   static const String newPossessionPath = '/possession/new';

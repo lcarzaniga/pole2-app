@@ -56,6 +56,9 @@ dependencies:
   http: ^1.2.2
   crypto: ^3.0.5
   package_info_plus: ^8.1.1
+  archive: ^4.0.9
+  cryptography: ^2.9.0
+  sqlite3: ^3.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -70,7 +73,6 @@ dev_dependencies:
   riverpod_generator: ^4.0.4
   drift_dev: ^2.34.0
   freezed: ^3.2.6-dev.1
-  sqlite3: ^3.4.0
   # Generates Android adaptive/legacy launcher icons + web favicon from the
   # source PNGs in assets/branding/. Dev-only; nothing ships at runtime.
   flutter_launcher_icons: ^0.14.4
