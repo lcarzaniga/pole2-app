@@ -864,4 +864,70 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get placeParentGone => 'Quel luogo non c\'è più.';
+
+  @override
+  String get entrustToSomeone => 'Affida a qualcuno';
+
+  @override
+  String get giveToSomeone => 'Dai a qualcuno';
+
+  @override
+  String get giveEditTitle => 'Dai a qualcuno';
+
+  @override
+  String get giveRecipientLabel => 'A chi lo dai?';
+
+  @override
+  String get giveRecipientChoose => 'Scegli una persona';
+
+  @override
+  String get giveDateLabel => 'Quando';
+
+  @override
+  String get giveNoteLabel => 'Nota (facoltativa)';
+
+  @override
+  String get markAsGiven => 'Segna come dato';
+
+  @override
+  String get giveEffectHint =>
+      'Uscirà dalla Home e dal suo luogo, ma resterà al sicuro in Archivio.';
+
+  @override
+  String givenToPerson(String name) {
+    return 'Dato a $name';
+  }
+
+  @override
+  String givenOn(String date) {
+    return 'Dato il $date';
+  }
+
+  @override
+  String get givenSavedSnack => 'Dato. È annotato.';
+
+  @override
+  String get transferDateFutureError => 'La data non può essere nel futuro.';
+
+  @override
+  String get resolveLoanBeforeGive => 'Segna prima l\'oggetto come restituito.';
+
+  @override
+  String get reacquireAction => 'Torna tra i miei oggetti';
+
+  @override
+  String get reacquireTitle => 'Torna tra i miei oggetti';
+
+  @override
+  String get reacquireDateLabel => 'Quando è tornato';
+
+  @override
+  String get reacquiredTimeline => 'Tornato tra i tuoi oggetti';
+
+  @override
+  String get reacquiredSnack => 'Bentornato tra le tue cose.';
+
+  @override
+  String get reacquireBeforeTransferError =>
+      'Non può essere prima di quando l\'hai dato.';
 }

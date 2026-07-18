@@ -23,6 +23,7 @@ import '../application/event_providers.dart';
 import '../application/gallery_order.dart';
 import '../application/possession_providers.dart';
 import 'lend_editor_screen.dart';
+import 'reacquire_sheet.dart';
 import 'return_sheet.dart';
 import 'widgets/cover_area.dart';
 import 'widgets/custody_card.dart';
@@ -162,9 +163,24 @@ class _StatusBanner extends ConsumerWidget {
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
     final removed = possession.deletedAt != null;
+    // A given (transferred) thing that isn't removed gets its own banner: who
+    // has it, when, and a *distinct* reacquisition action (not generic restore).
+    final given = !removed && possession.status == PossessionStatus.transferred;
+    final transfer = given
+        ? ref.watch(activeTransferProvider(possession.id)).value
+        : null;
+    final recipient = transfer?.partyId == null
+        ? null
+        : ref.watch(partyProvider(transfer!.partyId!)).value;
+
     final label = removed
         ? l10n.removedBannerTitle
+        : given
+        ? l10n.givenToPerson(recipient?.name ?? '—')
         : lifecycleLabel(l10n, possession.status);
+    final subline = given && transfer != null
+        ? l10n.givenOn(formatDate(transfer.at, l10n.localeName))
+        : l10n.inactiveReadOnlyHint;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -178,7 +194,9 @@ class _StatusBanner extends ConsumerWidget {
           Row(
             children: [
               Icon(
-                Icons.inventory_2_outlined,
+                given
+                    ? Icons.card_giftcard_outlined
+                    : Icons.inventory_2_outlined,
                 size: AppIconSize.md,
                 color: scheme.onSurfaceVariant,
               ),
@@ -190,7 +208,7 @@ class _StatusBanner extends ConsumerWidget {
                     Text(label, style: theme.textTheme.titleMedium),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
-                      l10n.inactiveReadOnlyHint,
+                      subline,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
@@ -203,11 +221,23 @@ class _StatusBanner extends ConsumerWidget {
           const SizedBox(height: AppSpacing.md),
           Align(
             alignment: Alignment.centerLeft,
-            child: FilledButton.tonalIcon(
-              onPressed: () => _restore(context, ref, removed),
-              icon: const Icon(Icons.restore),
-              label: Text(l10n.archiveRestore),
-            ),
+            child: given
+                ? FilledButton.tonalIcon(
+                    onPressed: transfer == null
+                        ? null
+                        : () => showReacquireSheet(
+                            context,
+                            possessionId: possession.id,
+                            transfer: transfer,
+                          ),
+                    icon: const Icon(Icons.keyboard_return),
+                    label: Text(l10n.reacquireAction),
+                  )
+                : FilledButton.tonalIcon(
+                    onPressed: () => _restore(context, ref, removed),
+                    icon: const Icon(Icons.restore),
+                    label: Text(l10n.archiveRestore),
+                  ),
           ),
         ],
       ),
@@ -446,12 +476,9 @@ class _Custody extends ConsumerWidget {
     if (loan == null) {
       return _TapCard(
         icon: Icons.people_alt_outlined,
-        title: l10n.lendToSomeone,
+        title: l10n.entrustToSomeone,
         subtitle: l10n.borrowerChoose,
-        onTap: () => context.pushNamed(
-          Routes.lendName,
-          pathParameters: {'id': possession.id},
-        ),
+        onTap: () => _entrust(context, possession.id),
       );
     }
 
@@ -679,6 +706,40 @@ class _EventRow extends ConsumerWidget {
     } else if (event.kind == EventKind.returned) {
       icon = Icons.assignment_turned_in_outlined;
       title = l10n.returnedOn(formatDate(event.at, l10n.localeName));
+    } else if (event.kind == EventKind.transfer) {
+      icon = Icons.card_giftcard_outlined;
+      final recipient = event.partyId == null
+          ? null
+          : ref.watch(partyProvider(event.partyId!)).value;
+      title = l10n.givenToPerson(recipient?.name ?? '—');
+      final note = event.notes;
+      whenLine = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.givenOn(formatDate(event.at, l10n.localeName)),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
+          if (note != null && note.isNotEmpty)
+            Text(
+              note,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+        ],
+      );
+    } else if (event.kind == EventKind.reacquired) {
+      icon = Icons.keyboard_return;
+      title = l10n.reacquiredTimeline;
+      whenLine = Text(
+        l10n.onDate(formatDate(event.at, l10n.localeName)),
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: scheme.onSurfaceVariant,
+        ),
+      );
     } else if (event.kind == EventKind.note) {
       icon = Icons.sticky_note_2_outlined;
       // The note's body is the headline; its title (if any) is rarely used.
@@ -1201,6 +1262,40 @@ Future<void> _replaceCover(
         byteSize: photo.byteSize,
         asCover: true,
       );
+}
+
+/// "Affida a qualcuno": choose between lending (temporary) and giving
+/// (permanent) — kept out of the Foto·Nota·Data·Luogo hub. Only offered for an
+/// active, non-lent thing (the custody card shows the loan state otherwise).
+Future<void> _entrust(BuildContext context, String id) async {
+  final l10n = AppLocalizations.of(context);
+  final action = await showModalBottomSheet<String>(
+    context: context,
+    showDragHandle: true,
+    builder: (_) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.people_alt_outlined),
+            title: Text(l10n.lendToSomeone),
+            onTap: () => Navigator.of(context).pop('lend'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.card_giftcard_outlined),
+            title: Text(l10n.giveToSomeone),
+            onTap: () => Navigator.of(context).pop('give'),
+          ),
+        ],
+      ),
+    ),
+  );
+  if (!context.mounted || action == null) return;
+  if (action == 'lend') {
+    context.pushNamed(Routes.lendName, pathParameters: {'id': id});
+  } else if (action == 'give') {
+    context.pushNamed(Routes.giveName, pathParameters: {'id': id});
+  }
 }
 
 /// Assign or change a thing's place via the picker. Shared by the action hub

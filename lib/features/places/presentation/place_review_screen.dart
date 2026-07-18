@@ -161,8 +161,8 @@ class _PlaceReviewScreenState extends ConsumerState<PlaceReviewScreen> {
   }
 
   /// Secondary "Altre opzioni" — keeps the four primary actions uncluttered.
-  /// Currently offers lending; lending clears the place, so the item leaves this
-  /// walk and is marked handled, advancing safely to the next one.
+  /// Offers lending and giving; both clear the place, so the item leaves this
+  /// walk and is marked handled only on success, advancing safely by one.
   Future<void> _more(Possession p) async {
     if (_busy) return;
     final l10n = AppLocalizations.of(context);
@@ -178,22 +178,29 @@ class _PlaceReviewScreenState extends ConsumerState<PlaceReviewScreen> {
               title: Text(l10n.lendToSomeone),
               onTap: () => Navigator.of(context).pop('lend'),
             ),
+            ListTile(
+              leading: const Icon(Icons.card_giftcard_outlined),
+              title: Text(l10n.giveToSomeone),
+              onTap: () => Navigator.of(context).pop('give'),
+            ),
           ],
         ),
       ),
     );
-    if (action == 'lend') await _lend(p);
+    if (action == 'lend') await _entrustVia(p, Routes.lendName);
+    if (action == 'give') await _entrustVia(p, Routes.giveName);
   }
 
-  Future<void> _lend(Possession p) async {
+  /// Push a lend/give editor; only a successful save (pop `true`) marks the item
+  /// handled and advances. Cancel/failure changes nothing and does not advance.
+  Future<void> _entrustVia(Possession p, String routeName) async {
     if (_busy || !mounted) return;
     setState(() => _busy = true);
     try {
       final ok = await context.pushNamed<bool>(
-        Routes.lendName,
+        routeName,
         pathParameters: {'id': p.id},
       );
-      // Only a successful lend marks handled and advances; cancel changes nothing.
       if (ok == true && mounted) setState(() => _session.markHandled(p.id));
     } finally {
       if (mounted) setState(() => _busy = false);

@@ -462,4 +462,142 @@ class EventsDao extends DatabaseAccessor<AppDatabase> with _$EventsDaoMixin {
     }
     return true;
   }
+
+  // ---- Giving / permanent transfer (M5.5) ----
+
+  /// The current transfer for a possession — the latest non-deleted `transfer`
+  /// event. Resolves the recipient and date for the "Dato a …" banner/timeline.
+  Stream<PossessionEvent?> watchTransfer(String possessionId) {
+    return (select(events)
+          ..where(
+            (t) =>
+                t.possessionId.equals(possessionId) &
+                t.kind.equalsValue(EventKind.transfer) &
+                t.deletedAt.isNull(),
+          )
+          ..orderBy([(t) => OrderingTerm.desc(t.at)])
+          ..limit(1))
+        .watchSingleOrNull();
+  }
+
+  /// Permanently gives a possession to a person, transactionally: create/reuse
+  /// the person, record the transfer (remembering the exact current place as
+  /// `originPlaceId`), set the status to `transferred`, and clear the place so it
+  /// leaves Home and Places. Returns the transfer event, or null if the give is
+  /// not allowed (an active loan, or the thing isn't active & non-deleted) — so
+  /// repeated taps and stale state can never produce a bad transfer.
+  Future<PossessionEvent?> give({
+    required String possessionId,
+    required String personName,
+    String? partyId,
+    required DateTime transferredAt,
+    String? note,
+  }) {
+    return transaction(() async {
+      final poss = await (select(
+        possessions,
+      )..where((t) => t.id.equals(possessionId))).getSingleOrNull();
+      // Must be an active, non-deleted, not-already-given thing.
+      if (poss == null ||
+          poss.deletedAt != null ||
+          poss.status != PossessionStatus.active) {
+        return null;
+      }
+      // An actively lent thing must be returned before it can be given.
+      if (await _activeLoan(possessionId) != null) return null;
+
+      final recipientId = partyId ?? await findOrCreatePerson(personName);
+      final now = DateTime.now();
+      final event = await into(events).insertReturning(
+        EventsCompanion.insert(
+          id: _uuid.v4(),
+          possessionId: possessionId,
+          kind: EventKind.transfer,
+          at: transferredAt,
+          partyId: Value(recipientId),
+          originPlaceId: Value(poss.placeId),
+          notes: Value(note),
+          status: const Value(EventStatus.done),
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+      await (update(
+        possessions,
+      )..where((t) => t.id.equals(possessionId))).write(
+        PossessionsCompanion(
+          status: const Value(PossessionStatus.transferred),
+          placeId: const Value(null),
+          updatedAt: Value(now),
+        ),
+      );
+      return event;
+    });
+  }
+
+  /// Immediate, fully atomic Undo of [give]: neutralize *only* the just-created
+  /// transfer event (soft-delete), set the status back to active, and restore the
+  /// exact origin place only if it is still reachable (else no place). Every
+  /// other event/photo is untouched; the recipient party is never changed.
+  Future<void> undoGive({
+    required String possessionId,
+    required String transferEventId,
+  }) {
+    return transaction(() async {
+      final transfer = await (select(
+        events,
+      )..where((t) => t.id.equals(transferEventId))).getSingleOrNull();
+      final now = DateTime.now();
+      await (update(events)..where((t) => t.id.equals(transferEventId))).write(
+        EventsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+      );
+      final restored = (await _placeReachable(transfer?.originPlaceId))
+          ? transfer?.originPlaceId
+          : null;
+      await (update(
+        possessions,
+      )..where((t) => t.id.equals(possessionId))).write(
+        PossessionsCompanion(
+          status: const Value(PossessionStatus.active),
+          placeId: Value(restored),
+          updatedAt: Value(now),
+        ),
+      );
+    });
+  }
+
+  /// Reacquire a given possession ("Torna tra i miei oggetti"): set it active
+  /// again, put it in the chosen place (kept only if reachable, else none), and
+  /// record a distinct `reacquired` history event — **preserving** the original
+  /// transfer event, so the full truth (given on…, back on…) stays readable.
+  Future<void> reacquire({
+    required String possessionId,
+    required DateTime reacquiredAt,
+    String? placeId,
+  }) {
+    return transaction(() async {
+      final now = DateTime.now();
+      final restored = (await _placeReachable(placeId)) ? placeId : null;
+      await (update(
+        possessions,
+      )..where((t) => t.id.equals(possessionId))).write(
+        PossessionsCompanion(
+          status: const Value(PossessionStatus.active),
+          placeId: Value(restored),
+          updatedAt: Value(now),
+        ),
+      );
+      await into(events).insert(
+        EventsCompanion.insert(
+          id: _uuid.v4(),
+          possessionId: possessionId,
+          kind: EventKind.reacquired,
+          at: reacquiredAt,
+          status: const Value(EventStatus.done),
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+    });
+  }
 }

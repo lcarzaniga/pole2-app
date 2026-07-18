@@ -1549,6 +1549,126 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Quel luogo non c\'è più.'**
   String get placeParentGone;
+
+  /// No description provided for @entrustToSomeone.
+  ///
+  /// In it, this message translates to:
+  /// **'Affida a qualcuno'**
+  String get entrustToSomeone;
+
+  /// No description provided for @giveToSomeone.
+  ///
+  /// In it, this message translates to:
+  /// **'Dai a qualcuno'**
+  String get giveToSomeone;
+
+  /// No description provided for @giveEditTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Dai a qualcuno'**
+  String get giveEditTitle;
+
+  /// No description provided for @giveRecipientLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'A chi lo dai?'**
+  String get giveRecipientLabel;
+
+  /// No description provided for @giveRecipientChoose.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli una persona'**
+  String get giveRecipientChoose;
+
+  /// No description provided for @giveDateLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Quando'**
+  String get giveDateLabel;
+
+  /// No description provided for @giveNoteLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Nota (facoltativa)'**
+  String get giveNoteLabel;
+
+  /// No description provided for @markAsGiven.
+  ///
+  /// In it, this message translates to:
+  /// **'Segna come dato'**
+  String get markAsGiven;
+
+  /// No description provided for @giveEffectHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Uscirà dalla Home e dal suo luogo, ma resterà al sicuro in Archivio.'**
+  String get giveEffectHint;
+
+  /// No description provided for @givenToPerson.
+  ///
+  /// In it, this message translates to:
+  /// **'Dato a {name}'**
+  String givenToPerson(String name);
+
+  /// No description provided for @givenOn.
+  ///
+  /// In it, this message translates to:
+  /// **'Dato il {date}'**
+  String givenOn(String date);
+
+  /// No description provided for @givenSavedSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'Dato. È annotato.'**
+  String get givenSavedSnack;
+
+  /// No description provided for @transferDateFutureError.
+  ///
+  /// In it, this message translates to:
+  /// **'La data non può essere nel futuro.'**
+  String get transferDateFutureError;
+
+  /// No description provided for @resolveLoanBeforeGive.
+  ///
+  /// In it, this message translates to:
+  /// **'Segna prima l\'oggetto come restituito.'**
+  String get resolveLoanBeforeGive;
+
+  /// No description provided for @reacquireAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Torna tra i miei oggetti'**
+  String get reacquireAction;
+
+  /// No description provided for @reacquireTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Torna tra i miei oggetti'**
+  String get reacquireTitle;
+
+  /// No description provided for @reacquireDateLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Quando è tornato'**
+  String get reacquireDateLabel;
+
+  /// No description provided for @reacquiredTimeline.
+  ///
+  /// In it, this message translates to:
+  /// **'Tornato tra i tuoi oggetti'**
+  String get reacquiredTimeline;
+
+  /// No description provided for @reacquiredSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'Bentornato tra le tue cose.'**
+  String get reacquiredSnack;
+
+  /// No description provided for @reacquireBeforeTransferError.
+  ///
+  /// In it, this message translates to:
+  /// **'Non può essere prima di quando l\'hai dato.'**
+  String get reacquireBeforeTransferError;
 }
 
 class _AppLocalizationsDelegate

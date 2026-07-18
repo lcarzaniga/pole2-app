@@ -50,6 +50,10 @@ abstract final class Routes {
   static const String lendName = 'lend';
   static const String lendPath = '/possession/:id/lend';
 
+  /// Give editor (permanent transfer). Path param: `id`.
+  static const String giveName = 'give';
+  static const String givePath = '/possession/:id/give';
+
   /// A single place's contents (the possessions kept there). Path param: `id`.
   static const String placeName = 'place';
   static const String placePath = '/place/:id';

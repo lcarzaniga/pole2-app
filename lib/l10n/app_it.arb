@@ -346,5 +346,32 @@
   "placeRootLevel": "Luogo principale",
   "newRootPlaceHint": "Nuovo luogo principale",
   "placeNewChildTitle": "Nuovo sottoluogo",
-  "placeParentGone": "Quel luogo non c'è più."
+  "placeParentGone": "Quel luogo non c'è più.",
+
+  "entrustToSomeone": "Affida a qualcuno",
+  "giveToSomeone": "Dai a qualcuno",
+  "giveEditTitle": "Dai a qualcuno",
+  "giveRecipientLabel": "A chi lo dai?",
+  "giveRecipientChoose": "Scegli una persona",
+  "giveDateLabel": "Quando",
+  "giveNoteLabel": "Nota (facoltativa)",
+  "markAsGiven": "Segna come dato",
+  "giveEffectHint": "Uscirà dalla Home e dal suo luogo, ma resterà al sicuro in Archivio.",
+  "givenToPerson": "Dato a {name}",
+  "@givenToPerson": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "givenOn": "Dato il {date}",
+  "@givenOn": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "givenSavedSnack": "Dato. È annotato.",
+  "transferDateFutureError": "La data non può essere nel futuro.",
+  "resolveLoanBeforeGive": "Segna prima l'oggetto come restituito.",
+  "reacquireAction": "Torna tra i miei oggetti",
+  "reacquireTitle": "Torna tra i miei oggetti",
+  "reacquireDateLabel": "Quando è tornato",
+  "reacquiredTimeline": "Tornato tra i tuoi oggetti",
+  "reacquiredSnack": "Bentornato tra le tue cose.",
+  "reacquireBeforeTransferError": "Non può essere prima di quando l'hai dato."
 }

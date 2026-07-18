@@ -33,6 +33,9 @@ enum EventKind {
   // `returned` records the hand-back. Stored by name, so additive and safe.
   lent,
   returned,
+  // M5.5 permanent giving. `transfer` (with PossessionStatus.transferred) records
+  // giving an object away; `reacquired` records it coming back to the user.
+  reacquired,
   custom,
 }
 

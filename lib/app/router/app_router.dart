@@ -8,6 +8,7 @@ import '../../features/places/presentation/place_review_screen.dart';
 import '../../features/places/presentation/places_browser_screen.dart';
 import '../../features/possessions/presentation/acquisition_editor_screen.dart';
 import '../../features/possessions/presentation/create_possession_screen.dart';
+import '../../features/possessions/presentation/give_editor_screen.dart';
 import '../../features/possessions/presentation/lend_editor_screen.dart';
 import '../../features/possessions/presentation/note_editor_screen.dart';
 import '../../features/possessions/presentation/photo_viewer_screen.dart';
@@ -96,6 +97,12 @@ GoRouter appRouter(Ref ref) {
           possessionId: state.pathParameters['id']!,
           edit: state.extra as LendEditData?,
         ),
+      ),
+      GoRoute(
+        path: Routes.givePath,
+        name: Routes.giveName,
+        builder: (context, state) =>
+            GiveEditorScreen(possessionId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: Routes.placePath,

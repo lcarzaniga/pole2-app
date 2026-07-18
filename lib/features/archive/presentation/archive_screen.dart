@@ -11,7 +11,9 @@ import '../../../shared/brand/hex_background.dart';
 import '../../../shared/format.dart';
 import '../../places/presentation/widgets/possession_thumb.dart';
 import '../../possessions/application/archive_query.dart';
+import '../../possessions/application/event_providers.dart';
 import '../../possessions/application/possession_providers.dart';
+import '../../possessions/presentation/reacquire_sheet.dart';
 
 /// Archivio: a calm destination to consult and restore things that have left
 /// normal use — either **Conservati** (kept aside via lifecycle status) or
@@ -169,6 +171,25 @@ class _Section extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final dao = ref.read(possessionsDaoProvider);
+
+    // A *given* (transferred, non-removed) thing doesn't "restore" — it comes
+    // back to the user through the distinct reacquisition flow, which records the
+    // return honestly and lets the user choose where it goes.
+    if (!removed && p.status == PossessionStatus.transferred) {
+      final transfer = await ref
+          .read(eventsDaoProvider)
+          .watchTransfer(p.id)
+          .first;
+      if (transfer != null && context.mounted) {
+        await showReacquireSheet(
+          context,
+          possessionId: p.id,
+          transfer: transfer,
+        );
+      }
+      return;
+    }
+
     if (removed) {
       await dao.restoreRemoved(p.id);
     } else {
@@ -190,7 +211,7 @@ class _Section extends ConsumerWidget {
 /// One archive row: cover thumbnail, title, category, a calm lifecycle label,
 /// the last-updated date, and a restore control. Tapping the body opens the
 /// (read-only) detail. Not colour-only — the status is a text chip.
-class _ArchiveRow extends StatelessWidget {
+class _ArchiveRow extends ConsumerWidget {
   const _ArchiveRow({
     required this.possession,
     required this.removed,
@@ -204,7 +225,7 @@ class _ArchiveRow extends StatelessWidget {
   final VoidCallback onRestore;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
@@ -214,6 +235,15 @@ class _ArchiveRow extends StatelessWidget {
     final label = removed && possession.status == PossessionStatus.active
         ? l10n.removedStatusLabel
         : lifecycleLabel(l10n, possession.status);
+
+    // For a given thing, add the recipient as secondary context ("Dato a …").
+    final transferred = possession.status == PossessionStatus.transferred;
+    final transfer = transferred
+        ? ref.watch(activeTransferProvider(possession.id)).value
+        : null;
+    final recipient = transfer?.partyId == null
+        ? null
+        : ref.watch(partyProvider(transfer!.partyId!)).value;
 
     return Card(
       margin: EdgeInsets.zero,
@@ -236,6 +266,15 @@ class _ArchiveRow extends StatelessWidget {
               ),
             const SizedBox(height: AppSpacing.xs),
             _StatusChip(label: label),
+            if (transferred && recipient != null) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                l10n.givenToPerson(recipient.name),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+            ],
             const SizedBox(height: AppSpacing.xs),
             Text(
               l10n.archiveUpdatedOn(
@@ -248,8 +287,13 @@ class _ArchiveRow extends StatelessWidget {
           ],
         ),
         trailing: IconButton(
-          tooltip: l10n.archiveRestore,
-          icon: const Icon(Icons.restore),
+          // A given thing reacquires; everything else restores.
+          tooltip: transferred && !removed
+              ? l10n.reacquireAction
+              : l10n.archiveRestore,
+          icon: Icon(
+            transferred && !removed ? Icons.keyboard_return : Icons.restore,
+          ),
           onPressed: onRestore,
         ),
         isThreeLine: true,

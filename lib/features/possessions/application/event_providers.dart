@@ -43,3 +43,9 @@ final activeLoanProvider = StreamProvider.family<PossessionEvent?, String>(
 final peopleProvider = StreamProvider<List<Party>>(
   (ref) => ref.watch(eventsDaoProvider).watchPeople(),
 );
+
+/// The current transfer (a non-deleted `transfer` event) for a possession, or
+/// null — resolves the recipient and date for the "Dato a …" banner/timeline.
+final activeTransferProvider = StreamProvider.family<PossessionEvent?, String>(
+  (ref, id) => ref.watch(eventsDaoProvider).watchTransfer(id),
+);
