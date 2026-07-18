@@ -23,12 +23,57 @@ void main() {
     });
 
     test(
-      'creating under a missing/deleted parent falls back to root',
+      'null parent creates a root; a valid active parent creates a child',
+      () async {
+        final root = await places().create(name: 'Casa'); // null parent
+        expect((await place(root))!.parentId, isNull);
+        final child = await places().create(name: 'Camera', parentId: root);
+        expect((await place(child))!.parentId, root);
+      },
+    );
+
+    test(
+      'an explicitly missing parent is rejected and creates nothing',
+      () async {
+        final before = (await places().watchAll().first).length;
+        await expectLater(
+          places().create(name: 'Orfano', parentId: 'ghost'),
+          throwsA(isA<PlaceParentNotFoundException>()),
+        );
+        // Nothing created (not silently dropped to root).
+        expect((await places().watchAll().first).length, before);
+      },
+    );
+
+    test(
+      'an explicitly soft-deleted parent is rejected and creates nothing',
       () async {
         final ghost = await places().create(name: 'Ghost');
         await places().softDelete(ghost);
-        final child = await places().create(name: 'Orfano', parentId: ghost);
-        expect((await place(child))!.parentId, isNull);
+        final before =
+            (await places().watchAll().first).length; // excludes ghost
+        await expectLater(
+          places().create(name: 'Orfano', parentId: ghost),
+          throwsA(isA<PlaceParentNotFoundException>()),
+        );
+        expect((await places().watchAll().first).length, before);
+      },
+    );
+
+    test(
+      'a stale-parent failure never reports success (no navigation)',
+      () async {
+        // Mirrors the add-child coordinator: only mark success on a clean return.
+        final ghost = await places().create(name: 'Ghost');
+        await places().softDelete(ghost);
+        var reportedSuccess = false;
+        try {
+          await places().create(name: 'Orfano', parentId: ghost);
+          reportedSuccess = true; // would navigate / show "created"
+        } on PlaceParentNotFoundException {
+          // calm error path — no success, no navigation
+        }
+        expect(reportedSuccess, isFalse);
       },
     );
   });
@@ -192,7 +237,8 @@ void main() {
           possessionId: p.id,
           loanEventId: loan.id,
           returnedAt: DateTime(2026, 7, 5),
-          returnPlaceId: loan.originPlaceId, // the exact origin, as the sheet does
+          returnPlaceId:
+              loan.originPlaceId, // the exact origin, as the sheet does
         );
         // Returns to the exact box, now at its new path.
         expect((await db.possessionsDao.watchById(p.id).first)!.placeId, box);

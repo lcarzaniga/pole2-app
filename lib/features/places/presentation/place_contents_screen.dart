@@ -379,6 +379,8 @@ Future<void> _addChild(
   String parentId,
 ) async {
   final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  final dao = ref.read(placesDaoProvider);
   final controller = TextEditingController();
   final name = await showDialog<String>(
     context: context,
@@ -403,8 +405,20 @@ Future<void> _addChild(
     ),
   );
   controller.dispose();
-  if (name != null && name.isNotEmpty) {
-    await ref.read(placesDaoProvider).create(name: name, parentId: parentId);
+  if (name == null || name.isEmpty) return;
+  try {
+    await dao.create(name: name, parentId: parentId);
+  } on PlaceParentNotFoundException {
+    // The parent was removed while the dialog was open — never create at root
+    // behind the user's back; explain it calmly instead.
+    messenger
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(l10n.placeParentGone),
+        ),
+      );
   }
 }
 

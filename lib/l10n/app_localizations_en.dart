@@ -861,4 +861,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get placeNewChildTitle => 'Nuovo sottoluogo';
+
+  @override
+  String get placeParentGone => 'Quel luogo non c\'è più.';
 }

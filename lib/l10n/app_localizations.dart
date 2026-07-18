@@ -1543,6 +1543,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Nuovo sottoluogo'**
   String get placeNewChildTitle;
+
+  /// No description provided for @placeParentGone.
+  ///
+  /// In it, this message translates to:
+  /// **'Quel luogo non c\'è più.'**
+  String get placeParentGone;
 }
 
 class _AppLocalizationsDelegate

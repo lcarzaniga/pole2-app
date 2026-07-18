@@ -345,5 +345,6 @@
   },
   "placeRootLevel": "Luogo principale",
   "newRootPlaceHint": "Nuovo luogo principale",
-  "placeNewChildTitle": "Nuovo sottoluogo"
+  "placeNewChildTitle": "Nuovo sottoluogo",
+  "placeParentGone": "Quel luogo non c'è più."
 }

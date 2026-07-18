@@ -10,6 +10,19 @@ part 'places_dao.g.dart';
 /// than failing silently.
 enum PlaceMoveResult { moved, invalid, cycle, notFound }
 
+/// Thrown by [PlacesDao.create] when an **explicitly supplied** parent no longer
+/// exists (missing or soft-deleted) — e.g. a picker/screen acted on stale state.
+/// The child is not created; the UI catches this and shows a calm message rather
+/// than silently dropping the new place at the root.
+class PlaceParentNotFoundException implements Exception {
+  const PlaceParentNotFoundException(this.parentId);
+
+  final String parentId;
+
+  @override
+  String toString() => 'PlaceParentNotFoundException($parentId)';
+}
+
 /// Data access for [Places] — a user-defined **tree** of physical containment
 /// (M5.4). Reads are **reactive** (Drift `Stream`s). "No place" is simply a null
 /// `placeId` on a possession, never a placeholder row here; a root place is one
@@ -60,29 +73,30 @@ class PlacesDao extends DatabaseAccessor<AppDatabase> with _$PlacesDaoMixin {
   }
 
   /// Create a place; returns its new id. `name` is trimmed and required.
-  /// [parentId] null → a root place; otherwise a child of that place. A parent
-  /// that is missing or soft-deleted is rejected (the place is created at root),
-  /// so a child never dangles under a tombstone.
+  /// [parentId] null → intentionally a **root**; a valid active id → a child.
+  /// An **explicitly supplied** parent that is missing or soft-deleted is a
+  /// stale-state error: nothing is created and [PlaceParentNotFoundException] is
+  /// thrown, so a child never silently drops to the root. (Defensive recovery of
+  /// pre-existing orphan rows lives in `PlaceTree`, not here.)
   Future<String> create({
     required String name,
     String? notes,
     String? parentId,
   }) async {
+    if (parentId != null) {
+      final parent =
+          await (select(places)
+                ..where((t) => t.id.equals(parentId) & t.deletedAt.isNull()))
+              .getSingleOrNull();
+      if (parent == null) throw PlaceParentNotFoundException(parentId);
+    }
     final id = _uuid.v4();
     final now = DateTime.now().toUtc();
-    String? parent = parentId;
-    if (parent != null) {
-      final p =
-          await (select(places)
-                ..where((t) => t.id.equals(parent!) & t.deletedAt.isNull()))
-              .getSingleOrNull();
-      if (p == null) parent = null; // never nest under a missing/deleted place
-    }
     await into(places).insert(
       PlacesCompanion.insert(
         id: id,
         name: name.trim(),
-        parentId: Value(parent),
+        parentId: Value(parentId),
         notes: Value(notes?.trim()),
         createdAt: now,
         updatedAt: now,
