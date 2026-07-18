@@ -166,25 +166,91 @@ void main() {
     expect(receipt().readAsStringSync().contains('success'), isTrue);
   });
 
-  test('next startup with a confirmed marker removes recovery', () {
-    scenario(phase: RestorePhase.prepared);
-    final sw = RestoreSwapper(docs);
-    sw.run(); // install → unconfirmed
-    // Simulate the app confirming (as confirmInstalled would).
-    RestoreConfirmed.writeAtomic(
-      confirmed(),
-      const RestoreConfirmed(
-        operationId: 'op1',
-        recoveryRelPath: 'recovery/current/op1',
-        confirmedAtUtc: '2026-07-18T00:00:00.000Z',
-      ),
-    );
-    unconfirmed().deleteSync();
+  test(
+    'confirmation never leaves both markers, then next startup cleans up',
+    () async {
+      final s = scenario(phase: RestorePhase.prepared);
+      final sw = RestoreSwapper(docs);
+      sw.run(); // install → unconfirmed
+      await sw.confirmInstalled(() async => true);
+      // The normal confirmation path never leaves both markers coexisting.
+      expect(unconfirmed().existsSync(), isFalse);
+      expect(confirmed().existsSync(), isTrue);
+      expect(receipt().existsSync(), isTrue);
+
+      final out = RestoreSwapper(docs).run();
+      expect(out.kind, RestoreOutcomeKind.none);
+      expect(sha(live()), s.newSha); // confirmed restore kept
+      expect(confirmed().existsSync(), isFalse);
+      expect(Directory(p.join(docs.path, 'recovery')).existsSync(), isFalse);
+    },
+  );
+
+  test('process death after the atomic rename but before the receipt keeps the '
+      'confirmed restore', () {
+    final s = scenario(phase: RestorePhase.prepared);
+    RestoreSwapper(docs).run(); // install → unconfirmed
+    // Simulate the rename having happened with the process dying before the
+    // receipt was written.
+    unconfirmed().renameSync(confirmed().path);
+    expect(receipt().existsSync(), isFalse);
 
     final out = RestoreSwapper(docs).run();
     expect(out.kind, RestoreOutcomeKind.none);
-    expect(confirmed().existsSync(), isFalse);
+    expect(sha(live()), s.newSha); // kept — no rollback
     expect(Directory(p.join(docs.path, 'recovery')).existsSync(), isFalse);
+  });
+
+  test(
+    'a matching confirmed marker takes precedence over unconfirmed (no rollback)',
+    () {
+      final s = scenario(phase: RestorePhase.prepared);
+      RestoreSwapper(docs).run(); // install → unconfirmed (op1)
+      // Impossible/legacy dual-marker state with the SAME operationId.
+      RestoreConfirmed.writeAtomic(
+        confirmed(),
+        RestoreConfirmed(
+          operationId: 'op1',
+          recoveryRelPath: 'recovery/current/op1',
+          installedDbSha256: s.newSha,
+          createdAtUtc: '2026-07-18T00:00:00.000Z',
+        ),
+      );
+      expect(unconfirmed().existsSync(), isTrue);
+
+      final out = RestoreSwapper(docs).run();
+      expect(out.kind, RestoreOutcomeKind.none);
+      expect(sha(live()), s.newSha); // NOT rolled back
+      expect(unconfirmed().existsSync(), isFalse);
+      expect(confirmed().existsSync(), isFalse);
+      expect(Directory(p.join(docs.path, 'recovery')).existsSync(), isFalse);
+    },
+  );
+
+  test('conflicting dual markers enter the fatal state and delete nothing', () {
+    final s = scenario(phase: RestorePhase.prepared);
+    RestoreSwapper(docs).run(); // install → unconfirmed (op1)
+    // A confirmed marker for a DIFFERENT operation → genuinely ambiguous.
+    RestoreConfirmed.writeAtomic(
+      confirmed(),
+      RestoreConfirmed(
+        operationId: 'op-other',
+        recoveryRelPath: 'recovery/current/op-other',
+        installedDbSha256: 'x',
+        createdAtUtc: '2026-07-18T00:00:00.000Z',
+      ),
+    );
+
+    final out = RestoreSwapper(docs).run();
+    expect(out.kind, RestoreOutcomeKind.fatal);
+    // Nothing deleted, nothing rolled back.
+    expect(unconfirmed().existsSync(), isTrue);
+    expect(confirmed().existsSync(), isTrue);
+    expect(sha(live()), s.newSha);
+    expect(
+      File(p.join(recoveryDb().path, 'project_kobe.sqlite')).existsSync(),
+      isTrue,
+    );
   });
 
   // ---- Unconfirmed on next startup → roll back (the core new guarantee) ----

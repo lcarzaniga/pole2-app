@@ -186,31 +186,40 @@ class RestoreUnconfirmed {
 /// Written by the *normal* app launch once Drift has opened the restored data
 /// and a real query has succeeded. Authorizes deleting the emergency recovery
 /// snapshot on the next startup.
+///
+/// Confirmation is performed as an **atomic rename** of the unconfirmed marker
+/// to `restore_confirmed.json` (see `RestoreSwapper.confirmInstalled`) — so it
+/// carries exactly the same fields the unconfirmed marker had, and confirmed and
+/// unconfirmed state can never coexist through the normal path.
 class RestoreConfirmed {
   const RestoreConfirmed({
     required this.operationId,
     required this.recoveryRelPath,
-    required this.confirmedAtUtc,
+    required this.installedDbSha256,
+    required this.createdAtUtc,
     this.markerVersion = 1,
   });
 
   final int markerVersion;
   final String operationId;
   final String recoveryRelPath;
-  final String confirmedAtUtc;
+  final String installedDbSha256;
+  final String createdAtUtc;
 
   Map<String, dynamic> toJson() => {
     'markerVersion': markerVersion,
     'operationId': operationId,
     'recoveryRelPath': recoveryRelPath,
-    'confirmedAtUtc': confirmedAtUtc,
+    'installedDbSha256': installedDbSha256,
+    'createdAtUtc': createdAtUtc,
   };
 
   static RestoreConfirmed fromJson(Map<String, dynamic> j) => RestoreConfirmed(
     markerVersion: (j['markerVersion'] as num?)?.toInt() ?? 1,
     operationId: j['operationId'] as String,
     recoveryRelPath: j['recoveryRelPath'] as String,
-    confirmedAtUtc: j['confirmedAtUtc'] as String,
+    installedDbSha256: j['installedDbSha256'] as String,
+    createdAtUtc: j['createdAtUtc'] as String,
   );
 
   static void writeAtomic(File f, RestoreConfirmed m) {

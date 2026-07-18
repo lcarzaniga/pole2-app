@@ -107,8 +107,42 @@ class RestoreSwapper {
       }
     }
 
-    // 2) An unconfirmed install (no pending) means the confirming launch never
-    // completed → roll back to the preserved installation.
+    // 2) A confirmed restore takes precedence over any unconfirmed marker (the
+    // atomic rename means they can't normally coexist; this defends against an
+    // impossible/legacy dual-marker state). A matching confirmed install is
+    // never rolled back; a conflicting one is left untouched (fatal).
+    if (_confirmedFile.existsSync()) {
+      final c = RestoreConfirmed.readOrNull(_confirmedFile);
+      if (c == null) {
+        // Corrupt confirmed marker: never guess when data is present.
+        if (_hasRestoreData()) {
+          return const RestoreOutcome(RestoreOutcomeKind.fatal);
+        }
+        _safeDelete(_confirmedFile);
+        return const RestoreOutcome(RestoreOutcomeKind.none);
+      }
+      if (_unconfirmedFile.existsSync()) {
+        final u = RestoreUnconfirmed.readOrNull(_unconfirmedFile);
+        // Unreadable, or a different operation → genuinely ambiguous: preserve
+        // everything and roll nothing back.
+        if (u == null || u.operationId != c.operationId) {
+          return RestoreOutcome(RestoreOutcomeKind.fatal, c.operationId);
+        }
+        // Same operation: the confirmed marker wins; the unconfirmed one is a
+        // superseded leftover.
+        _safeDelete(_unconfirmedFile);
+      }
+      if (_pathsSafe(null, c.recoveryRelPath)) {
+        _deleteSnapshot(
+          Directory(p.join(documentsDir.path, c.recoveryRelPath)),
+        );
+      }
+      _safeDelete(_confirmedFile);
+      return const RestoreOutcome(RestoreOutcomeKind.none);
+    }
+
+    // 3) An unconfirmed install (no confirmed marker) means the confirming
+    // launch never completed → roll back to the preserved installation.
     if (_unconfirmedFile.existsSync()) {
       final u = RestoreUnconfirmed.readOrNull(_unconfirmedFile);
       if (u == null) {
@@ -122,18 +156,6 @@ class RestoreSwapper {
         return RestoreOutcome(RestoreOutcomeKind.fatal, u.operationId);
       }
       return _rollbackUnconfirmed(u);
-    }
-
-    // 3) A confirmed restore authorizes cleaning up its recovery snapshot.
-    if (_confirmedFile.existsSync()) {
-      final c = RestoreConfirmed.readOrNull(_confirmedFile);
-      if (c != null && _pathsSafe(null, c.recoveryRelPath)) {
-        _deleteSnapshot(
-          Directory(p.join(documentsDir.path, c.recoveryRelPath)),
-        );
-      }
-      _safeDelete(_confirmedFile);
-      return const RestoreOutcome(RestoreOutcomeKind.none);
     }
 
     // 4) Nothing pending. Recovery is NEVER swept here (only a confirmed marker
@@ -150,10 +172,16 @@ class RestoreSwapper {
 
   /// Confirms a freshly installed restore once the *normal* app has proven it
   /// can query the restored database. [probe] runs a minimal read through the
-  /// normal Drift provider (true on success). On success: write the confirmed
-  /// marker + the one-time success receipt, then drop the unconfirmed marker.
-  /// On failure (or nothing pending): leave state untouched so the next startup
-  /// rolls back. Never throws — confirmation must never break a working app.
+  /// normal Drift provider (true on success).
+  ///
+  /// The state transition is a single **atomic rename** of the unconfirmed
+  /// marker to `restore_confirmed.json` on the same filesystem — never
+  /// "create confirmed, then delete unconfirmed" — so a process death can never
+  /// leave both markers. The one-time success receipt is written only *after*
+  /// the rename: if the process dies in between, the restore is already
+  /// confirmed (a missing success message is acceptable; a wrong rollback is
+  /// not). On failure (or nothing pending) state is left untouched so the next
+  /// startup rolls back. Never throws — confirmation must never break the app.
   Future<void> confirmInstalled(Future<bool> Function() probe) async {
     try {
       final unconf = RestoreUnconfirmed.readOrNull(_unconfirmedFile);
@@ -165,16 +193,12 @@ class RestoreSwapper {
         ok = false;
       }
       if (!ok) return; // next launch will roll back
-      RestoreConfirmed.writeAtomic(
-        _confirmedFile,
-        RestoreConfirmed(
-          operationId: unconf.operationId,
-          recoveryRelPath: unconf.recoveryRelPath,
-          confirmedAtUtc: DateTime.now().toUtc().toIso8601String(),
-        ),
-      );
+
+      // Authoritative, atomic state transition. The unconfirmed marker already
+      // holds exactly the fields the confirmed marker needs.
+      _unconfirmedFile.renameSync(_confirmedFile.path);
+      // Best-effort receipt, strictly after the rename.
       _writeReceipt('success', unconf.operationId);
-      _safeDelete(_unconfirmedFile);
     } catch (_) {}
   }
 
