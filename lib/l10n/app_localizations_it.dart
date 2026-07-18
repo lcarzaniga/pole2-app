@@ -759,4 +759,106 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get removedBannerTitle => 'Rimosso';
+
+  @override
+  String get placesTitle => 'Luoghi';
+
+  @override
+  String get placesMenu => 'Luoghi';
+
+  @override
+  String get placeAddRoot => 'Nuovo luogo';
+
+  @override
+  String get placeAddChild => 'Aggiungi sottoluogo';
+
+  @override
+  String get placeChildrenSection => 'Sottoluoghi';
+
+  @override
+  String get placeDirectItemsSection => 'Qui direttamente';
+
+  @override
+  String get placeMove => 'Sposta luogo';
+
+  @override
+  String get placeMoveToRoot => 'Nessun luogo superiore';
+
+  @override
+  String get placeParent => 'Luogo superiore';
+
+  @override
+  String placeTotalCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count oggetti in tutto',
+      one: '1 oggetto in tutto',
+      zero: 'Niente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String placeDirectCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count qui',
+      one: '1 qui',
+      zero: 'niente qui',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String placeSubtreeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count oggetti',
+      one: '1 oggetto',
+      zero: 'vuoto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get placesEmpty => 'Non hai ancora nessun luogo.';
+
+  @override
+  String get placesEmptyHint =>
+      'Crea un luogo per iniziare a organizzare le tue cose.';
+
+  @override
+  String get placeEmptyTree => 'Qui non c\'è ancora niente.';
+
+  @override
+  String get placeNoDirectItems => 'Nessun oggetto direttamente qui.';
+
+  @override
+  String get placeNoChildren => 'Nessun sottoluogo.';
+
+  @override
+  String get placeDeleteHasChildren => 'Prima sposta o rimuovi i sottoluoghi.';
+
+  @override
+  String get placeMoveInvalid => 'Non puoi spostarlo lì.';
+
+  @override
+  String get placeMovedToSnack => 'Luogo spostato.';
+
+  @override
+  String placeCreateUnder(String parent) {
+    return 'Nuovo sottoluogo di «$parent»';
+  }
+
+  @override
+  String get placeRootLevel => 'Luogo principale';
+
+  @override
+  String get newRootPlaceHint => 'Nuovo luogo principale';
+
+  @override
+  String get placeNewChildTitle => 'Nuovo sottoluogo';
 }

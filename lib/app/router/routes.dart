@@ -15,6 +15,10 @@ abstract final class Routes {
   static const String archiveName = 'archive';
   static const String archivePath = '/archive';
 
+  /// Luoghi: the root browser for the place hierarchy.
+  static const String placesName = 'places';
+  static const String placesPath = '/places';
+
   /// Create a new possession.
   static const String newPossessionName = 'new-possession';
   static const String newPossessionPath = '/possession/new';

@@ -16,8 +16,22 @@ import '../../../shared/brand/turtle_shell_menu.dart';
 import '../../../shared/format.dart';
 import '../../../shared/phrasing.dart';
 import '../../places/application/place_providers.dart';
+import '../../places/application/place_tree.dart';
 import '../application/event_providers.dart';
 import '../application/possession_query.dart';
+
+/// All places sorted by their full path, so the filter menu reads top-down
+/// (Casa, Casa › Camera, Casa › Studio, …) and duplicates stay distinguishable.
+List<Place> _placesByPath(PlaceTree tree) {
+  final all = tree.allPlaces.toList()
+    ..sort(
+      (a, b) => tree
+          .pathLabel(a.id)
+          .toLowerCase()
+          .compareTo(tree.pathLabel(b.id).toLowerCase()),
+    );
+  return all;
+}
 
 /// The Home once things exist: an optional calm deadline summary, calm
 /// search / sort / filter controls, the list, and the turtle as a persistent
@@ -51,8 +65,16 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final places = ref.watch(placeListProvider).value ?? const <Place>[];
-    final visible = applyPossessionQuery(widget.possessions, _query);
+    final tree = ref.watch(placeTreeProvider);
+    // A specific-place filter includes the whole subtree (M5.4).
+    final subtree = _query.place.isSpecific && _query.place.id != null
+        ? tree.subtreeIds(_query.place.id!)
+        : null;
+    final visible = applyPossessionQuery(
+      widget.possessions,
+      _query,
+      placeSubtreeIds: subtree,
+    );
 
     // Kobe the persistent anchor, now ~2× — a visual target with responsive
     // caps so it never dominates a narrow screen and its bloomed shell always
@@ -60,9 +82,12 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
     // gap, so items never sit under it.
     final width = MediaQuery.of(context).size.width;
     final turtleSize = math.max(
-        130.0,
-        math.min(
-            200.0, math.min(width * 0.5, TurtleShellMenu.maxTurtleForWidth(width))));
+      130.0,
+      math.min(
+        200.0,
+        math.min(width * 0.5, TurtleShellMenu.maxTurtleForWidth(width)),
+      ),
+    );
     final listBottomPad = turtleSize + AppSpacing.xxxxl;
 
     return Column(
@@ -71,7 +96,7 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
         _Controls(
           controller: _search,
           query: _query,
-          places: places,
+          tree: tree,
           onChanged: (q) => setState(() => _query = q),
         ),
         Expanded(
@@ -85,8 +110,8 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
                       l10n.searchNoResults,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 )
@@ -113,7 +138,9 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
                     padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
                     child: Center(
                       child: TurtleLauncher(
-                          size: turtleSize, onAction: widget.onQuickAction),
+                        size: turtleSize,
+                        onAction: widget.onQuickAction,
+                      ),
                     ),
                   ),
                 ),
@@ -133,13 +160,13 @@ class _Controls extends StatelessWidget {
   const _Controls({
     required this.controller,
     required this.query,
-    required this.places,
+    required this.tree,
     required this.onChanged,
   });
 
   final TextEditingController controller;
   final PossessionQuery query;
-  final List<Place> places;
+  final PlaceTree tree;
   final ValueChanged<PossessionQuery> onChanged;
 
   @override
@@ -151,7 +178,11 @@ class _Controls extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, AppSpacing.md, AppSpacing.sm, 0),
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.sm,
+        0,
+      ),
       child: Row(
         children: [
           Expanded(
@@ -197,8 +228,10 @@ class _Controls extends StatelessWidget {
           ),
           PopupMenuButton<PlaceFilter>(
             tooltip: l10n.filterTooltip,
-            icon: Icon(Icons.filter_list,
-                color: filtering ? scheme.primary : scheme.onSurfaceVariant),
+            icon: Icon(
+              Icons.filter_list,
+              color: filtering ? scheme.primary : scheme.onSurfaceVariant,
+            ),
             onSelected: (f) => onChanged(query.copyWith(place: f)),
             itemBuilder: (_) => [
               CheckedPopupMenuItem(
@@ -211,12 +244,14 @@ class _Controls extends StatelessWidget {
                 checked: query.place == const PlaceFilter.none(),
                 child: Text(l10n.filterNoPlace),
               ),
-              if (places.isNotEmpty) const PopupMenuDivider(),
-              for (final p in places)
+              if (tree.allPlaces.isNotEmpty) const PopupMenuDivider(),
+              // Every place (any level), shown with its full path so duplicate
+              // names stay unambiguous. Selecting one filters its whole subtree.
+              for (final p in _placesByPath(tree))
                 CheckedPopupMenuItem(
                   value: PlaceFilter.place(p.id),
                   checked: query.place == PlaceFilter.place(p.id),
-                  child: Text(p.name),
+                  child: Text(tree.pathLabel(p.id)),
                 ),
             ],
           ),
@@ -245,33 +280,44 @@ class _DeadlineSummary extends ConsumerWidget {
 
     final text = upcoming.length == 1
         ? '${nearest.event.title ?? ''} ${relativeDay(l10n, nearest.event.at)}'
-            .trim()
+              .trim()
         : l10n.upcomingDatesCount(upcoming.length);
 
     final bg = soon ? context.brand.attention : context.brand.shellTint;
-    final fg =
-        soon ? context.brand.onAttention : theme.colorScheme.onSurfaceVariant;
+    final fg = soon
+        ? context.brand.onAttention
+        : theme.colorScheme.onSurfaceVariant;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 0),
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        0,
+      ),
       child: Material(
         color: bg,
         borderRadius: AppRadii.borderMd,
         child: InkWell(
           borderRadius: AppRadii.borderMd,
-          onTap: () => context.pushNamed(Routes.possessionName,
-              pathParameters: {'id': nearest.event.possessionId}),
+          onTap: () => context.pushNamed(
+            Routes.possessionName,
+            pathParameters: {'id': nearest.event.possessionId},
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md, vertical: AppSpacing.md),
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.md,
+            ),
             child: Row(
               children: [
                 Icon(Icons.event_outlined, size: AppIconSize.sm, color: fg),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
-                  child: Text(text,
-                      style: theme.textTheme.labelLarge?.copyWith(color: fg)),
+                  child: Text(
+                    text,
+                    style: theme.textTheme.labelLarge?.copyWith(color: fg),
+                  ),
                 ),
               ],
             ),
@@ -304,14 +350,18 @@ class _PossessionCard extends ConsumerWidget {
     if (loan != null) {
       subtitle = Row(
         children: [
-          Icon(Icons.people_alt_outlined,
-              size: AppIconSize.sm, color: scheme.onSurfaceVariant),
+          Icon(
+            Icons.people_alt_outlined,
+            size: AppIconSize.sm,
+            color: scheme.onSurfaceVariant,
+          ),
           const SizedBox(width: AppSpacing.xs),
           Flexible(
             child: Text(
               l10n.lentToPerson(borrower?.name ?? '—'),
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(color: scheme.onSurfaceVariant),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
             ),
           ),
         ],
@@ -319,8 +369,9 @@ class _PossessionCard extends ConsumerWidget {
     } else if (possession.category != null) {
       subtitle = Text(
         possession.category!,
-        style: theme.textTheme.bodyMedium
-            ?.copyWith(color: scheme.onSurfaceVariant),
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: scheme.onSurfaceVariant,
+        ),
       );
     }
 

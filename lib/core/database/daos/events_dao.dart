@@ -432,21 +432,34 @@ class EventsDao extends DatabaseAccessor<AppDatabase> with _$EventsDaoMixin {
           updatedAt: now,
         ),
       );
-      // Restore the place only if it is still a real, active place.
-      String? restored;
-      if (returnPlaceId != null) {
-        final place =
-            await (select(places)..where(
-                  (t) => t.id.equals(returnPlaceId) & t.deletedAt.isNull(),
-                ))
-                .getSingleOrNull();
-        restored = place?.id;
-      }
+      // Restore the place only if it is still **reachable** — the place and its
+      // whole ancestor chain are active — so a return never lands in a deleted
+      // or unreachable branch.
+      final restored = (await _placeReachable(returnPlaceId))
+          ? returnPlaceId
+          : null;
       await (update(
         possessions,
       )..where((t) => t.id.equals(possessionId))).write(
         PossessionsCompanion(placeId: Value(restored), updatedAt: Value(now)),
       );
     });
+  }
+
+  /// True when [placeId] is null, or it and every ancestor up to a root are
+  /// active (non-deleted), with no cycle. Cheap for realistic tree depths.
+  Future<bool> _placeReachable(String? placeId) async {
+    if (placeId == null) return true;
+    final visited = <String>{};
+    String? cur = placeId;
+    while (cur != null) {
+      if (!visited.add(cur)) return false;
+      final p = await (select(
+        places,
+      )..where((t) => t.id.equals(cur!))).getSingleOrNull();
+      if (p == null || p.deletedAt != null) return false;
+      cur = p.parentId;
+    }
+    return true;
   }
 }

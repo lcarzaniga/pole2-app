@@ -187,16 +187,50 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
         .watch();
   }
 
-  /// The place to keep after a restore: the current one only if it still exists
-  /// and is active; otherwise none (never a dangling reference to a deleted
-  /// place). Assumes it runs inside a transaction.
+  /// The place to keep after a restore: the current one only if it is still
+  /// **reachable** — the place and its whole ancestor chain are active — so a
+  /// thing never restores into a deleted/unreachable branch. Cycle-safe. Assumes
+  /// it runs inside a transaction.
   Future<String?> _resolveRestoredPlace(String? placeId) async {
-    if (placeId == null) return null;
-    final place =
-        await (select(places)
-              ..where((t) => t.id.equals(placeId) & t.deletedAt.isNull()))
-            .getSingleOrNull();
-    return place?.id;
+    return (await _placeReachable(placeId)) ? placeId : null;
+  }
+
+  /// True when [placeId] is null (no place — trivially fine) or it and every
+  /// ancestor up to a root are active (non-deleted), with no cycle.
+  Future<bool> _placeReachable(String? placeId) async {
+    if (placeId == null) return true;
+    final visited = <String>{};
+    String? cur = placeId;
+    while (cur != null) {
+      if (!visited.add(cur)) return false; // corrupt cycle → unreachable
+      final p = await (select(
+        places,
+      )..where((t) => t.id.equals(cur!))).getSingleOrNull();
+      if (p == null || p.deletedAt != null) return false;
+      cur = p.parentId;
+    }
+    return true;
+  }
+
+  /// Direct active possession count per place: `{placeId: count}` over
+  /// non-deleted, active possessions that have a place. Lent things (placeId
+  /// null) and archived/removed things are naturally excluded. One reactive
+  /// query — the app derives subtree totals from this map + the place tree.
+  Stream<Map<String, int>> watchDirectPlaceCounts() {
+    final n = possessions.id.count();
+    final q = selectOnly(possessions)
+      ..addColumns([possessions.placeId, n])
+      ..where(
+        possessions.deletedAt.isNull() &
+            possessions.status.equalsValue(PossessionStatus.active) &
+            possessions.placeId.isNotNull(),
+      )
+      ..groupBy([possessions.placeId]);
+    return q.watch().map(
+      (rows) => {
+        for (final r in rows) r.read(possessions.placeId)!: r.read(n) ?? 0,
+      },
+    );
   }
 
   /// Restore from "Conservati": lifecycle back to active, deletion untouched

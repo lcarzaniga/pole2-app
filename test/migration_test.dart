@@ -257,4 +257,86 @@ void main() {
     expect(loan!.originPlaceId, 'pl1');
     expect((await db.possessionsDao.watchById('p1').first)!.placeId, isNull);
   });
+
+  test(
+    'v6→v7 adds parentId; existing places become roots and data survives',
+    () async {
+      final dir = Directory.systemTemp.createTempSync('pole2_migration_v7');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      final path = '${dir.path}/app.db';
+
+      // Build a real v6 database: v2 + v3 + v4 (places/place_id) + v5
+      // (possession_photos) + v6 (events.origin_place_id), then real data.
+      final raw = sqlite3.open(path);
+      raw.execute(_v2Schema);
+      raw.execute('ALTER TABLE events ADD COLUMN purchased_on TEXT NULL');
+      raw.execute('ALTER TABLE events ADD COLUMN acquisition_type TEXT NULL');
+      raw.execute('ALTER TABLE events ADD COLUMN remind_lead TEXT NULL');
+      raw.execute(
+        'CREATE TABLE "places" ("id" TEXT NOT NULL, "name" TEXT NOT '
+        'NULL, "notes" TEXT NULL, "created_at" TEXT NOT NULL, "updated_at" TEXT '
+        'NOT NULL, "deleted_at" TEXT NULL, PRIMARY KEY ("id"));',
+      );
+      raw.execute(
+        'ALTER TABLE possessions ADD COLUMN place_id TEXT NULL '
+        'REFERENCES places (id)',
+      );
+      raw.execute(
+        'CREATE TABLE "possession_photos" ("id" TEXT NOT NULL, '
+        '"possession_id" TEXT NOT NULL REFERENCES possessions (id), "file_id" '
+        'TEXT NOT NULL REFERENCES files (id), "sort_order" INTEGER NOT NULL '
+        'DEFAULT 0, "created_at" TEXT NOT NULL, "updated_at" TEXT NOT NULL, '
+        '"deleted_at" TEXT NULL, PRIMARY KEY ("id"));',
+      );
+      raw.execute(
+        'ALTER TABLE events ADD COLUMN origin_place_id TEXT NULL '
+        'REFERENCES places (id)',
+      );
+      raw.execute('PRAGMA user_version = 6');
+      final now = DateTime.now().toUtc().toIso8601String();
+      raw.execute(
+        "INSERT INTO places (id,name,created_at,updated_at) "
+        "VALUES ('pl1','Garage','$now','$now')",
+      );
+      raw.execute(
+        "INSERT INTO files (id,relative_path,mime_type,byte_size,"
+        "created_at) VALUES ('f1','photos/old.jpg','image/jpeg',10,'$now')",
+      );
+      raw.execute(
+        "INSERT INTO possessions (id,title,status,cover_file_id,place_id,"
+        "created_at,updated_at) "
+        "VALUES ('p1','Old Camera','active','f1','pl1','$now','$now')",
+      );
+      raw.execute(
+        "INSERT INTO possession_photos (id,possession_id,file_id,"
+        "sort_order,created_at,updated_at) "
+        "VALUES ('ph1','p1','f1',0,'$now','$now')",
+      );
+      raw.close();
+
+      // Open with the current app — the v6 → v7 migration runs on open.
+      final db = AppDatabase.forTesting(NativeDatabase(File(path)));
+      addTearDown(db.close);
+
+      // Existing place survived and is now a root (parentId null).
+      final place = await db.placesDao.findById('pl1');
+      expect(place!.name, 'Garage');
+      expect(place.parentId, isNull);
+      // Possession, its place assignment and its photo all survived.
+      final possession = await db.possessionsDao.watchById('p1').first;
+      expect(possession!.placeId, 'pl1');
+      expect((await db.possessionsDao.watchPhotos('p1').first).length, 1);
+
+      // The hierarchy is fully usable: a child can be created under the old root.
+      final child = await db.placesDao.create(
+        name: 'Scaffale',
+        parentId: 'pl1',
+      );
+      expect((await db.placesDao.findById(child))!.parentId, 'pl1');
+      expect(
+        await db.placesDao.watchRoots().first,
+        hasLength(1),
+      ); // only Garage
+    },
+  );
 }

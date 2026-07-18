@@ -47,7 +47,7 @@ class AppDatabase extends _$AppDatabase {
   static const Uuid _uuid = Uuid();
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -117,6 +117,21 @@ class AppDatabase extends _$AppDatabase {
         // rows are untouched (null = no origin place recorded).
         if (from < 6) {
           await m.addColumn(events, events.originPlaceId);
+        }
+        // v6 → v7 (M5.4 hierarchy): a nullable self-reference on Places. Every
+        // existing place stays a root (parentId null); nothing else is touched.
+        // No cascading delete — the tree is managed by application logic.
+        //
+        // Only when Places already existed without this column (upgrading from
+        // v4/v5/v6). Coming from v2/v3, the `from < 4` step above created the
+        // Places table from the *current* schema — which already has parentId
+        // and its index — so adding it again would duplicate the column.
+        if (from >= 4 && from < 7) {
+          await m.addColumn(places, places.parentId);
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_place_parent '
+            'ON places (parent_id)',
+          );
         }
       }
     },

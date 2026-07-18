@@ -66,8 +66,10 @@ class HomeScreen extends ConsumerWidget {
             icon: const Icon(Icons.more_vert),
             onSelected: (value) {
               if (value == 'archive') context.pushNamed(Routes.archiveName);
+              if (value == 'places') context.pushNamed(Routes.placesName);
             },
             itemBuilder: (context) => [
+              PopupMenuItem(value: 'places', child: Text(l10n.placesMenu)),
               PopupMenuItem(value: 'archive', child: Text(l10n.archiveMenu)),
             ],
           ),

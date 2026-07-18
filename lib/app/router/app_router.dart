@@ -5,6 +5,7 @@ import '../../features/archive/presentation/archive_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/places/presentation/place_contents_screen.dart';
 import '../../features/places/presentation/place_review_screen.dart';
+import '../../features/places/presentation/places_browser_screen.dart';
 import '../../features/possessions/presentation/acquisition_editor_screen.dart';
 import '../../features/possessions/presentation/create_possession_screen.dart';
 import '../../features/possessions/presentation/lend_editor_screen.dart';
@@ -40,6 +41,11 @@ GoRouter appRouter(Ref ref) {
         path: Routes.archivePath,
         name: Routes.archiveName,
         builder: (context, state) => const ArchiveScreen(),
+      ),
+      GoRoute(
+        path: Routes.placesPath,
+        name: Routes.placesName,
+        builder: (context, state) => const PlacesBrowserScreen(),
       ),
       GoRoute(
         path: Routes.newPossessionPath,

@@ -1399,6 +1399,150 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Rimosso'**
   String get removedBannerTitle;
+
+  /// No description provided for @placesTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Luoghi'**
+  String get placesTitle;
+
+  /// No description provided for @placesMenu.
+  ///
+  /// In it, this message translates to:
+  /// **'Luoghi'**
+  String get placesMenu;
+
+  /// No description provided for @placeAddRoot.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo luogo'**
+  String get placeAddRoot;
+
+  /// No description provided for @placeAddChild.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi sottoluogo'**
+  String get placeAddChild;
+
+  /// No description provided for @placeChildrenSection.
+  ///
+  /// In it, this message translates to:
+  /// **'Sottoluoghi'**
+  String get placeChildrenSection;
+
+  /// No description provided for @placeDirectItemsSection.
+  ///
+  /// In it, this message translates to:
+  /// **'Qui direttamente'**
+  String get placeDirectItemsSection;
+
+  /// No description provided for @placeMove.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta luogo'**
+  String get placeMove;
+
+  /// No description provided for @placeMoveToRoot.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun luogo superiore'**
+  String get placeMoveToRoot;
+
+  /// No description provided for @placeParent.
+  ///
+  /// In it, this message translates to:
+  /// **'Luogo superiore'**
+  String get placeParent;
+
+  /// No description provided for @placeTotalCount.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =0{Niente} =1{1 oggetto in tutto} other{{count} oggetti in tutto}}'**
+  String placeTotalCount(int count);
+
+  /// No description provided for @placeDirectCount.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =0{niente qui} =1{1 qui} other{{count} qui}}'**
+  String placeDirectCount(int count);
+
+  /// No description provided for @placeSubtreeCount.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =0{vuoto} =1{1 oggetto} other{{count} oggetti}}'**
+  String placeSubtreeCount(int count);
+
+  /// No description provided for @placesEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Non hai ancora nessun luogo.'**
+  String get placesEmpty;
+
+  /// No description provided for @placesEmptyHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea un luogo per iniziare a organizzare le tue cose.'**
+  String get placesEmptyHint;
+
+  /// No description provided for @placeEmptyTree.
+  ///
+  /// In it, this message translates to:
+  /// **'Qui non c\'è ancora niente.'**
+  String get placeEmptyTree;
+
+  /// No description provided for @placeNoDirectItems.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun oggetto direttamente qui.'**
+  String get placeNoDirectItems;
+
+  /// No description provided for @placeNoChildren.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun sottoluogo.'**
+  String get placeNoChildren;
+
+  /// No description provided for @placeDeleteHasChildren.
+  ///
+  /// In it, this message translates to:
+  /// **'Prima sposta o rimuovi i sottoluoghi.'**
+  String get placeDeleteHasChildren;
+
+  /// No description provided for @placeMoveInvalid.
+  ///
+  /// In it, this message translates to:
+  /// **'Non puoi spostarlo lì.'**
+  String get placeMoveInvalid;
+
+  /// No description provided for @placeMovedToSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'Luogo spostato.'**
+  String get placeMovedToSnack;
+
+  /// No description provided for @placeCreateUnder.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo sottoluogo di «{parent}»'**
+  String placeCreateUnder(String parent);
+
+  /// No description provided for @placeRootLevel.
+  ///
+  /// In it, this message translates to:
+  /// **'Luogo principale'**
+  String get placeRootLevel;
+
+  /// No description provided for @newRootPlaceHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo luogo principale'**
+  String get newRootPlaceHint;
+
+  /// No description provided for @placeNewChildTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo sottoluogo'**
+  String get placeNewChildTitle;
 }
 
 class _AppLocalizationsDelegate

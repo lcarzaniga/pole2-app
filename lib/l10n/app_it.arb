@@ -308,5 +308,42 @@
     "placeholders": { "date": { "type": "String" } }
   },
   "inactiveReadOnlyHint": "Ripristina per modificarlo di nuovo.",
-  "removedBannerTitle": "Rimosso"
+  "removedBannerTitle": "Rimosso",
+
+  "placesTitle": "Luoghi",
+  "placesMenu": "Luoghi",
+  "placeAddRoot": "Nuovo luogo",
+  "placeAddChild": "Aggiungi sottoluogo",
+  "placeChildrenSection": "Sottoluoghi",
+  "placeDirectItemsSection": "Qui direttamente",
+  "placeMove": "Sposta luogo",
+  "placeMoveToRoot": "Nessun luogo superiore",
+  "placeParent": "Luogo superiore",
+  "placeTotalCount": "{count, plural, =0{Niente} =1{1 oggetto in tutto} other{{count} oggetti in tutto}}",
+  "@placeTotalCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "placeDirectCount": "{count, plural, =0{niente qui} =1{1 qui} other{{count} qui}}",
+  "@placeDirectCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "placeSubtreeCount": "{count, plural, =0{vuoto} =1{1 oggetto} other{{count} oggetti}}",
+  "@placeSubtreeCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "placesEmpty": "Non hai ancora nessun luogo.",
+  "placesEmptyHint": "Crea un luogo per iniziare a organizzare le tue cose.",
+  "placeEmptyTree": "Qui non c'è ancora niente.",
+  "placeNoDirectItems": "Nessun oggetto direttamente qui.",
+  "placeNoChildren": "Nessun sottoluogo.",
+  "placeDeleteHasChildren": "Prima sposta o rimuovi i sottoluoghi.",
+  "placeMoveInvalid": "Non puoi spostarlo lì.",
+  "placeMovedToSnack": "Luogo spostato.",
+  "placeCreateUnder": "Nuovo sottoluogo di «{parent}»",
+  "@placeCreateUnder": {
+    "placeholders": { "parent": { "type": "String" } }
+  },
+  "placeRootLevel": "Luogo principale",
+  "newRootPlaceHint": "Nuovo luogo principale",
+  "placeNewChildTitle": "Nuovo sottoluogo"
 }

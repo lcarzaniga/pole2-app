@@ -58,13 +58,21 @@ class Possessions extends Table {
 }
 
 /// A user-defined, **reusable** place where possessions live ("Garage",
-/// "Ufficio", "Cantina"). Flat by design — no hierarchy/parentId in R1.0
-/// (DOMAIN_MODEL §3.11). Soft-deleted like its siblings.
+/// "Ufficio", "Cantina"). A **tree** of real physical containment (M5.4): a
+/// place may hold child places and/or possessions at any level. Soft-deleted
+/// like its siblings.
 @DataClassName('Place')
+@TableIndex(name: 'idx_place_parent', columns: {#parentId})
 class Places extends Table {
   TextColumn get id => text()();
   TextColumn get name => text().withLength(min: 1, max: 120)();
   TextColumn get notes => text().nullable()();
+
+  /// The containing place. **Null = root** (no hierarchy above). A self-
+  /// reference (added in schema v7); the tree shape and cycle-safety are
+  /// enforced by application logic, never by cascading DB deletes.
+  TextColumn get parentId => text().nullable().references(Places, #id)();
+
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();

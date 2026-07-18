@@ -21,11 +21,17 @@ class PlaceFilter {
 
   bool get isAll => _scope == _PlaceScope.all;
 
-  bool _matches(Possession p) => switch (_scope) {
-        _PlaceScope.all => true,
-        _PlaceScope.none => p.placeId == null,
-        _PlaceScope.specific => p.placeId == id,
-      };
+  bool get isSpecific => _scope == _PlaceScope.specific;
+
+  /// [subtreeIds] is the selected place plus all its descendants (M5.4): a
+  /// specific-place filter includes the whole subtree, so "Casa" shows things in
+  /// Casa and every nested place. Falls back to an exact match if not supplied.
+  bool _matches(Possession p, Set<String>? subtreeIds) => switch (_scope) {
+    _PlaceScope.all => true,
+    _PlaceScope.none => p.placeId == null,
+    _PlaceScope.specific =>
+      p.placeId != null && (subtreeIds?.contains(p.placeId) ?? p.placeId == id),
+  };
 
   @override
   bool operator ==(Object other) =>
@@ -55,20 +61,24 @@ class PossessionQuery {
     String? search,
     PossessionSort? sort,
     PlaceFilter? place,
-  }) =>
-      PossessionQuery(
-        search: search ?? this.search,
-        sort: sort ?? this.sort,
-        place: place ?? this.place,
-      );
+  }) => PossessionQuery(
+    search: search ?? this.search,
+    sort: sort ?? this.sort,
+    place: place ?? this.place,
+  );
 }
 
 /// Applies a [PossessionQuery] to an already-loaded list — pure, so it is unit
 /// testable without any database or widgets. Search matches title or category
 /// (case-insensitive); the place filter narrows; then the chosen sort orders a
 /// fresh copy (the input is never mutated).
+/// [placeSubtreeIds] (when a specific place is selected) is that place plus its
+/// descendants, so the hierarchical Home filter includes the whole subtree.
 List<Possession> applyPossessionQuery(
-    List<Possession> items, PossessionQuery query) {
+  List<Possession> items,
+  PossessionQuery query, {
+  Set<String>? placeSubtreeIds,
+}) {
   final needle = query.search.trim().toLowerCase();
   final filtered = items.where((p) {
     if (needle.isNotEmpty) {
@@ -76,15 +86,16 @@ List<Possession> applyPossessionQuery(
       final inCategory = p.category?.toLowerCase().contains(needle) ?? false;
       if (!inTitle && !inCategory) return false;
     }
-    return query.place._matches(p);
+    return query.place._matches(p, placeSubtreeIds);
   }).toList();
 
   switch (query.sort) {
     case PossessionSort.newest:
       filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     case PossessionSort.name:
-      filtered
-          .sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+      filtered.sort(
+        (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+      );
   }
   return filtered;
 }
