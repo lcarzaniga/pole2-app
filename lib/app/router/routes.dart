@@ -38,6 +38,10 @@ abstract final class Routes {
   static const String photoName = 'photo';
   static const String photoPath = '/possession/:id/photo';
 
+  /// Lend editor (create or correct a loan). Path param: `id`.
+  static const String lendName = 'lend';
+  static const String lendPath = '/possession/:id/lend';
+
   /// A single place's contents (the possessions kept there). Path param: `id`.
   static const String placeName = 'place';
   static const String placePath = '/place/:id';

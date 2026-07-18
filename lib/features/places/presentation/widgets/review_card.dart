@@ -23,6 +23,7 @@ class ReviewCard extends StatelessWidget {
     required this.onMove,
     required this.onUnassign,
     required this.onArchive,
+    required this.onMore,
   });
 
   final Possession possession;
@@ -33,6 +34,7 @@ class ReviewCard extends StatelessWidget {
   final VoidCallback onMove;
   final VoidCallback onUnassign;
   final VoidCallback onArchive;
+  final VoidCallback onMore;
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +125,12 @@ class ReviewCard extends StatelessWidget {
                   onPressed: enabled ? onArchive : null,
                   icon: Icons.archive_outlined,
                   label: l10n.placeReviewArchive,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                // Secondary to the four primaries: extra, less-common choices.
+                TextButton(
+                  onPressed: enabled ? onMore : null,
+                  child: Text(l10n.moreOptions),
                 ),
               ],
             ),

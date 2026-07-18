@@ -6,6 +6,7 @@ import '../../features/places/presentation/place_contents_screen.dart';
 import '../../features/places/presentation/place_review_screen.dart';
 import '../../features/possessions/presentation/acquisition_editor_screen.dart';
 import '../../features/possessions/presentation/create_possession_screen.dart';
+import '../../features/possessions/presentation/lend_editor_screen.dart';
 import '../../features/possessions/presentation/note_editor_screen.dart';
 import '../../features/possessions/presentation/photo_viewer_screen.dart';
 import '../../features/possessions/presentation/possession_detail_screen.dart';
@@ -44,30 +45,26 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: Routes.possessionPath,
         name: Routes.possessionName,
-        builder: (context, state) => PossessionDetailScreen(
-          id: state.pathParameters['id']!,
-        ),
+        builder: (context, state) =>
+            PossessionDetailScreen(id: state.pathParameters['id']!),
       ),
       GoRoute(
         path: Routes.acquisitionPath,
         name: Routes.acquisitionName,
-        builder: (context, state) => AcquisitionEditorScreen(
-          possessionId: state.pathParameters['id']!,
-        ),
+        builder: (context, state) =>
+            AcquisitionEditorScreen(possessionId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: Routes.reminderPath,
         name: Routes.reminderName,
-        builder: (context, state) => ReminderEditorScreen(
-          possessionId: state.pathParameters['id']!,
-        ),
+        builder: (context, state) =>
+            ReminderEditorScreen(possessionId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: Routes.notePath,
         name: Routes.noteName,
-        builder: (context, state) => NoteEditorScreen(
-          possessionId: state.pathParameters['id']!,
-        ),
+        builder: (context, state) =>
+            NoteEditorScreen(possessionId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: Routes.photoPath,
@@ -80,18 +77,25 @@ GoRouter appRouter(Ref ref) {
         ),
       ),
       GoRoute(
+        path: Routes.lendPath,
+        name: Routes.lendName,
+        // `extra` carries LendEditData when correcting an existing loan.
+        builder: (context, state) => LendEditorScreen(
+          possessionId: state.pathParameters['id']!,
+          edit: state.extra as LendEditData?,
+        ),
+      ),
+      GoRoute(
         path: Routes.placePath,
         name: Routes.placeName,
-        builder: (context, state) => PlaceContentsScreen(
-          placeId: state.pathParameters['id']!,
-        ),
+        builder: (context, state) =>
+            PlaceContentsScreen(placeId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: Routes.placeReviewPath,
         name: Routes.placeReviewName,
-        builder: (context, state) => PlaceReviewScreen(
-          placeId: state.pathParameters['id']!,
-        ),
+        builder: (context, state) =>
+            PlaceReviewScreen(placeId: state.pathParameters['id']!),
       ),
     ],
   );

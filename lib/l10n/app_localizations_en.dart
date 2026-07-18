@@ -580,4 +580,113 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get lendToSomeone => 'Presta a qualcuno';
+
+  @override
+  String get lendEditTitle => 'Modifica prestito';
+
+  @override
+  String get borrowerLabel => 'A chi lo presti?';
+
+  @override
+  String get borrowerChoose => 'Scegli una persona';
+
+  @override
+  String get selectPerson => 'Scegli una persona';
+
+  @override
+  String get createPerson => 'Nuova persona';
+
+  @override
+  String get personNameHint => 'Nome';
+
+  @override
+  String get addPersonButton => 'Aggiungi';
+
+  @override
+  String get lentDateLabel => 'Data del prestito';
+
+  @override
+  String get expectedReturnLabel => 'Rientro previsto';
+
+  @override
+  String get expectedReturnOptional => 'Rientro previsto (facoltativo)';
+
+  @override
+  String get noReturnDate => 'Nessuna data di rientro';
+
+  @override
+  String get returnDateClear => 'Togli la data';
+
+  @override
+  String get returnReminder => 'Ricordami il rientro';
+
+  @override
+  String lentToPerson(String name) {
+    return 'Prestato a $name';
+  }
+
+  @override
+  String lentOn(String date) {
+    return 'Prestato il $date';
+  }
+
+  @override
+  String expectedReturnOn(String date) {
+    return 'Rientro previsto il $date';
+  }
+
+  @override
+  String get returnReminderSet => 'Ti ricorderò il rientro';
+
+  @override
+  String get markReturned => 'Segna come restituito';
+
+  @override
+  String get returnTitle => 'Segna come restituito';
+
+  @override
+  String get returnActualDate => 'Data di rientro';
+
+  @override
+  String get returnPlaceLabel => 'Rimettilo in';
+
+  @override
+  String returnedOn(String date) {
+    return 'Restituito il $date';
+  }
+
+  @override
+  String returnReminderTitle(String object) {
+    return 'Rientro: $object';
+  }
+
+  @override
+  String get loanStarted => 'Prestato. È annotato.';
+
+  @override
+  String get loanUpdated => 'Prestito aggiornato.';
+
+  @override
+  String get loanReturned => 'Restituito. Bentornato.';
+
+  @override
+  String get loanDatesInvalid =>
+      'La data del prestito non può essere dopo il rientro.';
+
+  @override
+  String get cannotAssignPlaceWhileLent =>
+      'Puoi assegnare un luogo quando torna.';
+
+  @override
+  String get resolveLoanBeforeArchive =>
+      'Segna come restituito prima di archiviare o rimuovere.';
+
+  @override
+  String get moreOptions => 'Altre opzioni';
+
+  @override
+  String get personEmptyHint => 'Aggiungi la prima persona qui sopra.';
 }

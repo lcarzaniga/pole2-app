@@ -3979,6 +3979,20 @@ class $EventsTable extends Events
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   ).withConverter<ReminderLead?>($EventsTable.$converterremindLeadn);
+  static const VerificationMeta _originPlaceIdMeta = const VerificationMeta(
+    'originPlaceId',
+  );
+  @override
+  late final GeneratedColumn<String> originPlaceId = GeneratedColumn<String>(
+    'origin_place_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES places (id)',
+    ),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -4029,6 +4043,7 @@ class $EventsTable extends Events
     purchasedOn,
     acquisitionType,
     remindLead,
+    originPlaceId,
     createdAt,
     updatedAt,
     deletedAt,
@@ -4117,6 +4132,15 @@ class $EventsTable extends Events
         purchasedOn.isAcceptableOrUnknown(
           data['purchased_on']!,
           _purchasedOnMeta,
+        ),
+      );
+    }
+    if (data.containsKey('origin_place_id')) {
+      context.handle(
+        _originPlaceIdMeta,
+        originPlaceId.isAcceptableOrUnknown(
+          data['origin_place_id']!,
+          _originPlaceIdMeta,
         ),
       );
     }
@@ -4219,6 +4243,10 @@ class $EventsTable extends Events
           data['${effectivePrefix}remind_lead'],
         ),
       ),
+      originPlaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_place_id'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -4275,6 +4303,7 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
   final DateTime? purchasedOn;
   final AcquisitionType? acquisitionType;
   final ReminderLead? remindLead;
+  final String? originPlaceId;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -4294,6 +4323,7 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
     this.purchasedOn,
     this.acquisitionType,
     this.remindLead,
+    this.originPlaceId,
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
@@ -4346,6 +4376,9 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
         $EventsTable.$converterremindLeadn.toSql(remindLead),
       );
     }
+    if (!nullToAbsent || originPlaceId != null) {
+      map['origin_place_id'] = Variable<String>(originPlaceId);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
@@ -4393,6 +4426,9 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
       remindLead: remindLead == null && nullToAbsent
           ? const Value.absent()
           : Value(remindLead),
+      originPlaceId: originPlaceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originPlaceId),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       deletedAt: deletedAt == null && nullToAbsent
@@ -4430,6 +4466,7 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
       remindLead: $EventsTable.$converterremindLeadn.fromJson(
         serializer.fromJson<String?>(json['remindLead']),
       ),
+      originPlaceId: serializer.fromJson<String?>(json['originPlaceId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
@@ -4462,6 +4499,7 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
       'remindLead': serializer.toJson<String?>(
         $EventsTable.$converterremindLeadn.toJson(remindLead),
       ),
+      'originPlaceId': serializer.toJson<String?>(originPlaceId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
@@ -4484,6 +4522,7 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
     Value<DateTime?> purchasedOn = const Value.absent(),
     Value<AcquisitionType?> acquisitionType = const Value.absent(),
     Value<ReminderLead?> remindLead = const Value.absent(),
+    Value<String?> originPlaceId = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
     Value<DateTime?> deletedAt = const Value.absent(),
@@ -4505,6 +4544,9 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
         ? acquisitionType.value
         : this.acquisitionType,
     remindLead: remindLead.present ? remindLead.value : this.remindLead,
+    originPlaceId: originPlaceId.present
+        ? originPlaceId.value
+        : this.originPlaceId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
@@ -4538,6 +4580,9 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
       remindLead: data.remindLead.present
           ? data.remindLead.value
           : this.remindLead,
+      originPlaceId: data.originPlaceId.present
+          ? data.originPlaceId.value
+          : this.originPlaceId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
@@ -4562,6 +4607,7 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
           ..write('purchasedOn: $purchasedOn, ')
           ..write('acquisitionType: $acquisitionType, ')
           ..write('remindLead: $remindLead, ')
+          ..write('originPlaceId: $originPlaceId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt')
@@ -4586,6 +4632,7 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
     purchasedOn,
     acquisitionType,
     remindLead,
+    originPlaceId,
     createdAt,
     updatedAt,
     deletedAt,
@@ -4609,6 +4656,7 @@ class PossessionEvent extends DataClass implements Insertable<PossessionEvent> {
           other.purchasedOn == this.purchasedOn &&
           other.acquisitionType == this.acquisitionType &&
           other.remindLead == this.remindLead &&
+          other.originPlaceId == this.originPlaceId &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt);
@@ -4630,6 +4678,7 @@ class EventsCompanion extends UpdateCompanion<PossessionEvent> {
   final Value<DateTime?> purchasedOn;
   final Value<AcquisitionType?> acquisitionType;
   final Value<ReminderLead?> remindLead;
+  final Value<String?> originPlaceId;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> deletedAt;
@@ -4650,6 +4699,7 @@ class EventsCompanion extends UpdateCompanion<PossessionEvent> {
     this.purchasedOn = const Value.absent(),
     this.acquisitionType = const Value.absent(),
     this.remindLead = const Value.absent(),
+    this.originPlaceId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -4671,6 +4721,7 @@ class EventsCompanion extends UpdateCompanion<PossessionEvent> {
     this.purchasedOn = const Value.absent(),
     this.acquisitionType = const Value.absent(),
     this.remindLead = const Value.absent(),
+    this.originPlaceId = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.deletedAt = const Value.absent(),
@@ -4697,6 +4748,7 @@ class EventsCompanion extends UpdateCompanion<PossessionEvent> {
     Expression<DateTime>? purchasedOn,
     Expression<String>? acquisitionType,
     Expression<String>? remindLead,
+    Expression<String>? originPlaceId,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
@@ -4718,6 +4770,7 @@ class EventsCompanion extends UpdateCompanion<PossessionEvent> {
       if (purchasedOn != null) 'purchased_on': purchasedOn,
       if (acquisitionType != null) 'acquisition_type': acquisitionType,
       if (remindLead != null) 'remind_lead': remindLead,
+      if (originPlaceId != null) 'origin_place_id': originPlaceId,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
@@ -4741,6 +4794,7 @@ class EventsCompanion extends UpdateCompanion<PossessionEvent> {
     Value<DateTime?>? purchasedOn,
     Value<AcquisitionType?>? acquisitionType,
     Value<ReminderLead?>? remindLead,
+    Value<String?>? originPlaceId,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? deletedAt,
@@ -4762,6 +4816,7 @@ class EventsCompanion extends UpdateCompanion<PossessionEvent> {
       purchasedOn: purchasedOn ?? this.purchasedOn,
       acquisitionType: acquisitionType ?? this.acquisitionType,
       remindLead: remindLead ?? this.remindLead,
+      originPlaceId: originPlaceId ?? this.originPlaceId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
@@ -4825,6 +4880,9 @@ class EventsCompanion extends UpdateCompanion<PossessionEvent> {
         $EventsTable.$converterremindLeadn.toSql(remindLead.value),
       );
     }
+    if (originPlaceId.present) {
+      map['origin_place_id'] = Variable<String>(originPlaceId.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -4858,6 +4916,7 @@ class EventsCompanion extends UpdateCompanion<PossessionEvent> {
           ..write('purchasedOn: $purchasedOn, ')
           ..write('acquisitionType: $acquisitionType, ')
           ..write('remindLead: $remindLead, ')
+          ..write('originPlaceId: $originPlaceId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
@@ -5976,6 +6035,24 @@ final class $$PlacesTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$EventsTable, List<PossessionEvent>>
+  _eventsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.events,
+    aliasName: 'places__id__events__origin_place_id',
+  );
+
+  $$EventsTableProcessedTableManager get eventsRefs {
+    final manager = $$EventsTableTableManager(
+      $_db,
+      $_db.events,
+    ).filter((f) => f.originPlaceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_eventsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$PlacesTableFilterComposer
@@ -6033,6 +6110,31 @@ class $$PlacesTableFilterComposer
           }) => $$PossessionsTableFilterComposer(
             $db: $db,
             $table: $db.possessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> eventsRefs(
+    Expression<bool> Function($$EventsTableFilterComposer f) f,
+  ) {
+    final $$EventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.originPlaceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableFilterComposer(
+            $db: $db,
+            $table: $db.events,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6134,6 +6236,31 @@ class $$PlacesTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> eventsRefs<T extends Object>(
+    Expression<T> Function($$EventsTableAnnotationComposer a) f,
+  ) {
+    final $$EventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.originPlaceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$PlacesTableTableManager
@@ -6149,7 +6276,7 @@ class $$PlacesTableTableManager
           $$PlacesTableUpdateCompanionBuilder,
           (Place, $$PlacesTableReferences),
           Place,
-          PrefetchHooks Function({bool possessionsRefs})
+          PrefetchHooks Function({bool possessionsRefs, bool eventsRefs})
         > {
   $$PlacesTableTableManager(_$AppDatabase db, $PlacesTable table)
     : super(
@@ -6204,31 +6331,59 @@ class $$PlacesTableTableManager
                     (e.readTable(table), $$PlacesTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback: ({possessionsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (possessionsRefs) db.possessions],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (possessionsRefs)
-                    await $_getPrefetchedData<Place, $PlacesTable, Possession>(
-                      currentTable: table,
-                      referencedTable: $$PlacesTableReferences
-                          ._possessionsRefsTable(db),
-                      managerFromTypedResult: (p0) => $$PlacesTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).possessionsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.placeId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({possessionsRefs = false, eventsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (possessionsRefs) db.possessions,
+                    if (eventsRefs) db.events,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (possessionsRefs)
+                        await $_getPrefetchedData<
+                          Place,
+                          $PlacesTable,
+                          Possession
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PlacesTableReferences
+                              ._possessionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PlacesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).possessionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.placeId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (eventsRefs)
+                        await $_getPrefetchedData<
+                          Place,
+                          $PlacesTable,
+                          PossessionEvent
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PlacesTableReferences
+                              ._eventsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PlacesTableReferences(db, table, p0).eventsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.originPlaceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -6245,7 +6400,7 @@ typedef $$PlacesTableProcessedTableManager =
       $$PlacesTableUpdateCompanionBuilder,
       (Place, $$PlacesTableReferences),
       Place,
-      PrefetchHooks Function({bool possessionsRefs})
+      PrefetchHooks Function({bool possessionsRefs, bool eventsRefs})
     >;
 typedef $$PossessionsTableCreateCompanionBuilder =
     PossessionsCompanion Function({
@@ -9330,6 +9485,7 @@ typedef $$EventsTableCreateCompanionBuilder =
       Value<DateTime?> purchasedOn,
       Value<AcquisitionType?> acquisitionType,
       Value<ReminderLead?> remindLead,
+      Value<String?> originPlaceId,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<DateTime?> deletedAt,
@@ -9352,6 +9508,7 @@ typedef $$EventsTableUpdateCompanionBuilder =
       Value<DateTime?> purchasedOn,
       Value<AcquisitionType?> acquisitionType,
       Value<ReminderLead?> remindLead,
+      Value<String?> originPlaceId,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<DateTime?> deletedAt,
@@ -9407,6 +9564,23 @@ final class $$EventsTableReferences
       $_db.evidenceItems,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_evidenceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $PlacesTable _originPlaceIdTable(_$AppDatabase db) =>
+      db.places.createAlias('events__origin_place_id__places__id');
+
+  $$PlacesTableProcessedTableManager? get originPlaceId {
+    final $_column = $_itemColumn<String>('origin_place_id');
+    if ($_column == null) return null;
+    final manager = $$PlacesTableTableManager(
+      $_db,
+      $_db.places,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_originPlaceIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -9570,6 +9744,29 @@ class $$EventsTableFilterComposer
     );
     return composer;
   }
+
+  $$PlacesTableFilterComposer get originPlaceId {
+    final $$PlacesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originPlaceId,
+      referencedTable: $db.places,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlacesTableFilterComposer(
+            $db: $db,
+            $table: $db.places,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$EventsTableOrderingComposer
@@ -9724,6 +9921,29 @@ class $$EventsTableOrderingComposer
     );
     return composer;
   }
+
+  $$PlacesTableOrderingComposer get originPlaceId {
+    final $$PlacesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originPlaceId,
+      referencedTable: $db.places,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlacesTableOrderingComposer(
+            $db: $db,
+            $table: $db.places,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$EventsTableAnnotationComposer
@@ -9858,6 +10078,29 @@ class $$EventsTableAnnotationComposer
     );
     return composer;
   }
+
+  $$PlacesTableAnnotationComposer get originPlaceId {
+    final $$PlacesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originPlaceId,
+      referencedTable: $db.places,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlacesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.places,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$EventsTableTableManager
@@ -9877,6 +10120,7 @@ class $$EventsTableTableManager
             bool possessionId,
             bool partyId,
             bool evidenceId,
+            bool originPlaceId,
           })
         > {
   $$EventsTableTableManager(_$AppDatabase db, $EventsTable table)
@@ -9907,6 +10151,7 @@ class $$EventsTableTableManager
                 Value<DateTime?> purchasedOn = const Value.absent(),
                 Value<AcquisitionType?> acquisitionType = const Value.absent(),
                 Value<ReminderLead?> remindLead = const Value.absent(),
+                Value<String?> originPlaceId = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -9927,6 +10172,7 @@ class $$EventsTableTableManager
                 purchasedOn: purchasedOn,
                 acquisitionType: acquisitionType,
                 remindLead: remindLead,
+                originPlaceId: originPlaceId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
@@ -9949,6 +10195,7 @@ class $$EventsTableTableManager
                 Value<DateTime?> purchasedOn = const Value.absent(),
                 Value<AcquisitionType?> acquisitionType = const Value.absent(),
                 Value<ReminderLead?> remindLead = const Value.absent(),
+                Value<String?> originPlaceId = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -9969,6 +10216,7 @@ class $$EventsTableTableManager
                 purchasedOn: purchasedOn,
                 acquisitionType: acquisitionType,
                 remindLead: remindLead,
+                originPlaceId: originPlaceId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
@@ -9981,7 +10229,12 @@ class $$EventsTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({possessionId = false, partyId = false, evidenceId = false}) {
+              ({
+                possessionId = false,
+                partyId = false,
+                evidenceId = false,
+                originPlaceId = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [],
@@ -10040,6 +10293,19 @@ class $$EventsTableTableManager
                                   )
                                   as T;
                         }
+                        if (originPlaceId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.originPlaceId,
+                                    referencedTable: $$EventsTableReferences
+                                        ._originPlaceIdTable(db),
+                                    referencedColumn: $$EventsTableReferences
+                                        ._originPlaceIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
 
                         return state;
                       },
@@ -10064,7 +10330,12 @@ typedef $$EventsTableProcessedTableManager =
       $$EventsTableUpdateCompanionBuilder,
       (PossessionEvent, $$EventsTableReferences),
       PossessionEvent,
-      PrefetchHooks Function({bool possessionId, bool partyId, bool evidenceId})
+      PrefetchHooks Function({
+        bool possessionId,
+        bool partyId,
+        bool evidenceId,
+        bool originPlaceId,
+      })
     >;
 typedef $$PossessionPhotosTableCreateCompanionBuilder =
     PossessionPhotosCompanion Function({

@@ -282,15 +282,48 @@ class _DeadlineSummary extends ConsumerWidget {
   }
 }
 
-class _PossessionCard extends StatelessWidget {
+class _PossessionCard extends ConsumerWidget {
   const _PossessionCard({required this.possession});
 
   final Possession possession;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
+
+    // A lent thing stays on Home with a subtle, non-alarming custody line that
+    // replaces the category subtitle (never the title).
+    final loan = ref.watch(activeLoanProvider(possession.id)).value;
+    final borrower = loan?.partyId == null
+        ? null
+        : ref.watch(partyProvider(loan!.partyId!)).value;
+
+    Widget? subtitle;
+    if (loan != null) {
+      subtitle = Row(
+        children: [
+          Icon(Icons.people_alt_outlined,
+              size: AppIconSize.sm, color: scheme.onSurfaceVariant),
+          const SizedBox(width: AppSpacing.xs),
+          Flexible(
+            child: Text(
+              l10n.lentToPerson(borrower?.name ?? '—'),
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+          ),
+        ],
+      );
+    } else if (possession.category != null) {
+      subtitle = Text(
+        possession.category!,
+        style: theme.textTheme.bodyMedium
+            ?.copyWith(color: scheme.onSurfaceVariant),
+      );
+    }
+
     return Card(
       margin: EdgeInsets.zero,
       child: ListTile(
@@ -299,13 +332,7 @@ class _PossessionCard extends StatelessWidget {
           vertical: AppSpacing.sm,
         ),
         title: Text(possession.title, style: theme.textTheme.titleMedium),
-        subtitle: possession.category == null
-            ? null
-            : Text(
-                possession.category!,
-                style: theme.textTheme.bodyMedium
-                    ?.copyWith(color: scheme.onSurfaceVariant),
-              ),
+        subtitle: subtitle,
         trailing: Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
         onTap: () => context.pushNamed(
           Routes.possessionName,

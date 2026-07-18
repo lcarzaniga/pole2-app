@@ -27,7 +27,19 @@ final partyProvider = StreamProvider.family<Party?, String>(
 );
 
 /// All upcoming reminders across active things, soonest first — powers the
-/// calm Home summary.
+/// calm Home summary. Includes loan return reminders.
 final upcomingRemindersProvider = StreamProvider<List<UpcomingReminder>>(
   (ref) => ref.watch(eventsDaoProvider).watchUpcomingReminders(),
+);
+
+/// The active loan (a pending `lent` event) for a possession, or null. Powers
+/// the custody card, the Home "Prestato a …" indicator, and lending guards.
+final activeLoanProvider = StreamProvider.family<PossessionEvent?, String>(
+  (ref, id) => ref.watch(eventsDaoProvider).watchActiveLoan(id),
+);
+
+/// Non-deleted people (borrowers), alphabetical — for the person picker. Never
+/// includes suppliers or any non-person party.
+final peopleProvider = StreamProvider<List<Party>>(
+  (ref) => ref.watch(eventsDaoProvider).watchPeople(),
 );

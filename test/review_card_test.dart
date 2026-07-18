@@ -42,6 +42,7 @@ void main() {
           onMove: () {},
           onUnassign: () {},
           onArchive: () {},
+          onMore: () {},
         ),
       ),
     );
@@ -82,6 +83,7 @@ void main() {
           onMove: () => moved++,
           onUnassign: () => unassigned++,
           onArchive: () => archived++,
+          onMore: () {},
         ),
       ),
     );
@@ -111,6 +113,7 @@ void main() {
           onMove: () {},
           onUnassign: () {},
           onArchive: () {},
+          onMore: () {},
         ),
       ),
     );

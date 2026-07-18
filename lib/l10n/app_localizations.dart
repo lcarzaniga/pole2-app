@@ -1075,6 +1075,198 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{count, plural, =1{1 foto} other{{count} foto}}'**
   String photoCount(int count);
+
+  /// No description provided for @lendToSomeone.
+  ///
+  /// In it, this message translates to:
+  /// **'Presta a qualcuno'**
+  String get lendToSomeone;
+
+  /// No description provided for @lendEditTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica prestito'**
+  String get lendEditTitle;
+
+  /// No description provided for @borrowerLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'A chi lo presti?'**
+  String get borrowerLabel;
+
+  /// No description provided for @borrowerChoose.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli una persona'**
+  String get borrowerChoose;
+
+  /// No description provided for @selectPerson.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli una persona'**
+  String get selectPerson;
+
+  /// No description provided for @createPerson.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuova persona'**
+  String get createPerson;
+
+  /// No description provided for @personNameHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome'**
+  String get personNameHint;
+
+  /// No description provided for @addPersonButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi'**
+  String get addPersonButton;
+
+  /// No description provided for @lentDateLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Data del prestito'**
+  String get lentDateLabel;
+
+  /// No description provided for @expectedReturnLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Rientro previsto'**
+  String get expectedReturnLabel;
+
+  /// No description provided for @expectedReturnOptional.
+  ///
+  /// In it, this message translates to:
+  /// **'Rientro previsto (facoltativo)'**
+  String get expectedReturnOptional;
+
+  /// No description provided for @noReturnDate.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna data di rientro'**
+  String get noReturnDate;
+
+  /// No description provided for @returnDateClear.
+  ///
+  /// In it, this message translates to:
+  /// **'Togli la data'**
+  String get returnDateClear;
+
+  /// No description provided for @returnReminder.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricordami il rientro'**
+  String get returnReminder;
+
+  /// No description provided for @lentToPerson.
+  ///
+  /// In it, this message translates to:
+  /// **'Prestato a {name}'**
+  String lentToPerson(String name);
+
+  /// No description provided for @lentOn.
+  ///
+  /// In it, this message translates to:
+  /// **'Prestato il {date}'**
+  String lentOn(String date);
+
+  /// No description provided for @expectedReturnOn.
+  ///
+  /// In it, this message translates to:
+  /// **'Rientro previsto il {date}'**
+  String expectedReturnOn(String date);
+
+  /// No description provided for @returnReminderSet.
+  ///
+  /// In it, this message translates to:
+  /// **'Ti ricorderò il rientro'**
+  String get returnReminderSet;
+
+  /// No description provided for @markReturned.
+  ///
+  /// In it, this message translates to:
+  /// **'Segna come restituito'**
+  String get markReturned;
+
+  /// No description provided for @returnTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Segna come restituito'**
+  String get returnTitle;
+
+  /// No description provided for @returnActualDate.
+  ///
+  /// In it, this message translates to:
+  /// **'Data di rientro'**
+  String get returnActualDate;
+
+  /// No description provided for @returnPlaceLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimettilo in'**
+  String get returnPlaceLabel;
+
+  /// No description provided for @returnedOn.
+  ///
+  /// In it, this message translates to:
+  /// **'Restituito il {date}'**
+  String returnedOn(String date);
+
+  /// No description provided for @returnReminderTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Rientro: {object}'**
+  String returnReminderTitle(String object);
+
+  /// No description provided for @loanStarted.
+  ///
+  /// In it, this message translates to:
+  /// **'Prestato. È annotato.'**
+  String get loanStarted;
+
+  /// No description provided for @loanUpdated.
+  ///
+  /// In it, this message translates to:
+  /// **'Prestito aggiornato.'**
+  String get loanUpdated;
+
+  /// No description provided for @loanReturned.
+  ///
+  /// In it, this message translates to:
+  /// **'Restituito. Bentornato.'**
+  String get loanReturned;
+
+  /// No description provided for @loanDatesInvalid.
+  ///
+  /// In it, this message translates to:
+  /// **'La data del prestito non può essere dopo il rientro.'**
+  String get loanDatesInvalid;
+
+  /// No description provided for @cannotAssignPlaceWhileLent.
+  ///
+  /// In it, this message translates to:
+  /// **'Puoi assegnare un luogo quando torna.'**
+  String get cannotAssignPlaceWhileLent;
+
+  /// No description provided for @resolveLoanBeforeArchive.
+  ///
+  /// In it, this message translates to:
+  /// **'Segna come restituito prima di archiviare o rimuovere.'**
+  String get resolveLoanBeforeArchive;
+
+  /// No description provided for @moreOptions.
+  ///
+  /// In it, this message translates to:
+  /// **'Altre opzioni'**
+  String get moreOptions;
+
+  /// No description provided for @personEmptyHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi la prima persona qui sopra.'**
+  String get personEmptyHint;
 }
 
 class _AppLocalizationsDelegate

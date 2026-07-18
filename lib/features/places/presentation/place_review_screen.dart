@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/router/routes.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/database/tables/enums.dart';
 import '../../../l10n/app_localizations.dart';
@@ -159,6 +160,46 @@ class _PlaceReviewScreenState extends ConsumerState<PlaceReviewScreen> {
     }
   }
 
+  /// Secondary "Altre opzioni" — keeps the four primary actions uncluttered.
+  /// Currently offers lending; lending clears the place, so the item leaves this
+  /// walk and is marked handled, advancing safely to the next one.
+  Future<void> _more(Possession p) async {
+    if (_busy) return;
+    final l10n = AppLocalizations.of(context);
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.people_alt_outlined),
+              title: Text(l10n.lendToSomeone),
+              onTap: () => Navigator.of(context).pop('lend'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (action == 'lend') await _lend(p);
+  }
+
+  Future<void> _lend(Possession p) async {
+    if (_busy || !mounted) return;
+    setState(() => _busy = true);
+    try {
+      final ok = await context.pushNamed<bool>(
+        Routes.lendName,
+        pathParameters: {'id': p.id},
+      );
+      // Only a successful lend marks handled and advances; cancel changes nothing.
+      if (ok == true && mounted) setState(() => _session.markHandled(p.id));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   void _showError(ScaffoldMessengerState messenger, AppLocalizations l10n) {
     if (!mounted) return;
     messenger
@@ -223,6 +264,7 @@ class _PlaceReviewScreenState extends ConsumerState<PlaceReviewScreen> {
                   onMove: () => _move(current),
                   onUnassign: () => _unassign(current),
                   onArchive: () => _archive(current),
+                  onMore: () => _more(current),
                 ),
               ),
             );

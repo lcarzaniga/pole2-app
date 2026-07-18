@@ -234,5 +234,53 @@
   "photoCount": "{count, plural, =1{1 foto} other{{count} foto}}",
   "@photoCount": {
     "placeholders": { "count": { "type": "int" } }
-  }
+  },
+
+  "lendToSomeone": "Presta a qualcuno",
+  "lendEditTitle": "Modifica prestito",
+  "borrowerLabel": "A chi lo presti?",
+  "borrowerChoose": "Scegli una persona",
+  "selectPerson": "Scegli una persona",
+  "createPerson": "Nuova persona",
+  "personNameHint": "Nome",
+  "addPersonButton": "Aggiungi",
+  "lentDateLabel": "Data del prestito",
+  "expectedReturnLabel": "Rientro previsto",
+  "expectedReturnOptional": "Rientro previsto (facoltativo)",
+  "noReturnDate": "Nessuna data di rientro",
+  "returnDateClear": "Togli la data",
+  "returnReminder": "Ricordami il rientro",
+  "lentToPerson": "Prestato a {name}",
+  "@lentToPerson": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "lentOn": "Prestato il {date}",
+  "@lentOn": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "expectedReturnOn": "Rientro previsto il {date}",
+  "@expectedReturnOn": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "returnReminderSet": "Ti ricorderò il rientro",
+  "markReturned": "Segna come restituito",
+  "returnTitle": "Segna come restituito",
+  "returnActualDate": "Data di rientro",
+  "returnPlaceLabel": "Rimettilo in",
+  "returnedOn": "Restituito il {date}",
+  "@returnedOn": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "returnReminderTitle": "Rientro: {object}",
+  "@returnReminderTitle": {
+    "placeholders": { "object": { "type": "String" } }
+  },
+  "loanStarted": "Prestato. È annotato.",
+  "loanUpdated": "Prestito aggiornato.",
+  "loanReturned": "Restituito. Bentornato.",
+  "loanDatesInvalid": "La data del prestito non può essere dopo il rientro.",
+  "cannotAssignPlaceWhileLent": "Puoi assegnare un luogo quando torna.",
+  "resolveLoanBeforeArchive": "Segna come restituito prima di archiviare o rimuovere.",
+  "moreOptions": "Altre opzioni",
+  "personEmptyHint": "Aggiungi la prima persona qui sopra."
 }

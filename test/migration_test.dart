@@ -33,11 +33,13 @@ void main() {
     raw.execute('PRAGMA user_version = 2');
     final now = DateTime.now().toUtc().toIso8601String();
     raw.execute(
-        "INSERT INTO possessions (id,title,status,created_at,updated_at) "
-        "VALUES ('p1','Old Camera','active','$now','$now')");
+      "INSERT INTO possessions (id,title,status,created_at,updated_at) "
+      "VALUES ('p1','Old Camera','active','$now','$now')",
+    );
     raw.execute(
-        "INSERT INTO events (id,possession_id,kind,at,created_at,updated_at) "
-        "VALUES ('e1','p1','acquired','$now','$now','$now')");
+      "INSERT INTO events (id,possession_id,kind,at,created_at,updated_at) "
+      "VALUES ('e1','p1','acquired','$now','$now','$now')",
+    );
     raw.close();
 
     // Open with the current app — the v2 → v3 migration runs on open.
@@ -57,53 +59,63 @@ void main() {
     expect(acquisition.purchasedOn, isNull);
 
     // The new columns are fully usable after migration.
-    await db.eventsDao
-        .saveAcquisition(possessionId: 'p1', type: AcquisitionType.gift);
+    await db.eventsDao.saveAcquisition(
+      possessionId: 'p1',
+      type: AcquisitionType.gift,
+    );
     final updated = await db.eventsDao.watchAcquisition('p1').first;
     expect(updated!.acquisitionType, AcquisitionType.gift);
   });
 
-  test('v3 data survives migration to v4 (Places + nullable placeId)', () async {
-    final dir = Directory.systemTemp.createTempSync('pole2_migration_v4');
-    addTearDown(() => dir.deleteSync(recursive: true));
-    final path = '${dir.path}/app.db';
+  test(
+    'v3 data survives migration to v4 (Places + nullable placeId)',
+    () async {
+      final dir = Directory.systemTemp.createTempSync('pole2_migration_v4');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      final path = '${dir.path}/app.db';
 
-    // Build a real v3 database: the v2 schema plus the three additive Event
-    // columns the v2→v3 migration appended, then real data.
-    final raw = sqlite3.open(path);
-    raw.execute(_v2Schema);
-    raw.execute('ALTER TABLE events ADD COLUMN purchased_on TEXT NULL');
-    raw.execute('ALTER TABLE events ADD COLUMN acquisition_type TEXT NULL');
-    raw.execute('ALTER TABLE events ADD COLUMN remind_lead TEXT NULL');
-    raw.execute('PRAGMA user_version = 3');
-    final now = DateTime.now().toUtc().toIso8601String();
-    raw.execute(
+      // Build a real v3 database: the v2 schema plus the three additive Event
+      // columns the v2→v3 migration appended, then real data.
+      final raw = sqlite3.open(path);
+      raw.execute(_v2Schema);
+      raw.execute('ALTER TABLE events ADD COLUMN purchased_on TEXT NULL');
+      raw.execute('ALTER TABLE events ADD COLUMN acquisition_type TEXT NULL');
+      raw.execute('ALTER TABLE events ADD COLUMN remind_lead TEXT NULL');
+      raw.execute('PRAGMA user_version = 3');
+      final now = DateTime.now().toUtc().toIso8601String();
+      raw.execute(
         "INSERT INTO possessions (id,title,status,created_at,updated_at) "
-        "VALUES ('p1','Old Camera','active','$now','$now')");
-    raw.close();
+        "VALUES ('p1','Old Camera','active','$now','$now')",
+      );
+      raw.close();
 
-    // Open with the current app — the v3 → v4 migration runs on open.
-    final db = AppDatabase.forTesting(NativeDatabase(File(path)));
-    addTearDown(db.close);
+      // Open with the current app — the v3 → v4 migration runs on open.
+      final db = AppDatabase.forTesting(NativeDatabase(File(path)));
+      addTearDown(db.close);
 
-    // The existing possession survived untouched, with no place assigned.
-    final possession = await db.possessionsDao.watchById('p1').first;
-    expect(possession, isNotNull);
-    expect(possession!.title, 'Old Camera');
-    expect(possession.placeId, isNull); // "no place" — never a placeholder row
+      // The existing possession survived untouched, with no place assigned.
+      final possession = await db.possessionsDao.watchById('p1').first;
+      expect(possession, isNotNull);
+      expect(possession!.title, 'Old Camera');
+      expect(
+        possession.placeId,
+        isNull,
+      ); // "no place" — never a placeholder row
 
-    // The new Places table is fully usable after migration.
-    final placeId = await db.placesDao.create(name: 'Garage');
-    final place = await db.placesDao.findById(placeId);
-    expect(place, isNotNull);
-    expect(place!.name, 'Garage');
+      // The new Places table is fully usable after migration.
+      final placeId = await db.placesDao.create(name: 'Garage');
+      final place = await db.placesDao.findById(placeId);
+      expect(place, isNotNull);
+      expect(place!.name, 'Garage');
 
-    // The nullable placeId is settable and round-trips.
-    await (db.update(db.possessions)..where((t) => t.id.equals('p1')))
-        .write(PossessionsCompanion(placeId: Value(placeId)));
-    final reloaded = await db.possessionsDao.watchById('p1').first;
-    expect(reloaded!.placeId, placeId);
-  });
+      // The nullable placeId is settable and round-trips.
+      await (db.update(db.possessions)..where((t) => t.id.equals('p1'))).write(
+        PossessionsCompanion(placeId: Value(placeId)),
+      );
+      final reloaded = await db.possessionsDao.watchById('p1').first;
+      expect(reloaded!.placeId, placeId);
+    },
+  );
 
   test('v4 data survives migration to v5, and the existing cover joins the '
       'gallery', () async {
@@ -120,18 +132,25 @@ void main() {
     raw.execute('ALTER TABLE events ADD COLUMN purchased_on TEXT NULL');
     raw.execute('ALTER TABLE events ADD COLUMN acquisition_type TEXT NULL');
     raw.execute('ALTER TABLE events ADD COLUMN remind_lead TEXT NULL');
-    raw.execute('CREATE TABLE "places" ("id" TEXT NOT NULL, "name" TEXT NOT '
-        'NULL, "notes" TEXT NULL, "created_at" TEXT NOT NULL, "updated_at" TEXT '
-        'NOT NULL, "deleted_at" TEXT NULL, PRIMARY KEY ("id"));');
-    raw.execute('ALTER TABLE possessions ADD COLUMN place_id TEXT NULL '
-        'REFERENCES places (id)');
+    raw.execute(
+      'CREATE TABLE "places" ("id" TEXT NOT NULL, "name" TEXT NOT '
+      'NULL, "notes" TEXT NULL, "created_at" TEXT NOT NULL, "updated_at" TEXT '
+      'NOT NULL, "deleted_at" TEXT NULL, PRIMARY KEY ("id"));',
+    );
+    raw.execute(
+      'ALTER TABLE possessions ADD COLUMN place_id TEXT NULL '
+      'REFERENCES places (id)',
+    );
     raw.execute('PRAGMA user_version = 4');
     final now = DateTime.now().toUtc().toIso8601String();
-    raw.execute("INSERT INTO files (id,relative_path,mime_type,byte_size,"
-        "created_at) VALUES ('f1','photos/old.jpg','image/jpeg',10,'$now')");
     raw.execute(
-        "INSERT INTO possessions (id,title,status,cover_file_id,created_at,"
-        "updated_at) VALUES ('p1','Old Camera','active','f1','$now','$now')");
+      "INSERT INTO files (id,relative_path,mime_type,byte_size,"
+      "created_at) VALUES ('f1','photos/old.jpg','image/jpeg',10,'$now')",
+    );
+    raw.execute(
+      "INSERT INTO possessions (id,title,status,cover_file_id,created_at,"
+      "updated_at) VALUES ('p1','Old Camera','active','f1','$now','$now')",
+    );
     raw.close();
 
     // Open with the current app — the v4 → v5 migration runs on open.
@@ -150,10 +169,92 @@ void main() {
 
     // The gallery is fully usable after migration: adding another photo leaves
     // the migrated cover in place.
-    await db.possessionsDao.addPhoto('p1',
-        relativePath: 'photos/new.jpg', mimeType: 'image/jpeg', byteSize: 20);
+    await db.possessionsDao.addPhoto(
+      'p1',
+      relativePath: 'photos/new.jpg',
+      mimeType: 'image/jpeg',
+      byteSize: 20,
+    );
     final after = await db.possessionsDao.watchPhotos('p1').first;
     expect(after.length, 2);
     expect((await db.possessionsDao.watchById('p1').first)!.coverFileId, 'f1');
+  });
+
+  test('v5 data survives migration to v6 (loans column added), preserving '
+      'possessions, photos, places and events', () async {
+    final dir = Directory.systemTemp.createTempSync('pole2_migration_v6');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final path = '${dir.path}/app.db';
+
+    // Build a real v5 database: v2 + v3 columns + v4 places/place_id + the v5
+    // possession_photos table, then real data (a possession with a cover photo
+    // in a place, plus an acquisition event).
+    final raw = sqlite3.open(path);
+    raw.execute(_v2Schema);
+    raw.execute('ALTER TABLE events ADD COLUMN purchased_on TEXT NULL');
+    raw.execute('ALTER TABLE events ADD COLUMN acquisition_type TEXT NULL');
+    raw.execute('ALTER TABLE events ADD COLUMN remind_lead TEXT NULL');
+    raw.execute(
+      'CREATE TABLE "places" ("id" TEXT NOT NULL, "name" TEXT NOT '
+      'NULL, "notes" TEXT NULL, "created_at" TEXT NOT NULL, "updated_at" TEXT '
+      'NOT NULL, "deleted_at" TEXT NULL, PRIMARY KEY ("id"));',
+    );
+    raw.execute(
+      'ALTER TABLE possessions ADD COLUMN place_id TEXT NULL '
+      'REFERENCES places (id)',
+    );
+    raw.execute(
+      'CREATE TABLE "possession_photos" ("id" TEXT NOT NULL, '
+      '"possession_id" TEXT NOT NULL REFERENCES possessions (id), "file_id" '
+      'TEXT NOT NULL REFERENCES files (id), "sort_order" INTEGER NOT NULL '
+      'DEFAULT 0, "created_at" TEXT NOT NULL, "updated_at" TEXT NOT NULL, '
+      '"deleted_at" TEXT NULL, PRIMARY KEY ("id"));',
+    );
+    raw.execute('PRAGMA user_version = 5');
+    final now = DateTime.now().toUtc().toIso8601String();
+    raw.execute(
+      "INSERT INTO places (id,name,created_at,updated_at) "
+      "VALUES ('pl1','Garage','$now','$now')",
+    );
+    raw.execute(
+      "INSERT INTO files (id,relative_path,mime_type,byte_size,"
+      "created_at) VALUES ('f1','photos/old.jpg','image/jpeg',10,'$now')",
+    );
+    raw.execute(
+      "INSERT INTO possessions (id,title,status,cover_file_id,place_id,"
+      "created_at,updated_at) "
+      "VALUES ('p1','Old Camera','active','f1','pl1','$now','$now')",
+    );
+    raw.execute(
+      "INSERT INTO possession_photos (id,possession_id,file_id,"
+      "sort_order,created_at,updated_at) "
+      "VALUES ('ph1','p1','f1',0,'$now','$now')",
+    );
+    raw.execute(
+      "INSERT INTO events (id,possession_id,kind,at,created_at,updated_at) "
+      "VALUES ('e1','p1','acquired','$now','$now','$now')",
+    );
+    raw.close();
+
+    // Open with the current app — the v5 → v6 migration runs on open.
+    final db = AppDatabase.forTesting(NativeDatabase(File(path)));
+    addTearDown(db.close);
+
+    // Everything from v5 survived untouched.
+    final possession = await db.possessionsDao.watchById('p1').first;
+    expect(possession!.title, 'Old Camera');
+    expect(possession.placeId, 'pl1');
+    expect((await db.possessionsDao.watchPhotos('p1').first).length, 1);
+    expect((await db.placesDao.findById('pl1'))!.name, 'Garage');
+    expect((await db.eventsDao.watchAcquisition('p1').first)!.id, 'e1');
+
+    // The new loans column is usable: lending records the origin place.
+    final loan = await db.eventsDao.lend(
+      possessionId: 'p1',
+      personName: 'Marco',
+      lentAt: DateTime(2026, 7, 1),
+    );
+    expect(loan!.originPlaceId, 'pl1');
+    expect((await db.possessionsDao.watchById('p1').first)!.placeId, isNull);
   });
 }

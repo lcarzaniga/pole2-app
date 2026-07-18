@@ -181,6 +181,10 @@ class Events extends Table {
       dateTime().nullable()(); // explicit acquisition date
   TextColumn get acquisitionType => textEnum<AcquisitionType>().nullable()();
   TextColumn get remindLead => textEnum<ReminderLead>().nullable()();
+  // Added in schema v6 (M5.2 loans): the possession's place at lend time, so a
+  // return can safely restore it. Null = no place then. Only meaningful on a
+  // `lent` event.
+  TextColumn get originPlaceId => text().nullable().references(Places, #id)();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();

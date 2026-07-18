@@ -9,7 +9,15 @@ library;
 /// is preserved in every state (see DOMAIN_MODEL §4).
 enum PossessionStatus { active, archived, transferred, lost, disposed }
 
-enum EvidenceKind { receipt, invoice, manual, warrantyCard, photo, label, other }
+enum EvidenceKind {
+  receipt,
+  invoice,
+  manual,
+  warrantyCard,
+  photo,
+  label,
+  other,
+}
 
 enum EventKind {
   acquired,
@@ -21,6 +29,10 @@ enum EventKind {
   transfer,
   disposal,
   lost,
+  // M5.2 loans (temporary custody). `lent` (status pending) is an active loan;
+  // `returned` records the hand-back. Stored by name, so additive and safe.
+  lent,
+  returned,
   custom,
 }
 

@@ -21,7 +21,10 @@ import '../../places/presentation/place_picker.dart';
 import '../application/event_providers.dart';
 import '../application/gallery_order.dart';
 import '../application/possession_providers.dart';
+import 'lend_editor_screen.dart';
+import 'return_sheet.dart';
 import 'widgets/cover_area.dart';
+import 'widgets/custody_card.dart';
 import 'widgets/gallery_strip.dart';
 
 /// A single thing, living inside Pole² — its dossier.
@@ -103,6 +106,8 @@ class _Dossier extends ConsumerWidget {
               const SizedBox(height: AppSpacing.lg),
               _ActionHub(possession: possession),
               const SizedBox(height: AppSpacing.xl),
+              _Custody(possession: possession),
+              const SizedBox(height: AppSpacing.md),
               _PlaceCard(possession: possession),
               const SizedBox(height: AppSpacing.md),
               _DetailsCard(id: id),
@@ -292,9 +297,63 @@ class _DetailsCard extends ConsumerWidget {
   }
 }
 
+/// Custody: while lent, a calm card showing who has it and how to correct or
+/// end the loan; otherwise a discoverable, secondary "Presta a qualcuno" action
+/// (kept out of the Foto·Nota·Data·Luogo hub).
+class _Custody extends ConsumerWidget {
+  const _Custody({required this.possession});
+
+  final Possession possession;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final loan = ref.watch(activeLoanProvider(possession.id)).value;
+
+    if (loan == null) {
+      return _TapCard(
+        icon: Icons.people_alt_outlined,
+        title: l10n.lendToSomeone,
+        subtitle: l10n.borrowerChoose,
+        onTap: () => context.pushNamed(
+          Routes.lendName,
+          pathParameters: {'id': possession.id},
+        ),
+      );
+    }
+
+    final borrower = loan.partyId == null
+        ? null
+        : ref.watch(partyProvider(loan.partyId!)).value;
+
+    return CustodyCard(
+      borrowerName: borrower?.name ?? '—',
+      lentAt: loan.at,
+      expectedReturn: loan.endsAt,
+      hasReminder: loan.remindLead != null,
+      onEdit: () => context.pushNamed(
+        Routes.lendName,
+        pathParameters: {'id': possession.id},
+        extra: LendEditData(
+          loanEventId: loan.id,
+          borrowerName: borrower?.name ?? '',
+          borrowerPartyId: loan.partyId,
+          lentAt: loan.at,
+          expectedReturn: loan.endsAt,
+          lead: loan.remindLead,
+        ),
+      ),
+      onReturn: () =>
+          showReturnSheet(context, possessionId: possession.id, loan: loan),
+    );
+  }
+}
+
 /// Where this thing lives — always shown. When a place is assigned, tapping the
 /// card opens that place's contents; a separate edit control changes / creates /
 /// clears the place. When none is assigned, the card invites choosing one.
+/// While the thing is lent, the place is calmly unavailable (it returns when the
+/// object does), so we never claim it is in its old place.
 class _PlaceCard extends ConsumerWidget {
   const _PlaceCard({required this.possession});
 
@@ -303,6 +362,16 @@ class _PlaceCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+
+    // While lent, don't invite assigning a place (it would fight the loan).
+    if (ref.watch(activeLoanProvider(possession.id)).value != null) {
+      return _InfoCard(
+        icon: Icons.place_outlined,
+        title: l10n.noPlace,
+        subtitle: l10n.cannotAssignPlaceWhileLent,
+      );
+    }
+
     final placeId = possession.placeId;
     // A deleted place resolves to null → treated as "no place" (invite choosing).
     final place =
@@ -442,6 +511,20 @@ class _EventRow extends ConsumerWidget {
             style: theme.textTheme.bodySmall
                 ?.copyWith(color: scheme.onSurfaceVariant));
       }
+    } else if (event.kind == EventKind.lent) {
+      icon = Icons.people_alt_outlined;
+      final borrower = event.partyId == null
+          ? null
+          : ref.watch(partyProvider(event.partyId!)).value;
+      title = l10n.lentToPerson(borrower?.name ?? '—');
+      whenLine = Text(
+        l10n.lentOn(formatDate(event.at, l10n.localeName)),
+        style: theme.textTheme.bodySmall
+            ?.copyWith(color: scheme.onSurfaceVariant),
+      );
+    } else if (event.kind == EventKind.returned) {
+      icon = Icons.assignment_turned_in_outlined;
+      title = l10n.returnedOn(formatDate(event.at, l10n.localeName));
     } else if (event.kind == EventKind.note) {
       icon = Icons.sticky_note_2_outlined;
       // The note's body is the headline; its title (if any) is rarely used.
@@ -571,6 +654,52 @@ class _TapCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// A calm, non-interactive informational card (same language as [_TapCard] but
+/// nothing to tap) — used to explain why the place is unavailable while lent.
+class _InfoCard extends StatelessWidget {
+  const _InfoCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: AppRadii.borderLg,
+      ),
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: AppIconSize.md, color: scheme.onSurfaceVariant),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: theme.textTheme.titleMedium),
+                const SizedBox(height: AppSpacing.xs),
+                Text(subtitle,
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: scheme.onSurfaceVariant)),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -743,7 +872,27 @@ Future<void> _rename(
   }
 }
 
+/// True when the thing is actively lent — used to block actions that would
+/// conflict with an open loan, with a calm explanation instead of silent damage.
+Future<bool> _guardLent(
+    BuildContext context, WidgetRef ref, String id) async {
+  final loan = await ref.read(eventsDaoProvider).watchActiveLoan(id).first;
+  if (loan == null) return false;
+  if (context.mounted) {
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(l10n.resolveLoanBeforeArchive),
+      ));
+  }
+  return true;
+}
+
 Future<void> _archive(BuildContext context, WidgetRef ref, String id) async {
+  if (await _guardLent(context, ref, id)) return;
+  if (!context.mounted) return;
   final l10n = AppLocalizations.of(context);
   final messenger = ScaffoldMessenger.of(context);
   final router = GoRouter.of(context);
@@ -761,6 +910,8 @@ Future<void> _archive(BuildContext context, WidgetRef ref, String id) async {
 }
 
 Future<void> _remove(BuildContext context, WidgetRef ref, String id) async {
+  if (await _guardLent(context, ref, id)) return;
+  if (!context.mounted) return;
   final l10n = AppLocalizations.of(context);
   final messenger = ScaffoldMessenger.of(context);
   final router = GoRouter.of(context);
@@ -837,6 +988,21 @@ Future<void> _replaceCover(
 /// reached.
 Future<void> _pickPlace(
     BuildContext context, WidgetRef ref, Possession possession) async {
+  // A lent thing has no place; assigning one would contradict the loan.
+  final loan = await ref.read(eventsDaoProvider).watchActiveLoan(possession.id).first;
+  if (loan != null) {
+    if (context.mounted) {
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(l10n.cannotAssignPlaceWhileLent),
+        ));
+    }
+    return;
+  }
+  if (!context.mounted) return;
   final choice =
       await showPlacePicker(context, currentPlaceId: possession.placeId);
   if (choice == null) return;

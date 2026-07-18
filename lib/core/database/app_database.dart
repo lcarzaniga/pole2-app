@@ -47,7 +47,7 @@ class AppDatabase extends _$AppDatabase {
   static const Uuid _uuid = Uuid();
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -111,6 +111,12 @@ class AppDatabase extends _$AppDatabase {
               ),
             );
           }
+        }
+        // v5 → v6 (M5.2 loans): one additive nullable column on Events so a
+        // returned loan can restore the possession's original place. Existing
+        // rows are untouched (null = no origin place recorded).
+        if (from < 6) {
+          await m.addColumn(events, events.originPlaceId);
         }
       }
     },
