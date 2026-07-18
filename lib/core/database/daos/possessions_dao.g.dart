@@ -7,6 +7,8 @@ mixin _$PossessionsDaoMixin on DatabaseAccessor<AppDatabase> {
   $FilesTable get files => attachedDatabase.files;
   $PlacesTable get places => attachedDatabase.places;
   $PossessionsTable get possessions => attachedDatabase.possessions;
+  $PossessionPhotosTable get possessionPhotos =>
+      attachedDatabase.possessionPhotos;
   PossessionsDaoManager get managers => PossessionsDaoManager(this);
 }
 
@@ -19,4 +21,9 @@ class PossessionsDaoManager {
       $$PlacesTableTableManager(_db.attachedDatabase, _db.places);
   $$PossessionsTableTableManager get possessions =>
       $$PossessionsTableTableManager(_db.attachedDatabase, _db.possessions);
+  $$PossessionPhotosTableTableManager get possessionPhotos =>
+      $$PossessionPhotosTableTableManager(
+        _db.attachedDatabase,
+        _db.possessionPhotos,
+      );
 }

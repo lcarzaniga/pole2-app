@@ -104,4 +104,56 @@ void main() {
     final reloaded = await db.possessionsDao.watchById('p1').first;
     expect(reloaded!.placeId, placeId);
   });
+
+  test('v4 data survives migration to v5, and the existing cover joins the '
+      'gallery', () async {
+    final dir = Directory.systemTemp.createTempSync('pole2_migration_v5');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final path = '${dir.path}/app.db';
+
+    // Build a real v4 database: the v2 schema + the additive v3 Event columns +
+    // the v4 Places table and possessions.place_id, then a possession that has
+    // a cover photo (a File the possession points at) — exactly what a vc2010
+    // user has on disk.
+    final raw = sqlite3.open(path);
+    raw.execute(_v2Schema);
+    raw.execute('ALTER TABLE events ADD COLUMN purchased_on TEXT NULL');
+    raw.execute('ALTER TABLE events ADD COLUMN acquisition_type TEXT NULL');
+    raw.execute('ALTER TABLE events ADD COLUMN remind_lead TEXT NULL');
+    raw.execute('CREATE TABLE "places" ("id" TEXT NOT NULL, "name" TEXT NOT '
+        'NULL, "notes" TEXT NULL, "created_at" TEXT NOT NULL, "updated_at" TEXT '
+        'NOT NULL, "deleted_at" TEXT NULL, PRIMARY KEY ("id"));');
+    raw.execute('ALTER TABLE possessions ADD COLUMN place_id TEXT NULL '
+        'REFERENCES places (id)');
+    raw.execute('PRAGMA user_version = 4');
+    final now = DateTime.now().toUtc().toIso8601String();
+    raw.execute("INSERT INTO files (id,relative_path,mime_type,byte_size,"
+        "created_at) VALUES ('f1','photos/old.jpg','image/jpeg',10,'$now')");
+    raw.execute(
+        "INSERT INTO possessions (id,title,status,cover_file_id,created_at,"
+        "updated_at) VALUES ('p1','Old Camera','active','f1','$now','$now')");
+    raw.close();
+
+    // Open with the current app — the v4 → v5 migration runs on open.
+    final db = AppDatabase.forTesting(NativeDatabase(File(path)));
+    addTearDown(db.close);
+
+    // The existing cover is preserved and now also appears in the gallery,
+    // reusing the same file (no bytes copied).
+    final possession = await db.possessionsDao.watchById('p1').first;
+    expect(possession!.coverFileId, 'f1'); // still the cover
+
+    final photos = await db.possessionsDao.watchPhotos('p1').first;
+    expect(photos.length, 1);
+    expect(photos.single.file.id, 'f1');
+    expect(photos.single.file.relativePath, 'photos/old.jpg');
+
+    // The gallery is fully usable after migration: adding another photo leaves
+    // the migrated cover in place.
+    await db.possessionsDao.addPhoto('p1',
+        relativePath: 'photos/new.jpg', mimeType: 'image/jpeg', byteSize: 20);
+    final after = await db.possessionsDao.watchPhotos('p1').first;
+    expect(after.length, 2);
+    expect((await db.possessionsDao.watchById('p1').first)!.coverFileId, 'f1');
+  });
 }

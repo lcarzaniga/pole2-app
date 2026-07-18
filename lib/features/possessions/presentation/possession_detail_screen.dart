@@ -8,6 +8,7 @@ import '../../../app/theme/app_radii.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/brand_colors.dart';
 import '../../../core/database/app_database.dart';
+import '../../../core/database/daos/possessions_dao.dart';
 import '../../../core/database/tables/enums.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/brand/hex_background.dart';
@@ -18,8 +19,10 @@ import '../../../shared/platform/photo_store.dart';
 import '../../places/application/place_providers.dart';
 import '../../places/presentation/place_picker.dart';
 import '../application/event_providers.dart';
+import '../application/gallery_order.dart';
 import '../application/possession_providers.dart';
 import 'widgets/cover_area.dart';
+import 'widgets/gallery_strip.dart';
 
 /// A single thing, living inside Pole² — its dossier.
 ///
@@ -71,6 +74,7 @@ class _Dossier extends ConsumerWidget {
       padding: EdgeInsets.zero,
       children: [
         _Cover(possession: possession),
+        _Gallery(possession: possession),
         Padding(
           padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
@@ -169,7 +173,7 @@ class _ActionHub extends ConsumerWidget {
         _HubAction(
           icon: Icons.add_a_photo_outlined,
           label: l10n.hubPhoto,
-          onTap: () => _pickPhoto(context, ref, id),
+          onTap: () => _addPhotos(context, ref, id),
         ),
         _HubAction(
           icon: Icons.sticky_note_2_outlined,
@@ -594,7 +598,7 @@ class _Cover extends ConsumerWidget {
         image: null,
         addLabel: l10n.addPhoto,
         editTooltip: l10n.photoEditTooltip,
-        onAdd: () => _pickPhoto(context, ref, possession.id),
+        onAdd: () => _addPhotos(context, ref, possession.id),
       );
     }
 
@@ -624,7 +628,50 @@ class _Cover extends ConsumerWidget {
         Routes.photoName,
         pathParameters: {'id': possession.id},
       ),
-      onEdit: () => _pickPhoto(context, ref, possession.id),
+      onEdit: () => _replaceCover(context, ref, possession.id),
+    );
+  }
+}
+
+/// The calm thumbnail gallery under the cover. Hidden when there are no photos,
+/// so an object with nothing (or only the empty-cover invitation above) stays
+/// uncluttered. Cover first, with a subtle badge; a trailing tile adds more.
+class _Gallery extends ConsumerWidget {
+  const _Gallery({required this.possession});
+
+  final Possession possession;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final photos = ref.watch(possessionPhotosProvider(possession.id)).value ??
+        const <PhotoWithFile>[];
+    if (photos.isEmpty) return const SizedBox.shrink();
+
+    final docs = ref.watch(appDocumentsPathProvider).value;
+    final ordered = orderCoverFirst(
+      photos,
+      fileId: (p) => p.file.id,
+      coverFileId: possession.coverFileId,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        0,
+      ),
+      child: GalleryStrip(
+        photos: ordered,
+        coverFileId: possession.coverFileId,
+        docsPath: docs,
+        onOpen: (i) => context.pushNamed(
+          Routes.photoName,
+          pathParameters: {'id': possession.id},
+          queryParameters: {'i': '$i'},
+        ),
+        onAdd: () => _addPhotos(context, ref, possession.id),
+      ),
     );
   }
 }
@@ -745,15 +792,43 @@ Future<void> _removeEvent(BuildContext context, WidgetRef ref, String id) async 
     ));
 }
 
-Future<void> _pickPhoto(
+/// Add one or more photos — the hub "Foto" action and the empty-cover
+/// invitation. On an object with no photos the first becomes the cover;
+/// otherwise the cover is left untouched (adding never silently replaces).
+Future<void> _addPhotos(BuildContext context, WidgetRef ref, String id) async {
+  final photos = await chooseAndCapturePhotos(context);
+  if (photos.isEmpty) return;
+  final dao = ref.read(possessionsDaoProvider);
+  if (photos.length == 1) {
+    final ph = photos.first;
+    await dao.addPhoto(id,
+        relativePath: ph.relativePath,
+        mimeType: ph.mimeType,
+        byteSize: ph.byteSize);
+  } else {
+    await dao.addPhotos(id, [
+      for (final ph in photos)
+        (
+          relativePath: ph.relativePath,
+          mimeType: ph.mimeType,
+          byteSize: ph.byteSize
+        ),
+    ]);
+  }
+}
+
+/// Replace the cover via the pencil: capture one image, add it and promote it to
+/// cover. The previous cover stays in the gallery (demoted, never orphaned).
+Future<void> _replaceCover(
     BuildContext context, WidgetRef ref, String id) async {
   final photo = await chooseAndCapturePhoto(context);
   if (photo == null) return;
-  await ref.read(possessionsDaoProvider).setCover(
+  await ref.read(possessionsDaoProvider).addPhoto(
         id,
         relativePath: photo.relativePath,
         mimeType: photo.mimeType,
         byteSize: photo.byteSize,
+        asCover: true,
       );
 }
 

@@ -4867,6 +4867,478 @@ class EventsCompanion extends UpdateCompanion<PossessionEvent> {
   }
 }
 
+class $PossessionPhotosTable extends PossessionPhotos
+    with TableInfo<$PossessionPhotosTable, PossessionPhoto> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PossessionPhotosTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _possessionIdMeta = const VerificationMeta(
+    'possessionId',
+  );
+  @override
+  late final GeneratedColumn<String> possessionId = GeneratedColumn<String>(
+    'possession_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES possessions (id)',
+    ),
+  );
+  static const VerificationMeta _fileIdMeta = const VerificationMeta('fileId');
+  @override
+  late final GeneratedColumn<String> fileId = GeneratedColumn<String>(
+    'file_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES files (id)',
+    ),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    possessionId,
+    fileId,
+    sortOrder,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'possession_photos';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PossessionPhoto> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('possession_id')) {
+      context.handle(
+        _possessionIdMeta,
+        possessionId.isAcceptableOrUnknown(
+          data['possession_id']!,
+          _possessionIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_possessionIdMeta);
+    }
+    if (data.containsKey('file_id')) {
+      context.handle(
+        _fileIdMeta,
+        fileId.isAcceptableOrUnknown(data['file_id']!, _fileIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fileIdMeta);
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PossessionPhoto map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PossessionPhoto(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      possessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}possession_id'],
+      )!,
+      fileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_id'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $PossessionPhotosTable createAlias(String alias) {
+    return $PossessionPhotosTable(attachedDatabase, alias);
+  }
+}
+
+class PossessionPhoto extends DataClass implements Insertable<PossessionPhoto> {
+  final String id;
+  final String possessionId;
+  final String fileId;
+  final int sortOrder;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  const PossessionPhoto({
+    required this.id,
+    required this.possessionId,
+    required this.fileId,
+    required this.sortOrder,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['possession_id'] = Variable<String>(possessionId);
+    map['file_id'] = Variable<String>(fileId);
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  PossessionPhotosCompanion toCompanion(bool nullToAbsent) {
+    return PossessionPhotosCompanion(
+      id: Value(id),
+      possessionId: Value(possessionId),
+      fileId: Value(fileId),
+      sortOrder: Value(sortOrder),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory PossessionPhoto.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PossessionPhoto(
+      id: serializer.fromJson<String>(json['id']),
+      possessionId: serializer.fromJson<String>(json['possessionId']),
+      fileId: serializer.fromJson<String>(json['fileId']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'possessionId': serializer.toJson<String>(possessionId),
+      'fileId': serializer.toJson<String>(fileId),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  PossessionPhoto copyWith({
+    String? id,
+    String? possessionId,
+    String? fileId,
+    int? sortOrder,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => PossessionPhoto(
+    id: id ?? this.id,
+    possessionId: possessionId ?? this.possessionId,
+    fileId: fileId ?? this.fileId,
+    sortOrder: sortOrder ?? this.sortOrder,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  PossessionPhoto copyWithCompanion(PossessionPhotosCompanion data) {
+    return PossessionPhoto(
+      id: data.id.present ? data.id.value : this.id,
+      possessionId: data.possessionId.present
+          ? data.possessionId.value
+          : this.possessionId,
+      fileId: data.fileId.present ? data.fileId.value : this.fileId,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PossessionPhoto(')
+          ..write('id: $id, ')
+          ..write('possessionId: $possessionId, ')
+          ..write('fileId: $fileId, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    possessionId,
+    fileId,
+    sortOrder,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PossessionPhoto &&
+          other.id == this.id &&
+          other.possessionId == this.possessionId &&
+          other.fileId == this.fileId &&
+          other.sortOrder == this.sortOrder &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class PossessionPhotosCompanion extends UpdateCompanion<PossessionPhoto> {
+  final Value<String> id;
+  final Value<String> possessionId;
+  final Value<String> fileId;
+  final Value<int> sortOrder;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const PossessionPhotosCompanion({
+    this.id = const Value.absent(),
+    this.possessionId = const Value.absent(),
+    this.fileId = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PossessionPhotosCompanion.insert({
+    required String id,
+    required String possessionId,
+    required String fileId,
+    this.sortOrder = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       possessionId = Value(possessionId),
+       fileId = Value(fileId),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<PossessionPhoto> custom({
+    Expression<String>? id,
+    Expression<String>? possessionId,
+    Expression<String>? fileId,
+    Expression<int>? sortOrder,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (possessionId != null) 'possession_id': possessionId,
+      if (fileId != null) 'file_id': fileId,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PossessionPhotosCompanion copyWith({
+    Value<String>? id,
+    Value<String>? possessionId,
+    Value<String>? fileId,
+    Value<int>? sortOrder,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return PossessionPhotosCompanion(
+      id: id ?? this.id,
+      possessionId: possessionId ?? this.possessionId,
+      fileId: fileId ?? this.fileId,
+      sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (possessionId.present) {
+      map['possession_id'] = Variable<String>(possessionId.value);
+    }
+    if (fileId.present) {
+      map['file_id'] = Variable<String>(fileId.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PossessionPhotosCompanion(')
+          ..write('id: $id, ')
+          ..write('possessionId: $possessionId, ')
+          ..write('fileId: $fileId, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4880,6 +5352,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $PossessionEvidenceTable(this);
   late final $PartiesTable parties = $PartiesTable(this);
   late final $EventsTable events = $EventsTable(this);
+  late final $PossessionPhotosTable possessionPhotos = $PossessionPhotosTable(
+    this,
+  );
   late final Index idxPossessionPlace = Index(
     'idx_possession_place',
     'CREATE INDEX idx_possession_place ON possessions (place_id)',
@@ -4900,6 +5375,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_event_at',
     'CREATE INDEX idx_event_at ON events (at)',
   );
+  late final Index idxPhotoPossession = Index(
+    'idx_photo_possession',
+    'CREATE INDEX idx_photo_possession ON possession_photos (possession_id)',
+  );
+  late final Index idxPhotoSort = Index(
+    'idx_photo_sort',
+    'CREATE INDEX idx_photo_sort ON possession_photos (possession_id, sort_order)',
+  );
   late final PossessionsDao possessionsDao = PossessionsDao(
     this as AppDatabase,
   );
@@ -4919,11 +5402,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     possessionEvidence,
     parties,
     events,
+    possessionPhotos,
     idxPossessionPlace,
     idxIdentifierPossession,
     idxAttributePossession,
     idxEventPossession,
     idxEventAt,
+    idxPhotoPossession,
+    idxPhotoSort,
   ];
   @override
   DriftDatabaseOptions get options =>
@@ -4986,6 +5472,26 @@ final class $$FilesTableReferences
     ).filter((f) => f.fileId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_evidenceItemsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$PossessionPhotosTable, List<PossessionPhoto>>
+  _possessionPhotosRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.possessionPhotos,
+    aliasName: 'files__id__possession_photos__file_id',
+  );
+
+  $$PossessionPhotosTableProcessedTableManager get possessionPhotosRefs {
+    final manager = $$PossessionPhotosTableTableManager(
+      $_db,
+      $_db.possessionPhotos,
+    ).filter((f) => f.fileId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _possessionPhotosRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -5071,6 +5577,31 @@ class $$FilesTableFilterComposer extends Composer<_$AppDatabase, $FilesTable> {
           }) => $$EvidenceItemsTableFilterComposer(
             $db: $db,
             $table: $db.evidenceItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> possessionPhotosRefs(
+    Expression<bool> Function($$PossessionPhotosTableFilterComposer f) f,
+  ) {
+    final $$PossessionPhotosTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.possessionPhotos,
+      getReferencedColumn: (t) => t.fileId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PossessionPhotosTableFilterComposer(
+            $db: $db,
+            $table: $db.possessionPhotos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5199,6 +5730,31 @@ class $$FilesTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> possessionPhotosRefs<T extends Object>(
+    Expression<T> Function($$PossessionPhotosTableAnnotationComposer a) f,
+  ) {
+    final $$PossessionPhotosTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.possessionPhotos,
+      getReferencedColumn: (t) => t.fileId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PossessionPhotosTableAnnotationComposer(
+            $db: $db,
+            $table: $db.possessionPhotos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$FilesTableTableManager
@@ -5214,7 +5770,11 @@ class $$FilesTableTableManager
           $$FilesTableUpdateCompanionBuilder,
           (StoredFile, $$FilesTableReferences),
           StoredFile,
-          PrefetchHooks Function({bool possessionsRefs, bool evidenceItemsRefs})
+          PrefetchHooks Function({
+            bool possessionsRefs,
+            bool evidenceItemsRefs,
+            bool possessionPhotosRefs,
+          })
         > {
   $$FilesTableTableManager(_$AppDatabase db, $FilesTable table)
     : super(
@@ -5270,12 +5830,17 @@ class $$FilesTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({possessionsRefs = false, evidenceItemsRefs = false}) {
+              ({
+                possessionsRefs = false,
+                evidenceItemsRefs = false,
+                possessionPhotosRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (possessionsRefs) db.possessions,
                     if (evidenceItemsRefs) db.evidenceItems,
+                    if (possessionPhotosRefs) db.possessionPhotos,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -5322,6 +5887,27 @@ class $$FilesTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (possessionPhotosRefs)
+                        await $_getPrefetchedData<
+                          StoredFile,
+                          $FilesTable,
+                          PossessionPhoto
+                        >(
+                          currentTable: table,
+                          referencedTable: $$FilesTableReferences
+                              ._possessionPhotosRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$FilesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).possessionPhotosRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.fileId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -5342,7 +5928,11 @@ typedef $$FilesTableProcessedTableManager =
       $$FilesTableUpdateCompanionBuilder,
       (StoredFile, $$FilesTableReferences),
       StoredFile,
-      PrefetchHooks Function({bool possessionsRefs, bool evidenceItemsRefs})
+      PrefetchHooks Function({
+        bool possessionsRefs,
+        bool evidenceItemsRefs,
+        bool possessionPhotosRefs,
+      })
     >;
 typedef $$PlacesTableCreateCompanionBuilder =
     PlacesCompanion Function({
@@ -5801,6 +6391,26 @@ final class $$PossessionsTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$PossessionPhotosTable, List<PossessionPhoto>>
+  _possessionPhotosRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.possessionPhotos,
+    aliasName: 'possessions__id__possession_photos__possession_id',
+  );
+
+  $$PossessionPhotosTableProcessedTableManager get possessionPhotosRefs {
+    final manager = $$PossessionPhotosTableTableManager(
+      $_db,
+      $_db.possessionPhotos,
+    ).filter((f) => f.possessionId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _possessionPhotosRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$PossessionsTableFilterComposer
@@ -5990,6 +6600,31 @@ class $$PossessionsTableFilterComposer
           }) => $$EventsTableFilterComposer(
             $db: $db,
             $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> possessionPhotosRefs(
+    Expression<bool> Function($$PossessionPhotosTableFilterComposer f) f,
+  ) {
+    final $$PossessionPhotosTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.possessionPhotos,
+      getReferencedColumn: (t) => t.possessionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PossessionPhotosTableFilterComposer(
+            $db: $db,
+            $table: $db.possessionPhotos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6275,6 +6910,31 @@ class $$PossessionsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> possessionPhotosRefs<T extends Object>(
+    Expression<T> Function($$PossessionPhotosTableAnnotationComposer a) f,
+  ) {
+    final $$PossessionPhotosTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.possessionPhotos,
+      getReferencedColumn: (t) => t.possessionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PossessionPhotosTableAnnotationComposer(
+            $db: $db,
+            $table: $db.possessionPhotos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$PossessionsTableTableManager
@@ -6297,6 +6957,7 @@ class $$PossessionsTableTableManager
             bool attributesRefs,
             bool possessionEvidenceRefs,
             bool eventsRefs,
+            bool possessionPhotosRefs,
           })
         > {
   $$PossessionsTableTableManager(_$AppDatabase db, $PossessionsTable table)
@@ -6378,6 +7039,7 @@ class $$PossessionsTableTableManager
                 attributesRefs = false,
                 possessionEvidenceRefs = false,
                 eventsRefs = false,
+                possessionPhotosRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -6386,6 +7048,7 @@ class $$PossessionsTableTableManager
                     if (attributesRefs) db.attributes,
                     if (possessionEvidenceRefs) db.possessionEvidence,
                     if (eventsRefs) db.events,
+                    if (possessionPhotosRefs) db.possessionPhotos,
                   ],
                   addJoins:
                       <
@@ -6522,6 +7185,27 @@ class $$PossessionsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (possessionPhotosRefs)
+                        await $_getPrefetchedData<
+                          Possession,
+                          $PossessionsTable,
+                          PossessionPhoto
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PossessionsTableReferences
+                              ._possessionPhotosRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PossessionsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).possessionPhotosRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.possessionId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -6549,6 +7233,7 @@ typedef $$PossessionsTableProcessedTableManager =
         bool attributesRefs,
         bool possessionEvidenceRefs,
         bool eventsRefs,
+        bool possessionPhotosRefs,
       })
     >;
 typedef $$IdentifiersTableCreateCompanionBuilder =
@@ -9381,6 +10066,459 @@ typedef $$EventsTableProcessedTableManager =
       PossessionEvent,
       PrefetchHooks Function({bool possessionId, bool partyId, bool evidenceId})
     >;
+typedef $$PossessionPhotosTableCreateCompanionBuilder =
+    PossessionPhotosCompanion Function({
+      required String id,
+      required String possessionId,
+      required String fileId,
+      Value<int> sortOrder,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$PossessionPhotosTableUpdateCompanionBuilder =
+    PossessionPhotosCompanion Function({
+      Value<String> id,
+      Value<String> possessionId,
+      Value<String> fileId,
+      Value<int> sortOrder,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+
+final class $$PossessionPhotosTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $PossessionPhotosTable, PossessionPhoto> {
+  $$PossessionPhotosTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $PossessionsTable _possessionIdTable(_$AppDatabase db) => db
+      .possessions
+      .createAlias('possession_photos__possession_id__possessions__id');
+
+  $$PossessionsTableProcessedTableManager get possessionId {
+    final $_column = $_itemColumn<String>('possession_id')!;
+
+    final manager = $$PossessionsTableTableManager(
+      $_db,
+      $_db.possessions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_possessionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $FilesTable _fileIdTable(_$AppDatabase db) =>
+      db.files.createAlias('possession_photos__file_id__files__id');
+
+  $$FilesTableProcessedTableManager get fileId {
+    final $_column = $_itemColumn<String>('file_id')!;
+
+    final manager = $$FilesTableTableManager(
+      $_db,
+      $_db.files,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_fileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$PossessionPhotosTableFilterComposer
+    extends Composer<_$AppDatabase, $PossessionPhotosTable> {
+  $$PossessionPhotosTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$PossessionsTableFilterComposer get possessionId {
+    final $$PossessionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.possessionId,
+      referencedTable: $db.possessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PossessionsTableFilterComposer(
+            $db: $db,
+            $table: $db.possessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FilesTableFilterComposer get fileId {
+    final $$FilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fileId,
+      referencedTable: $db.files,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FilesTableFilterComposer(
+            $db: $db,
+            $table: $db.files,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PossessionPhotosTableOrderingComposer
+    extends Composer<_$AppDatabase, $PossessionPhotosTable> {
+  $$PossessionPhotosTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$PossessionsTableOrderingComposer get possessionId {
+    final $$PossessionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.possessionId,
+      referencedTable: $db.possessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PossessionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.possessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FilesTableOrderingComposer get fileId {
+    final $$FilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fileId,
+      referencedTable: $db.files,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.files,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PossessionPhotosTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PossessionPhotosTable> {
+  $$PossessionPhotosTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  $$PossessionsTableAnnotationComposer get possessionId {
+    final $$PossessionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.possessionId,
+      referencedTable: $db.possessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PossessionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.possessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FilesTableAnnotationComposer get fileId {
+    final $$FilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fileId,
+      referencedTable: $db.files,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.files,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PossessionPhotosTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PossessionPhotosTable,
+          PossessionPhoto,
+          $$PossessionPhotosTableFilterComposer,
+          $$PossessionPhotosTableOrderingComposer,
+          $$PossessionPhotosTableAnnotationComposer,
+          $$PossessionPhotosTableCreateCompanionBuilder,
+          $$PossessionPhotosTableUpdateCompanionBuilder,
+          (PossessionPhoto, $$PossessionPhotosTableReferences),
+          PossessionPhoto,
+          PrefetchHooks Function({bool possessionId, bool fileId})
+        > {
+  $$PossessionPhotosTableTableManager(
+    _$AppDatabase db,
+    $PossessionPhotosTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PossessionPhotosTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PossessionPhotosTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PossessionPhotosTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> possessionId = const Value.absent(),
+                Value<String> fileId = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PossessionPhotosCompanion(
+                id: id,
+                possessionId: possessionId,
+                fileId: fileId,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String possessionId,
+                required String fileId,
+                Value<int> sortOrder = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PossessionPhotosCompanion.insert(
+                id: id,
+                possessionId: possessionId,
+                fileId: fileId,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$PossessionPhotosTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({possessionId = false, fileId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (possessionId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.possessionId,
+                                referencedTable:
+                                    $$PossessionPhotosTableReferences
+                                        ._possessionIdTable(db),
+                                referencedColumn:
+                                    $$PossessionPhotosTableReferences
+                                        ._possessionIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (fileId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.fileId,
+                                referencedTable:
+                                    $$PossessionPhotosTableReferences
+                                        ._fileIdTable(db),
+                                referencedColumn:
+                                    $$PossessionPhotosTableReferences
+                                        ._fileIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PossessionPhotosTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PossessionPhotosTable,
+      PossessionPhoto,
+      $$PossessionPhotosTableFilterComposer,
+      $$PossessionPhotosTableOrderingComposer,
+      $$PossessionPhotosTableAnnotationComposer,
+      $$PossessionPhotosTableCreateCompanionBuilder,
+      $$PossessionPhotosTableUpdateCompanionBuilder,
+      (PossessionPhoto, $$PossessionPhotosTableReferences),
+      PossessionPhoto,
+      PrefetchHooks Function({bool possessionId, bool fileId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -9403,4 +10541,6 @@ class $AppDatabaseManager {
       $$PartiesTableTableManager(_db, _db.parties);
   $$EventsTableTableManager get events =>
       $$EventsTableTableManager(_db, _db.events);
+  $$PossessionPhotosTableTableManager get possessionPhotos =>
+      $$PossessionPhotosTableTableManager(_db, _db.possessionPhotos);
 }

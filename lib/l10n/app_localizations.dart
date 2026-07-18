@@ -1033,6 +1033,48 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{count, plural, =0{Niente qui} =1{1 cosa qui} other{{count} cose qui}}'**
   String placeReviewGentleCount(int count);
+
+  /// No description provided for @photoAddAnother.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi un\'altra foto'**
+  String get photoAddAnother;
+
+  /// No description provided for @photoSetCover.
+  ///
+  /// In it, this message translates to:
+  /// **'Imposta come copertina'**
+  String get photoSetCover;
+
+  /// No description provided for @photoIsCover.
+  ///
+  /// In it, this message translates to:
+  /// **'Copertina'**
+  String get photoIsCover;
+
+  /// No description provided for @photoRemove.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi foto'**
+  String get photoRemove;
+
+  /// No description provided for @photoRemovedSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'Foto rimossa.'**
+  String get photoRemovedSnack;
+
+  /// No description provided for @photoPosition.
+  ///
+  /// In it, this message translates to:
+  /// **'{current} di {total}'**
+  String photoPosition(int current, int total);
+
+  /// No description provided for @photoCount.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =1{1 foto} other{{count} foto}}'**
+  String photoCount(int count);
 }
 
 class _AppLocalizationsDelegate

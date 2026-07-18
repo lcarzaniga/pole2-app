@@ -13,12 +13,14 @@ Future<String?> documentsPath() async => null;
 Future<PhotoResult> capturePhoto(PhotoSource source) async =>
     const PhotoResult.cancelled();
 
+Future<MultiPhotoResult> capturePhotosFromGallery() async =>
+    const MultiPhotoResult.cancelled();
+
 Widget coverImage({
   required String docsPath,
   required String relativePath,
   required double height,
-}) =>
-    const SizedBox.shrink();
+}) => const SizedBox.shrink();
 
 /// Web has no on-disk photo, so this is a 1×1 transparent placeholder — the
 /// viewer is a native-only surface in practice and never reaches here with a
@@ -26,8 +28,9 @@ Widget coverImage({
 ImageProvider coverImageProvider({
   required String docsPath,
   required String relativePath,
-}) =>
-    MemoryImage(base64Decode(
-      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk'
-      'YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
-    ));
+}) => MemoryImage(
+  base64Decode(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk'
+    'YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+  ),
+);

@@ -22,11 +22,17 @@ Future<PhotoSource?> showPhotoSourceSheet(BuildContext context) {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
+              AppSpacing.lg,
+              0,
+              AppSpacing.lg,
+              AppSpacing.sm,
+            ),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(l10n.photoSourceTitle,
-                  style: Theme.of(context).textTheme.titleMedium),
+              child: Text(
+                l10n.photoSourceTitle,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ),
           ),
           ListTile(
@@ -72,12 +78,48 @@ Future<StoredPhoto?> chooseAndCapturePhoto(BuildContext context) async {
   if (message != null) {
     messenger
       ..clearSnackBars()
-      ..showSnackBar(SnackBar(
-        behavior: SnackBarBehavior.floating,
-        content: Text(message),
-      ));
+      ..showSnackBar(
+        SnackBar(behavior: SnackBarBehavior.floating, content: Text(message)),
+      );
   }
   return result.photo;
+}
+
+/// Runs the add-a-photo flow that can bring back several images: chooser →
+/// camera (one) or gallery (one or many) → returns the stored photos in order,
+/// or an empty list on cancel/denied/failure. Shows a calm snackbar for
+/// denied/failed; silent on cancel. The caller's own state is never touched.
+Future<List<StoredPhoto>> chooseAndCapturePhotos(BuildContext context) async {
+  final messenger = ScaffoldMessenger.of(context);
+  final l10n = AppLocalizations.of(context);
+
+  final source = await showPhotoSourceSheet(context);
+  if (source == null) return const []; // dismissed — silent.
+
+  if (source == PhotoSource.camera) {
+    final result = await capturePhoto(source);
+    _sayIfNeeded(messenger, l10n, result.outcome);
+    return result.photo == null ? const [] : [result.photo!];
+  }
+
+  final result = await capturePhotosFromGallery();
+  _sayIfNeeded(messenger, l10n, result.outcome);
+  return result.photos;
+}
+
+void _sayIfNeeded(
+  ScaffoldMessengerState messenger,
+  AppLocalizations l10n,
+  PhotoOutcome outcome,
+) {
+  final message = photoOutcomeMessage(l10n, outcome);
+  if (message != null) {
+    messenger
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(behavior: SnackBarBehavior.floating, content: Text(message)),
+      );
+  }
 }
 
 /// A ready-made "add a photo" leading icon, kept consistent across surfaces.

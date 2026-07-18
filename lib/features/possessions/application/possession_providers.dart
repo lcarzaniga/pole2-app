@@ -38,3 +38,10 @@ final fileByIdProvider = StreamProvider.family<StoredFile?, String>(
 final appDocumentsPathProvider = FutureProvider<String?>(
   (ref) => documentsPath(),
 );
+
+/// Reactive gallery photos (with their files) for a possession, in stable
+/// stored order — powers the thumbnail strip and the full-screen gallery.
+final possessionPhotosProvider =
+    StreamProvider.family<List<PhotoWithFile>, String>(
+      (ref, id) => ref.watch(possessionsDaoProvider).watchPhotos(id),
+    );

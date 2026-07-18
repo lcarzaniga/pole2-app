@@ -42,8 +42,7 @@ class Possessions extends Table {
   TextColumn get notes => text().nullable()();
   TextColumn get status =>
       textEnum<PossessionStatus>().withDefault(const Constant('active'))();
-  TextColumn get coverFileId =>
-      text().nullable().references(Files, #id)();
+  TextColumn get coverFileId => text().nullable().references(Files, #id)();
 
   /// Where this thing lives (M2 Places). **Null = "no place"** — there is never
   /// a physical placeholder record; the UI shows "no place" for null. Flat only:
@@ -66,6 +65,30 @@ class Places extends Table {
   TextColumn get id => text()();
   TextColumn get name => text().withLength(min: 1, max: 120)();
   TextColumn get notes => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// A possession's photo gallery (M5.1). One-to-many: each row is one image of
+/// exactly one possession — never shared (that's what [EvidenceItems] is for).
+///
+/// The **cover** is not a flag here; it stays on `possessions.cover_file_id`,
+/// which structurally guarantees "at most one cover" and keeps every legacy
+/// cover working unchanged. A photo is the cover when its `fileId` equals the
+/// possession's `coverFileId`. `sortOrder` gives a stable, deterministic order
+/// for the rest; soft-deleted rows are excluded from the gallery.
+@DataClassName('PossessionPhoto')
+@TableIndex(name: 'idx_photo_possession', columns: {#possessionId})
+@TableIndex(name: 'idx_photo_sort', columns: {#possessionId, #sortOrder})
+class PossessionPhotos extends Table {
+  TextColumn get id => text()();
+  TextColumn get possessionId => text().references(Possessions, #id)();
+  TextColumn get fileId => text().references(Files, #id)();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
@@ -154,7 +177,8 @@ class Events extends Table {
   TextColumn get status => textEnum<EventStatus>().nullable()();
   // Added in schema v3 (Milestone 9). All nullable, only meaningful for their
   // respective event kinds.
-  DateTimeColumn get purchasedOn => dateTime().nullable()(); // explicit acquisition date
+  DateTimeColumn get purchasedOn =>
+      dateTime().nullable()(); // explicit acquisition date
   TextColumn get acquisitionType => textEnum<AcquisitionType>().nullable()();
   TextColumn get remindLead => textEnum<ReminderLead>().nullable()();
   DateTimeColumn get createdAt => dateTime()();

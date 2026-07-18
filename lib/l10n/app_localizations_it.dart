@@ -549,4 +549,35 @@ class AppLocalizationsIt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get photoAddAnother => 'Aggiungi un\'altra foto';
+
+  @override
+  String get photoSetCover => 'Imposta come copertina';
+
+  @override
+  String get photoIsCover => 'Copertina';
+
+  @override
+  String get photoRemove => 'Rimuovi foto';
+
+  @override
+  String get photoRemovedSnack => 'Foto rimossa.';
+
+  @override
+  String photoPosition(int current, int total) {
+    return '$current di $total';
+  }
+
+  @override
+  String photoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count foto',
+      one: '1 foto',
+    );
+    return '$_temp0';
+  }
 }

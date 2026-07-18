@@ -39,11 +39,13 @@ Future<PhotoResult> capturePhoto(PhotoSource source) async {
     final rel = p.join('photos', name);
     final dest = File(p.join(docs.path, rel));
     await dest.writeAsBytes(await picked.readAsBytes());
-    return PhotoResult.success(StoredPhoto(
-      relativePath: rel,
-      mimeType: 'image/jpeg',
-      byteSize: dest.lengthSync(),
-    ));
+    return PhotoResult.success(
+      StoredPhoto(
+        relativePath: rel,
+        mimeType: 'image/jpeg',
+        byteSize: dest.lengthSync(),
+      ),
+    );
   } on PlatformException catch (e) {
     // image_picker surfaces a denied OS permission with these codes.
     if (e.code == 'camera_access_denied' || e.code == 'photo_access_denied') {
@@ -52,6 +54,48 @@ Future<PhotoResult> capturePhoto(PhotoSource source) async {
     return const PhotoResult.failed();
   } catch (_) {
     return const PhotoResult.failed();
+  }
+}
+
+/// Picks one or more images from the gallery and copies each into app-owned
+/// storage, returning them in pick order. `image_picker`'s `pickMultiImage` is
+/// stable on the project's Android toolchain. Same calm error model as
+/// [capturePhoto]: cancellation and every failure are data, never thrown.
+Future<MultiPhotoResult> capturePhotosFromGallery() async {
+  try {
+    final picked = await ImagePicker().pickMultiImage(
+      maxWidth: 2400,
+      imageQuality: 85,
+    );
+    if (picked.isEmpty) return const MultiPhotoResult.cancelled();
+
+    final docs = await getApplicationDocumentsDirectory();
+    final dir = Directory(p.join(docs.path, 'photos'));
+    if (!dir.existsSync()) dir.createSync(recursive: true);
+
+    final stored = <StoredPhoto>[];
+    for (final picture in picked) {
+      final ext = p.extension(picture.path);
+      final name = '${const Uuid().v4()}${ext.isEmpty ? '.jpg' : ext}';
+      final rel = p.join('photos', name);
+      final dest = File(p.join(docs.path, rel));
+      await dest.writeAsBytes(await picture.readAsBytes());
+      stored.add(
+        StoredPhoto(
+          relativePath: rel,
+          mimeType: 'image/jpeg',
+          byteSize: dest.lengthSync(),
+        ),
+      );
+    }
+    return MultiPhotoResult.success(stored);
+  } on PlatformException catch (e) {
+    if (e.code == 'photo_access_denied') {
+      return const MultiPhotoResult.permissionDenied();
+    }
+    return const MultiPhotoResult.failed();
+  } catch (_) {
+    return const MultiPhotoResult.failed();
   }
 }
 
@@ -74,5 +118,4 @@ Widget coverImage({
 ImageProvider coverImageProvider({
   required String docsPath,
   required String relativePath,
-}) =>
-    FileImage(File(p.join(docsPath, relativePath)));
+}) => FileImage(File(p.join(docsPath, relativePath)));

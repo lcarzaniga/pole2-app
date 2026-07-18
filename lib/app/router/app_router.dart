@@ -72,8 +72,11 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: Routes.photoPath,
         name: Routes.photoName,
+        // Optional `?i=<index>` opens the gallery at a specific photo (the cover
+        // is index 0). Missing or malformed falls back to the cover.
         builder: (context, state) => PhotoViewerScreen(
           possessionId: state.pathParameters['id']!,
+          initialIndex: int.tryParse(state.uri.queryParameters['i'] ?? '') ?? 0,
         ),
       ),
       GoRoute(

@@ -24,17 +24,34 @@ enum PhotoOutcome { success, cancelled, permissionDenied, failed }
 /// The result of a capture attempt. On [PhotoOutcome.success], [photo] is set.
 class PhotoResult {
   const PhotoResult.success(StoredPhoto this.photo)
-      : outcome = PhotoOutcome.success;
+    : outcome = PhotoOutcome.success;
   const PhotoResult.cancelled()
-      : outcome = PhotoOutcome.cancelled,
-        photo = null;
+    : outcome = PhotoOutcome.cancelled,
+      photo = null;
   const PhotoResult.permissionDenied()
-      : outcome = PhotoOutcome.permissionDenied,
-        photo = null;
-  const PhotoResult.failed()
-      : outcome = PhotoOutcome.failed,
-        photo = null;
+    : outcome = PhotoOutcome.permissionDenied,
+      photo = null;
+  const PhotoResult.failed() : outcome = PhotoOutcome.failed, photo = null;
 
   final PhotoOutcome outcome;
   final StoredPhoto? photo;
+}
+
+/// The result of a multi-image gallery pick. On [PhotoOutcome.success], [photos]
+/// holds one or more stored images in pick order; every other outcome carries an
+/// empty list, so callers never add anything on cancel/denied/failure.
+class MultiPhotoResult {
+  const MultiPhotoResult.success(this.photos) : outcome = PhotoOutcome.success;
+  const MultiPhotoResult.cancelled()
+    : outcome = PhotoOutcome.cancelled,
+      photos = const [];
+  const MultiPhotoResult.permissionDenied()
+    : outcome = PhotoOutcome.permissionDenied,
+      photos = const [];
+  const MultiPhotoResult.failed()
+    : outcome = PhotoOutcome.failed,
+      photos = const [];
+
+  final PhotoOutcome outcome;
+  final List<StoredPhoto> photos;
 }
