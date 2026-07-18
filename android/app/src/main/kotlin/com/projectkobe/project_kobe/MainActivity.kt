@@ -24,8 +24,10 @@ class MainActivity : FlutterActivity() {
     private val installerChannel = "pole2/installer"
     private val backupChannel = "pole2/backup"
     private val createDocRequest = 4011
+    private val openDocRequest = 4012
 
     private var pendingCreateResult: MethodChannel.Result? = null
+    private var pendingOpenResult: MethodChannel.Result? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -72,6 +74,16 @@ class MainActivity : FlutterActivity() {
                             copyToUri(src, uri, result)
                         }
                     }
+                    "openDocument" -> openDocument(result)
+                    "copyUriToFile" -> {
+                        val uri = call.argument<String>("uri")
+                        val dest = call.argument<String>("destPath")
+                        if (uri == null || dest == null) {
+                            result.error("bad_args", "uri and destPath required", null)
+                        } else {
+                            copyUriToFile(uri, dest, result)
+                        }
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -105,20 +117,92 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == createDocRequest) {
-            val pending = pendingCreateResult
-            pendingCreateResult = null
-            if (pending != null) {
-                if (resultCode == Activity.RESULT_OK && data?.data != null) {
-                    pending.success(data.data.toString()) // content:// URI
-                } else {
-                    pending.success(null) // cancelled — a normal no-op
-                }
-            }
+    private fun openDocument(result: MethodChannel.Result) {
+        if (pendingOpenResult != null) {
+            result.error("busy", "a document open is already in progress", null)
             return
         }
+        pendingOpenResult = result
+        try {
+            // "*/*" is the practical fallback: many providers don't recognize the
+            // custom .pole2backup extension and would otherwise hide the file.
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "*/*"
+                putExtra(
+                    Intent.EXTRA_MIME_TYPES,
+                    arrayOf("application/octet-stream", "*/*"),
+                )
+            }
+            startActivityForResult(intent, openDocRequest)
+        } catch (e: Exception) {
+            pendingOpenResult = null
+            result.error("open_failed", e.message, null)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            createDocRequest -> {
+                val pending = pendingCreateResult
+                pendingCreateResult = null
+                pending?.success(
+                    if (resultCode == Activity.RESULT_OK) data?.data?.toString() else null,
+                )
+                return
+            }
+            openDocRequest -> {
+                val pending = pendingOpenResult
+                pendingOpenResult = null
+                pending?.success(
+                    if (resultCode == Activity.RESULT_OK) data?.data?.toString() else null,
+                )
+                return
+            }
+        }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun copyUriToFile(uriString: String, destPath: String, result: MethodChannel.Result) {
+        // The destination must be inside the app's own private restore staging.
+        val dest = File(destPath)
+        val canonical = try {
+            dest.canonicalPath
+        } catch (e: Exception) {
+            result.error("bad_dest", e.message, null)
+            return
+        }
+        val allowed = listOf(cacheDir, filesDir).mapNotNull {
+            try { it.canonicalPath } catch (_: Exception) { null }
+        }
+        if (allowed.none { canonical.startsWith(it) }) {
+            result.error("bad_dest", "destination not in app storage", null)
+            return
+        }
+        val uri = Uri.parse(uriString)
+        Thread {
+            var written = 0L
+            try {
+                dest.parentFile?.mkdirs()
+                contentResolver.openInputStream(uri)?.use { input ->
+                    dest.outputStream().use { out ->
+                        val buf = ByteArray(64 * 1024)
+                        while (true) {
+                            val n = input.read(buf)
+                            if (n < 0) break
+                            out.write(buf, 0, n)
+                            written += n
+                        }
+                        out.flush()
+                    }
+                } ?: throw IllegalStateException("no input stream")
+                if (written <= 0L) throw IllegalStateException("empty document")
+                runOnUiThread { result.success(written) }
+            } catch (e: Exception) {
+                try { if (dest.exists()) dest.delete() } catch (_: Exception) {}
+                runOnUiThread { result.error("copy_failed", e.message, null) }
+            }
+        }.start()
     }
 
     private fun copyToUri(sourcePath: String, uriString: String, result: MethodChannel.Result) {

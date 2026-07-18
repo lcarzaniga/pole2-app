@@ -41,3 +41,23 @@ Future<int> copyFileToUri({
   });
   return written ?? 0;
 }
+
+/// Opens the system "open document" picker (M6.1 restore). Returns the chosen
+/// `content://` URI, or null if the user cancelled.
+Future<String?> openBackupDocument() async {
+  if (!Platform.isAndroid) return null;
+  return _channel.invokeMethod<String>('openDocument');
+}
+
+/// Streams the chosen [uri] into [destPath] (must be inside app-private restore
+/// staging). Returns bytes copied; native rejects a zero-byte/incomplete copy.
+Future<int> copyUriToFile({
+  required String uri,
+  required String destPath,
+}) async {
+  final written = await _channel.invokeMethod<int>('copyUriToFile', {
+    'uri': uri,
+    'destPath': destPath,
+  });
+  return written ?? 0;
+}

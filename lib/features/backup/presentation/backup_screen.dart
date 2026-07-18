@@ -4,5 +4,4 @@
 /// everywhere without pulling native-only code into the web bundle.
 library;
 
-export 'backup_screen_stub.dart'
-    if (dart.library.io) 'backup_screen_impl.dart';
+export 'backup_screen_stub.dart' if (dart.library.io) 'backup_screen_impl.dart';

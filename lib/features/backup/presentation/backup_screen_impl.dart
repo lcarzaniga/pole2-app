@@ -7,10 +7,11 @@ import '../../../shared/brand/hex_background.dart';
 import '../../../shared/format.dart';
 import '../application/backup_controller.dart';
 import '../domain/backup_limits.dart';
+import '../restore/restore_controller.dart';
+import '../restore/restore_preparer.dart' show RestoreSummary;
 
 /// "Backup e ripristino": create a portable, integrity-checked backup of the
-/// database + photos (encrypted by default). Restore is intentionally visible
-/// but disabled in M6.0 — it arrives in the next update.
+/// database + photos (encrypted by default), and restore one (M6.1).
 class BackupScreen extends ConsumerStatefulWidget {
   const BackupScreen({super.key});
 
@@ -74,14 +75,180 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     controller.reset();
   }
 
+  void _snack(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(behavior: SnackBarBehavior.floating, content: Text(msg)),
+      );
+  }
+
+  String _restoreError(AppLocalizations l10n, String? code) => switch (code) {
+    'newerFormat' || 'newerSchema' => l10n.restoreErrNewer,
+    'passwordOrCorrupt' => l10n.restoreErrPassword,
+    'missingActiveMedia' => l10n.restoreErrIncompleteMedia,
+    'lowSpace' => l10n.restoreErrLowSpace,
+    _ => l10n.restoreErrGeneric,
+  };
+
+  Future<void> _askRestorePassword() async {
+    final l10n = AppLocalizations.of(context);
+    final controller = TextEditingController();
+    final pw = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.restorePasswordTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(l10n.restorePasswordPrompt),
+            const SizedBox(height: AppSpacing.md),
+            TextField(
+              controller: controller,
+              obscureText: true,
+              autofocus: true,
+              decoration: InputDecoration(labelText: l10n.backupPasswordLabel),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.cancelButton),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(controller.text),
+            child: Text(l10n.saveButton),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    final notifier = ref.read(restoreControllerProvider.notifier);
+    if (pw == null || pw.isEmpty) {
+      notifier.cancel();
+    } else {
+      await notifier.submitPassword(pw);
+    }
+  }
+
+  Future<void> _confirmRestore(RestoreSummary s) async {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.restoreSummaryTitle),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              l10n.restoreSummaryCreated(
+                formatDate(
+                  DateTime.tryParse(s.createdAtUtc)?.toLocal() ??
+                      DateTime.now(),
+                  l10n.localeName,
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              l10n.restoreSummaryCounts(
+                s.possessions,
+                s.photos,
+                s.places,
+                s.people,
+              ),
+            ),
+            if (s.migratedInStaging) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Text(l10n.restoreMigratedNote, style: theme.textTheme.bodySmall),
+            ],
+            for (final _ in s.warnings) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                l10n.backupDormantMissingWarning,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.error,
+                ),
+              ),
+            ],
+            const SizedBox(height: AppSpacing.md),
+            Text(l10n.restoreReplaceWarning, style: theme.textTheme.bodyMedium),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancelButton),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: theme.colorScheme.error,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.restoreConfirm),
+          ),
+        ],
+      ),
+    );
+    final notifier = ref.read(restoreControllerProvider.notifier);
+    if (ok == true) {
+      await notifier.confirm();
+    } else {
+      notifier.cancel();
+    }
+  }
+
+  Future<void> _showCloseForRestore() async {
+    final l10n = AppLocalizations.of(context);
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.restoreCloseTitle),
+        content: Text(l10n.restoreCloseBody),
+        actions: [
+          FilledButton(
+            onPressed: () =>
+                ref.read(restoreControllerProvider.notifier).closeApp(),
+            child: Text(l10n.restoreCloseButton),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
     final state = ref.watch(backupControllerProvider);
+    final restore = ref.watch(restoreControllerProvider);
     final lastBackup = ref.watch(lastBackupProvider).value;
     final busy = state.isBusy;
+
+    // Drive the multi-step restore flow (password → summary → close) from state
+    // transitions, so the coordinator stays UI-free and survives rebuilds.
+    ref.listen<RestoreState>(restoreControllerProvider, (prev, next) {
+      if (prev?.status == next.status) return;
+      switch (next.status) {
+        case RestoreStatus.awaitingPassword:
+          _askRestorePassword();
+        case RestoreStatus.readyForConfirmation:
+          _confirmRestore(next.summary!);
+        case RestoreStatus.awaitingReopen:
+          _showCloseForRestore();
+        case RestoreStatus.failed:
+          _snack(_restoreError(l10n, next.errorCode));
+        default:
+          break;
+      }
+    });
 
     final pwError = _showPasswordError
         ? (_password.text.length < kMinPasswordLength
@@ -182,17 +349,31 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             const Divider(),
             const SizedBox(height: AppSpacing.md),
 
-            // ---- Restore (disabled in M6.0) ----
+            // ---- Restore (M6.1) ----
             Text(l10n.restoreSectionTitle, style: theme.textTheme.titleMedium),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              l10n.restoreIntro,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: AppSpacing.md),
-            Opacity(
-              opacity: 0.6,
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                enabled: false,
-                leading: const Icon(Icons.settings_backup_restore),
-                title: Text(l10n.restoreAction),
-                subtitle: Text(l10n.restoreComingSoon),
+            OutlinedButton.icon(
+              onPressed: (busy || restore.isBusy)
+                  ? null
+                  : () => ref.read(restoreControllerProvider.notifier).start(),
+              icon: restore.isBusy
+                  ? const SizedBox.square(
+                      dimension: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.settings_backup_restore),
+              label: Text(
+                restore.isBusy ? l10n.restorePreparing : l10n.restoreAction,
+              ),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
               ),
             ),
           ],

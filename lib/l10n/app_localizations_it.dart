@@ -1019,4 +1019,76 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get restoreComingSoon => 'Disponibile nel prossimo aggiornamento.';
+
+  @override
+  String get restoreIntro =>
+      'Scegli un file di backup di Pole² per riportare qui i tuoi dati.';
+
+  @override
+  String get restoreReplaceWarning =>
+      'Il ripristino sostituisce i dati attuali di Pole² con quelli del backup. Le cose che hai adesso su questo dispositivo verranno rimpiazzate.';
+
+  @override
+  String get restoreConfirm => 'Ho capito, ripristina';
+
+  @override
+  String get restorePasswordTitle => 'Password del backup';
+
+  @override
+  String get restorePasswordPrompt =>
+      'Questo backup è protetto. Inserisci la password.';
+
+  @override
+  String get restoreSummaryTitle => 'Contenuto del backup';
+
+  @override
+  String restoreSummaryCounts(int objects, int photos, int places, int people) {
+    return '$objects oggetti · $photos foto · $places luoghi · $people persone';
+  }
+
+  @override
+  String restoreSummaryCreated(String date) {
+    return 'Creato il $date';
+  }
+
+  @override
+  String get restoreMigratedNote =>
+      'Backup di una versione precedente: verrà aggiornato durante il ripristino.';
+
+  @override
+  String get restorePreparing => 'Sto verificando il backup…';
+
+  @override
+  String get restoreCloseTitle => 'Quasi fatto';
+
+  @override
+  String get restoreCloseBody =>
+      'Pole² verrà chiusa per completare il ripristino. Riaprila per continuare.';
+
+  @override
+  String get restoreCloseButton => 'Chiudi Pole²';
+
+  @override
+  String get restoreDoneMessage =>
+      'Backup ripristinato. Le tue cose sono di nuovo al loro posto.';
+
+  @override
+  String get restoreFailedMessage =>
+      'Ripristino non riuscito. I tuoi dati sono rimasti al loro posto.';
+
+  @override
+  String get restoreErrNewer => 'Aggiorna Pole² per aprire questo backup.';
+
+  @override
+  String get restoreErrPassword => 'Password errata oppure backup danneggiato.';
+
+  @override
+  String get restoreErrIncompleteMedia =>
+      'Nel backup mancano delle foto necessarie.';
+
+  @override
+  String get restoreErrLowSpace => 'Spazio insufficiente per il ripristino.';
+
+  @override
+  String get restoreErrGeneric => 'Non è stato possibile leggere il backup.';
 }

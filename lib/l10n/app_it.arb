@@ -406,5 +406,36 @@
   "backupNever": "Nessun backup ancora.",
   "restoreSectionTitle": "Ripristino",
   "restoreAction": "Ripristina da backup",
-  "restoreComingSoon": "Disponibile nel prossimo aggiornamento."
+  "restoreComingSoon": "Disponibile nel prossimo aggiornamento.",
+  "restoreIntro": "Scegli un file di backup di Pole² per riportare qui i tuoi dati.",
+  "restoreReplaceWarning": "Il ripristino sostituisce i dati attuali di Pole² con quelli del backup. Le cose che hai adesso su questo dispositivo verranno rimpiazzate.",
+  "restoreConfirm": "Ho capito, ripristina",
+  "restorePasswordTitle": "Password del backup",
+  "restorePasswordPrompt": "Questo backup è protetto. Inserisci la password.",
+  "restoreSummaryTitle": "Contenuto del backup",
+  "restoreSummaryCounts": "{objects} oggetti · {photos} foto · {places} luoghi · {people} persone",
+  "@restoreSummaryCounts": {
+    "placeholders": {
+      "objects": { "type": "int" },
+      "photos": { "type": "int" },
+      "places": { "type": "int" },
+      "people": { "type": "int" }
+    }
+  },
+  "restoreSummaryCreated": "Creato il {date}",
+  "@restoreSummaryCreated": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "restoreMigratedNote": "Backup di una versione precedente: verrà aggiornato durante il ripristino.",
+  "restorePreparing": "Sto verificando il backup…",
+  "restoreCloseTitle": "Quasi fatto",
+  "restoreCloseBody": "Pole² verrà chiusa per completare il ripristino. Riaprila per continuare.",
+  "restoreCloseButton": "Chiudi Pole²",
+  "restoreDoneMessage": "Backup ripristinato. Le tue cose sono di nuovo al loro posto.",
+  "restoreFailedMessage": "Ripristino non riuscito. I tuoi dati sono rimasti al loro posto.",
+  "restoreErrNewer": "Aggiorna Pole² per aprire questo backup.",
+  "restoreErrPassword": "Password errata oppure backup danneggiato.",
+  "restoreErrIncompleteMedia": "Nel backup mancano delle foto necessarie.",
+  "restoreErrLowSpace": "Spazio insufficiente per il ripristino.",
+  "restoreErrGeneric": "Non è stato possibile leggere il backup."
 }

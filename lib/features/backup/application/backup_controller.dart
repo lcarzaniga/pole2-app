@@ -10,6 +10,7 @@ import '../../../core/database/app_database.dart';
 import '../../../core/providers/database_provider.dart';
 import '../data/backup_plan.dart';
 import '../platform/backup_saver.dart' as saf;
+import '../restore/restore_controller.dart';
 import 'backup_service.dart';
 
 /// Where the backup job is.
@@ -83,7 +84,8 @@ class BackupController extends Notifier<BackupState> {
 
   /// Runs a full backup and, on success, saves it through the Android picker.
   Future<void> createBackup({required bool encrypt, String? password}) async {
-    if (state.isBusy) return; // ignore double-taps / concurrent runs
+    // Single-flight, and mutually exclusive with an in-progress restore.
+    if (state.isBusy || ref.read(restoreControllerProvider).isBusy) return;
     state = const BackupState(status: BackupStatus.working);
 
     BuiltBackup? built;

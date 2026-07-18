@@ -1825,6 +1825,126 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Disponibile nel prossimo aggiornamento.'**
   String get restoreComingSoon;
+
+  /// No description provided for @restoreIntro.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli un file di backup di Pole² per riportare qui i tuoi dati.'**
+  String get restoreIntro;
+
+  /// No description provided for @restoreReplaceWarning.
+  ///
+  /// In it, this message translates to:
+  /// **'Il ripristino sostituisce i dati attuali di Pole² con quelli del backup. Le cose che hai adesso su questo dispositivo verranno rimpiazzate.'**
+  String get restoreReplaceWarning;
+
+  /// No description provided for @restoreConfirm.
+  ///
+  /// In it, this message translates to:
+  /// **'Ho capito, ripristina'**
+  String get restoreConfirm;
+
+  /// No description provided for @restorePasswordTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Password del backup'**
+  String get restorePasswordTitle;
+
+  /// No description provided for @restorePasswordPrompt.
+  ///
+  /// In it, this message translates to:
+  /// **'Questo backup è protetto. Inserisci la password.'**
+  String get restorePasswordPrompt;
+
+  /// No description provided for @restoreSummaryTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Contenuto del backup'**
+  String get restoreSummaryTitle;
+
+  /// No description provided for @restoreSummaryCounts.
+  ///
+  /// In it, this message translates to:
+  /// **'{objects} oggetti · {photos} foto · {places} luoghi · {people} persone'**
+  String restoreSummaryCounts(int objects, int photos, int places, int people);
+
+  /// No description provided for @restoreSummaryCreated.
+  ///
+  /// In it, this message translates to:
+  /// **'Creato il {date}'**
+  String restoreSummaryCreated(String date);
+
+  /// No description provided for @restoreMigratedNote.
+  ///
+  /// In it, this message translates to:
+  /// **'Backup di una versione precedente: verrà aggiornato durante il ripristino.'**
+  String get restoreMigratedNote;
+
+  /// No description provided for @restorePreparing.
+  ///
+  /// In it, this message translates to:
+  /// **'Sto verificando il backup…'**
+  String get restorePreparing;
+
+  /// No description provided for @restoreCloseTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Quasi fatto'**
+  String get restoreCloseTitle;
+
+  /// No description provided for @restoreCloseBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Pole² verrà chiusa per completare il ripristino. Riaprila per continuare.'**
+  String get restoreCloseBody;
+
+  /// No description provided for @restoreCloseButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiudi Pole²'**
+  String get restoreCloseButton;
+
+  /// No description provided for @restoreDoneMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Backup ripristinato. Le tue cose sono di nuovo al loro posto.'**
+  String get restoreDoneMessage;
+
+  /// No description provided for @restoreFailedMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristino non riuscito. I tuoi dati sono rimasti al loro posto.'**
+  String get restoreFailedMessage;
+
+  /// No description provided for @restoreErrNewer.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiorna Pole² per aprire questo backup.'**
+  String get restoreErrNewer;
+
+  /// No description provided for @restoreErrPassword.
+  ///
+  /// In it, this message translates to:
+  /// **'Password errata oppure backup danneggiato.'**
+  String get restoreErrPassword;
+
+  /// No description provided for @restoreErrIncompleteMedia.
+  ///
+  /// In it, this message translates to:
+  /// **'Nel backup mancano delle foto necessarie.'**
+  String get restoreErrIncompleteMedia;
+
+  /// No description provided for @restoreErrLowSpace.
+  ///
+  /// In it, this message translates to:
+  /// **'Spazio insufficiente per il ripristino.'**
+  String get restoreErrLowSpace;
+
+  /// No description provided for @restoreErrGeneric.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile leggere il backup.'**
+  String get restoreErrGeneric;
 }
 
 class _AppLocalizationsDelegate

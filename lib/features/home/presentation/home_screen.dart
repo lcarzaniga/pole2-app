@@ -9,10 +9,17 @@ import '../../../l10n/app_localizations.dart';
 import '../../../shared/brand/hex_background.dart';
 import '../../../shared/brand/turtle_shell_menu.dart';
 import '../../../shared/photo_capture.dart';
+import '../../backup/restore/restore_receipt.dart';
 import '../../possessions/application/possession_providers.dart';
 import '../../possessions/presentation/possessions_home_view.dart';
 import '../../update/update_gate.dart';
 import 'widgets/home_empty_state.dart';
+
+/// One-time consumption of the restore result receipt written by the pre-DB
+/// swap — surfaced calmly on Home, then never repeated.
+final _restoreReceiptProvider = FutureProvider<String?>(
+  (ref) => consumeRestoreReceipt(),
+);
 
 /// The home screen — the digital home's front door.
 ///
@@ -27,6 +34,20 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final possessions = ref.watch(possessionListProvider);
     final l10n = AppLocalizations.of(context);
+
+    // Show the post-restore outcome once, when its receipt resolves.
+    ref.listen(_restoreReceiptProvider, (prev, next) {
+      final status = next.value;
+      if (status == null) return;
+      final msg = status == 'success'
+          ? l10n.restoreDoneMessage
+          : l10n.restoreFailedMessage;
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(
+          SnackBar(behavior: SnackBarBehavior.floating, content: Text(msg)),
+        );
+    });
 
     Future<void> handleQuickAction(QuickAction action) async {
       // "Un oggetto" opens the full creation flow; "Una foto" captures first,

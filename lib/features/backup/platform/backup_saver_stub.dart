@@ -13,3 +13,12 @@ Future<int> copyFileToUri({
 }) async {
   throw UnsupportedError('Backup save is not supported on this platform.');
 }
+
+Future<String?> openBackupDocument() async => null;
+
+Future<int> copyUriToFile({
+  required String uri,
+  required String destPath,
+}) async {
+  throw UnsupportedError('Backup restore is not supported on this platform.');
+}
