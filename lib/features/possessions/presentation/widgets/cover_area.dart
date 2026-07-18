@@ -92,22 +92,24 @@ class CoverArea extends StatelessWidget {
           ),
         ),
         // A calm, always-legible pencil over any image. Its own button consumes
-        // the tap, so it never falls through to the view gesture beneath.
-        Positioned(
-          right: AppSpacing.sm,
-          bottom: AppSpacing.sm,
-          child: Material(
-            color: Colors.black.withValues(alpha: 0.45),
-            shape: const CircleBorder(),
-            clipBehavior: Clip.antiAlias,
-            child: IconButton(
-              tooltip: editTooltip,
-              iconSize: AppIconSize.md,
-              icon: const Icon(Icons.edit_outlined, color: Colors.white),
-              onPressed: onEdit,
+        // the tap, so it never falls through to the view gesture beneath. Hidden
+        // entirely when replacing isn't offered (e.g. an inactive thing).
+        if (onEdit != null)
+          Positioned(
+            right: AppSpacing.sm,
+            bottom: AppSpacing.sm,
+            child: Material(
+              color: Colors.black.withValues(alpha: 0.45),
+              shape: const CircleBorder(),
+              clipBehavior: Clip.antiAlias,
+              child: IconButton(
+                tooltip: editTooltip,
+                iconSize: AppIconSize.md,
+                icon: const Icon(Icons.edit_outlined, color: Colors.white),
+                onPressed: onEdit,
+              ),
             ),
           ),
-        ),
       ],
     );
   }

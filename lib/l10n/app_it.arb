@@ -282,5 +282,31 @@
   "cannotAssignPlaceWhileLent": "Puoi assegnare un luogo quando torna.",
   "resolveLoanBeforeArchive": "Segna come restituito prima di archiviare o rimuovere.",
   "moreOptions": "Altre opzioni",
-  "personEmptyHint": "Aggiungi la prima persona qui sopra."
+  "personEmptyHint": "Aggiungi la prima persona qui sopra.",
+
+  "archiveTitle": "Archivio",
+  "archiveMenu": "Archivio",
+  "archiveKeptTab": "Conservati",
+  "archiveRemovedTab": "Rimossi",
+  "archiveOpen": "Apri",
+  "archiveRestore": "Ripristina",
+  "archiveRestoredSnack": "Ripristinato.",
+  "removedRestoredSnack": "Ripristinato.",
+  "archivedStatusLabel": "Messo da parte",
+  "transferredStatusLabel": "Dato",
+  "lostStatusLabel": "Smarrito",
+  "disposedStatusLabel": "Dismesso",
+  "removedStatusLabel": "Rimosso",
+  "archiveKeptEmpty": "Non hai messo da parte nessun oggetto.",
+  "archiveKeptEmptyHint": "Le cose messe da parte restano al sicuro qui e puoi ripristinarle quando vuoi.",
+  "archiveRemovedEmpty": "Non ci sono oggetti rimossi.",
+  "archiveRemovedEmptyHint": "Quello che rimuovi resta qui, pronto da ripristinare.",
+  "archiveSearchHint": "Cerca nell'archivio",
+  "archiveSearchNoResults": "Nessun risultato",
+  "archiveUpdatedOn": "Aggiornato il {date}",
+  "@archiveUpdatedOn": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "inactiveReadOnlyHint": "Ripristina per modificarlo di nuovo.",
+  "removedBannerTitle": "Rimosso"
 }

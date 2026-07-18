@@ -10,7 +10,7 @@ import '../../shared/brand/pole_wordmark.dart';
 /// place (e.g. a `NavigationBar` / `StatefulShellRoute` added here) without
 /// reshaping screens.
 class AppShell extends StatelessWidget {
-  const AppShell({super.key, required this.body, this.title});
+  const AppShell({super.key, required this.body, this.title, this.actions});
 
   final Widget body;
 
@@ -18,11 +18,15 @@ class AppShell extends StatelessWidget {
   /// Pole² brand wordmark instead — this is the app's own top-level surface.
   final String? title;
 
+  /// Secondary app-bar actions (e.g. the overflow that reaches Archivio).
+  final List<Widget>? actions;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: title == null ? const PoleWordmark(size: 22) : Text(title!),
+        actions: actions,
       ),
       body: body,
     );

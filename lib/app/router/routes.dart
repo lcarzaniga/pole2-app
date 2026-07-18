@@ -11,6 +11,10 @@ abstract final class Routes {
   static const String homeName = 'home';
   static const String homePath = '/';
 
+  /// Archivio: consult & restore kept-aside and removed things.
+  static const String archiveName = 'archive';
+  static const String archivePath = '/archive';
+
   /// Create a new possession.
   static const String newPossessionName = 'new-possession';
   static const String newPossessionPath = '/possession/new';

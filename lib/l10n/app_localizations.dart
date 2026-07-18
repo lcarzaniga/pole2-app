@@ -1267,6 +1267,138 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Aggiungi la prima persona qui sopra.'**
   String get personEmptyHint;
+
+  /// No description provided for @archiveTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Archivio'**
+  String get archiveTitle;
+
+  /// No description provided for @archiveMenu.
+  ///
+  /// In it, this message translates to:
+  /// **'Archivio'**
+  String get archiveMenu;
+
+  /// No description provided for @archiveKeptTab.
+  ///
+  /// In it, this message translates to:
+  /// **'Conservati'**
+  String get archiveKeptTab;
+
+  /// No description provided for @archiveRemovedTab.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimossi'**
+  String get archiveRemovedTab;
+
+  /// No description provided for @archiveOpen.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri'**
+  String get archiveOpen;
+
+  /// No description provided for @archiveRestore.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristina'**
+  String get archiveRestore;
+
+  /// No description provided for @archiveRestoredSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristinato.'**
+  String get archiveRestoredSnack;
+
+  /// No description provided for @removedRestoredSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristinato.'**
+  String get removedRestoredSnack;
+
+  /// No description provided for @archivedStatusLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Messo da parte'**
+  String get archivedStatusLabel;
+
+  /// No description provided for @transferredStatusLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Dato'**
+  String get transferredStatusLabel;
+
+  /// No description provided for @lostStatusLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Smarrito'**
+  String get lostStatusLabel;
+
+  /// No description provided for @disposedStatusLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Dismesso'**
+  String get disposedStatusLabel;
+
+  /// No description provided for @removedStatusLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimosso'**
+  String get removedStatusLabel;
+
+  /// No description provided for @archiveKeptEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Non hai messo da parte nessun oggetto.'**
+  String get archiveKeptEmpty;
+
+  /// No description provided for @archiveKeptEmptyHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Le cose messe da parte restano al sicuro qui e puoi ripristinarle quando vuoi.'**
+  String get archiveKeptEmptyHint;
+
+  /// No description provided for @archiveRemovedEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Non ci sono oggetti rimossi.'**
+  String get archiveRemovedEmpty;
+
+  /// No description provided for @archiveRemovedEmptyHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Quello che rimuovi resta qui, pronto da ripristinare.'**
+  String get archiveRemovedEmptyHint;
+
+  /// No description provided for @archiveSearchHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca nell\'archivio'**
+  String get archiveSearchHint;
+
+  /// No description provided for @archiveSearchNoResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun risultato'**
+  String get archiveSearchNoResults;
+
+  /// No description provided for @archiveUpdatedOn.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiornato il {date}'**
+  String archiveUpdatedOn(String date);
+
+  /// No description provided for @inactiveReadOnlyHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristina per modificarlo di nuovo.'**
+  String get inactiveReadOnlyHint;
+
+  /// No description provided for @removedBannerTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimosso'**
+  String get removedBannerTitle;
 }
 
 class _AppLocalizationsDelegate

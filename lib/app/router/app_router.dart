@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../features/archive/presentation/archive_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/places/presentation/place_contents_screen.dart';
 import '../../features/places/presentation/place_review_screen.dart';
@@ -34,6 +35,11 @@ GoRouter appRouter(Ref ref) {
         path: Routes.homePath,
         name: Routes.homeName,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: Routes.archivePath,
+        name: Routes.archiveName,
+        builder: (context, state) => const ArchiveScreen(),
       ),
       GoRoute(
         path: Routes.newPossessionPath,

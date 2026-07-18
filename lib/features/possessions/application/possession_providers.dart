@@ -45,3 +45,14 @@ final possessionPhotosProvider =
     StreamProvider.family<List<PhotoWithFile>, String>(
       (ref, id) => ref.watch(possessionsDaoProvider).watchPhotos(id),
     );
+
+/// "Conservati": non-deleted, non-active possessions (archived and any
+/// transferred/lost/disposed) — the Archivio "kept aside" section.
+final archivedListProvider = StreamProvider<List<Possession>>(
+  (ref) => ref.watch(possessionsDaoProvider).watchArchived(),
+);
+
+/// "Rimossi": soft-deleted possessions — the Archivio "removed" section.
+final removedListProvider = StreamProvider<List<Possession>>(
+  (ref) => ref.watch(possessionsDaoProvider).watchRemoved(),
+);

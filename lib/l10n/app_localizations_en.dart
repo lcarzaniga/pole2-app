@@ -689,4 +689,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get personEmptyHint => 'Aggiungi la prima persona qui sopra.';
+
+  @override
+  String get archiveTitle => 'Archivio';
+
+  @override
+  String get archiveMenu => 'Archivio';
+
+  @override
+  String get archiveKeptTab => 'Conservati';
+
+  @override
+  String get archiveRemovedTab => 'Rimossi';
+
+  @override
+  String get archiveOpen => 'Apri';
+
+  @override
+  String get archiveRestore => 'Ripristina';
+
+  @override
+  String get archiveRestoredSnack => 'Ripristinato.';
+
+  @override
+  String get removedRestoredSnack => 'Ripristinato.';
+
+  @override
+  String get archivedStatusLabel => 'Messo da parte';
+
+  @override
+  String get transferredStatusLabel => 'Dato';
+
+  @override
+  String get lostStatusLabel => 'Smarrito';
+
+  @override
+  String get disposedStatusLabel => 'Dismesso';
+
+  @override
+  String get removedStatusLabel => 'Rimosso';
+
+  @override
+  String get archiveKeptEmpty => 'Non hai messo da parte nessun oggetto.';
+
+  @override
+  String get archiveKeptEmptyHint =>
+      'Le cose messe da parte restano al sicuro qui e puoi ripristinarle quando vuoi.';
+
+  @override
+  String get archiveRemovedEmpty => 'Non ci sono oggetti rimossi.';
+
+  @override
+  String get archiveRemovedEmptyHint =>
+      'Quello che rimuovi resta qui, pronto da ripristinare.';
+
+  @override
+  String get archiveSearchHint => 'Cerca nell\'archivio';
+
+  @override
+  String get archiveSearchNoResults => 'Nessun risultato';
+
+  @override
+  String archiveUpdatedOn(String date) {
+    return 'Aggiornato il $date';
+  }
+
+  @override
+  String get inactiveReadOnlyHint => 'Ripristina per modificarlo di nuovo.';
+
+  @override
+  String get removedBannerTitle => 'Rimosso';
 }

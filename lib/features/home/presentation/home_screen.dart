@@ -47,11 +47,13 @@ class HomeScreen extends ConsumerWidget {
         case QuickAction.detail:
           ScaffoldMessenger.of(context)
             ..clearSnackBars()
-            ..showSnackBar(SnackBar(
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 3),
-              content: Text(l10n.quickActionSoon),
-            ));
+            ..showSnackBar(
+              SnackBar(
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 3),
+                content: Text(l10n.quickActionSoon),
+              ),
+            );
       }
     }
 
@@ -59,6 +61,17 @@ class HomeScreen extends ConsumerWidget {
     // optional prompt can be shown). The gate renders its child unchanged.
     return UpdateGate(
       child: AppShell(
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value == 'archive') context.pushNamed(Routes.archiveName);
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(value: 'archive', child: Text(l10n.archiveMenu)),
+            ],
+          ),
+        ],
         body: HexBackground(
           child: possessions.when(
             loading: () => const _CalmCenter(),
@@ -96,8 +109,9 @@ class _CalmCenter extends StatelessWidget {
               child: Text(
                 message!,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge
-                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
     );

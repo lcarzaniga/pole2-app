@@ -18,6 +18,7 @@ import '../../../shared/phrasing.dart';
 import '../../../shared/platform/photo_store.dart';
 import '../../places/application/place_providers.dart';
 import '../../places/presentation/place_picker.dart';
+import '../application/archive_query.dart';
 import '../application/event_providers.dart';
 import '../application/gallery_order.dart';
 import '../application/possession_providers.dart';
@@ -42,11 +43,12 @@ class PossessionDetailScreen extends ConsumerWidget {
     final possession = ref.watch(possessionByIdProvider(id));
     final l10n = AppLocalizations.of(context);
 
+    final p = possession.value;
     return Scaffold(
       appBar: AppBar(
         actions: [
-          if (possession.value != null)
-            _MoreMenu(id: id, possession: possession.value!),
+          // Rename/archive/remove only make sense for a live, active thing.
+          if (p != null && !_isInactive(p)) _MoreMenu(id: id, possession: p),
         ],
       ),
       body: HexBackground(
@@ -61,6 +63,12 @@ class PossessionDetailScreen extends ConsumerWidget {
   }
 }
 
+/// True when a thing has left normal use — soft-deleted, or any lifecycle
+/// status other than active. Such a thing is consulted read-only in Archivio;
+/// enrichment/state-changing actions are withheld until it is restored.
+bool _isInactive(Possession p) =>
+    p.deletedAt != null || p.status != PossessionStatus.active;
+
 class _Dossier extends ConsumerWidget {
   const _Dossier({required this.possession});
 
@@ -72,12 +80,13 @@ class _Dossier extends ConsumerWidget {
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
     final id = possession.id;
+    final inactive = _isInactive(possession);
 
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        _Cover(possession: possession),
-        _Gallery(possession: possession),
+        _Cover(possession: possession, inactive: inactive),
+        _Gallery(possession: possession, inactive: inactive),
         Padding(
           padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
@@ -87,28 +96,45 @@ class _Dossier extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(possession.title,
-                        style: theme.textTheme.headlineSmall),
+                    child: Text(
+                      possession.title,
+                      style: theme.textTheme.headlineSmall,
+                    ),
                   ),
-                  IconButton(
-                    tooltip: l10n.renameTooltip,
-                    icon: Icon(Icons.edit_outlined,
-                        size: AppIconSize.md, color: scheme.onSurfaceVariant),
-                    onPressed: () => _rename(context, ref, possession),
-                  ),
+                  // Renaming is enrichment — withheld until restored.
+                  if (!inactive)
+                    IconButton(
+                      tooltip: l10n.renameTooltip,
+                      icon: Icon(
+                        Icons.edit_outlined,
+                        size: AppIconSize.md,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                      onPressed: () => _rename(context, ref, possession),
+                    ),
                 ],
               ),
               const SizedBox(height: AppSpacing.xs),
-              Text(l10n.keptOn(formatDate(possession.createdAt, l10n.localeName)),
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: scheme.onSurfaceVariant)),
-              _NextGlance(id: id),
-              const SizedBox(height: AppSpacing.lg),
-              _ActionHub(possession: possession),
-              const SizedBox(height: AppSpacing.xl),
-              _Custody(possession: possession),
-              const SizedBox(height: AppSpacing.md),
-              _PlaceCard(possession: possession),
+              Text(
+                l10n.keptOn(formatDate(possession.createdAt, l10n.localeName)),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+              if (inactive) ...[
+                const SizedBox(height: AppSpacing.lg),
+                _StatusBanner(possession: possession),
+                const SizedBox(height: AppSpacing.md),
+                _PlaceCard(possession: possession, inactive: true),
+              ] else ...[
+                _NextGlance(id: id),
+                const SizedBox(height: AppSpacing.lg),
+                _ActionHub(possession: possession),
+                const SizedBox(height: AppSpacing.xl),
+                _Custody(possession: possession),
+                const SizedBox(height: AppSpacing.md),
+                _PlaceCard(possession: possession),
+              ],
               const SizedBox(height: AppSpacing.md),
               _DetailsCard(id: id),
               const SizedBox(height: AppSpacing.md),
@@ -121,6 +147,99 @@ class _Dossier extends ConsumerWidget {
   }
 }
 
+/// The calm banner shown when consulting an inactive/removed thing: what state
+/// it is in, a reminder that it is read-only, and a single "Ripristina" that
+/// honours the status ≠ deletion distinction (removed → keep prior status;
+/// kept-aside → back to active).
+class _StatusBanner extends ConsumerWidget {
+  const _StatusBanner({required this.possession});
+
+  final Possession possession;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final removed = possession.deletedAt != null;
+    final label = removed
+        ? l10n.removedBannerTitle
+        : lifecycleLabel(l10n, possession.status);
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHigh,
+        borderRadius: AppRadii.borderLg,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.inventory_2_outlined,
+                size: AppIconSize.md,
+                color: scheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label, style: theme.textTheme.titleMedium),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      l10n.inactiveReadOnlyHint,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FilledButton.tonalIcon(
+              onPressed: () => _restore(context, ref, removed),
+              icon: const Icon(Icons.restore),
+              label: Text(l10n.archiveRestore),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _restore(
+    BuildContext context,
+    WidgetRef ref,
+    bool removed,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final dao = ref.read(possessionsDaoProvider);
+    if (removed) {
+      await dao.restoreRemoved(possession.id);
+    } else {
+      await dao.restoreArchived(possession.id);
+    }
+    messenger
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            removed ? l10n.removedRestoredSnack : l10n.archiveRestoredSnack,
+          ),
+        ),
+      );
+  }
+}
+
 /// A calm one-line "what's next" cue, if a date is coming up.
 class _NextGlance extends ConsumerWidget {
   const _NextGlance({required this.id});
@@ -130,18 +249,20 @@ class _NextGlance extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final events = ref.watch(timelineProvider(id)).value ?? const [];
-    final upcoming = events
-        .where((e) => e.kind == EventKind.reminder && daysUntil(e.at) >= 0)
-        .toList()
-      ..sort((a, b) => a.at.compareTo(b.at));
+    final upcoming =
+        events
+            .where((e) => e.kind == EventKind.reminder && daysUntil(e.at) >= 0)
+            .toList()
+          ..sort((a, b) => a.at.compareTo(b.at));
     if (upcoming.isEmpty) return const SizedBox.shrink();
 
     final next = upcoming.first;
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final soon = daysUntil(next.at) <= 30;
-    final color =
-        soon ? context.brand.attention : theme.colorScheme.onSurfaceVariant;
+    final color = soon
+        ? context.brand.attention
+        : theme.colorScheme.onSurfaceVariant;
     final what = '${next.title ?? ''} ${relativeDay(l10n, next.at)}'.trim();
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.sm),
@@ -189,8 +310,10 @@ class _ActionHub extends ConsumerWidget {
         _HubAction(
           icon: Icons.event_outlined,
           label: l10n.hubDate,
-          onTap: () =>
-              context.pushNamed(Routes.reminderName, pathParameters: {'id': id}),
+          onTap: () => context.pushNamed(
+            Routes.reminderName,
+            pathParameters: {'id': id},
+          ),
         ),
         _HubAction(
           icon: Icons.place_outlined,
@@ -236,15 +359,21 @@ class _HubAction extends StatelessWidget {
                     color: scheme.surfaceContainerHigh,
                     shape: BoxShape.circle,
                   ),
-                  child:
-                      Icon(icon, size: AppIconSize.md, color: scheme.primary),
+                  child: Icon(
+                    icon,
+                    size: AppIconSize.md,
+                    color: scheme.primary,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                Text(label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall
-                        ?.copyWith(color: scheme.onSurfaceVariant)),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),
@@ -264,8 +393,8 @@ class _DetailsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final acq = ref.watch(acquisitionProvider(id)).value;
     final l10n = AppLocalizations.of(context);
-    void onTap() => context.pushNamed(Routes.acquisitionName,
-        pathParameters: {'id': id});
+    void onTap() =>
+        context.pushNamed(Routes.acquisitionName, pathParameters: {'id': id});
 
     if (acq == null) {
       return _TapCard(
@@ -276,10 +405,14 @@ class _DetailsCard extends ConsumerWidget {
       );
     }
 
-    final supplier =
-        acq.partyId == null ? null : ref.watch(partyProvider(acq.partyId!)).value;
-    final headline =
-        acquisitionHeadline(l10n, acq.acquisitionType, supplier?.name);
+    final supplier = acq.partyId == null
+        ? null
+        : ref.watch(partyProvider(acq.partyId!)).value;
+    final headline = acquisitionHeadline(
+      l10n,
+      acq.acquisitionType,
+      supplier?.name,
+    );
     final meta = <String>[
       if (acq.amountMinor != null)
         formatMoney(acq.amountMinor!, acq.currency, l10n.localeName),
@@ -355,13 +488,28 @@ class _Custody extends ConsumerWidget {
 /// While the thing is lent, the place is calmly unavailable (it returns when the
 /// object does), so we never claim it is in its old place.
 class _PlaceCard extends ConsumerWidget {
-  const _PlaceCard({required this.possession});
+  const _PlaceCard({required this.possession, this.inactive = false});
 
   final Possession possession;
+  final bool inactive;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+
+    // Inactive/removed: show the retained place read-only (context, not an
+    // invitation) — assigning is withheld until restored.
+    if (inactive) {
+      final pid = possession.placeId;
+      final retained = pid == null
+          ? null
+          : ref.watch(placeByIdProvider(pid)).value;
+      return _InfoCard(
+        icon: Icons.place_outlined,
+        title: retained?.name ?? l10n.noPlace,
+        subtitle: l10n.placeLabel,
+      );
+    }
 
     // While lent, don't invite assigning a place (it would fight the loan).
     if (ref.watch(activeLoanProvider(possession.id)).value != null) {
@@ -374,8 +522,9 @@ class _PlaceCard extends ConsumerWidget {
 
     final placeId = possession.placeId;
     // A deleted place resolves to null → treated as "no place" (invite choosing).
-    final place =
-        placeId == null ? null : ref.watch(placeByIdProvider(placeId)).value;
+    final place = placeId == null
+        ? null
+        : ref.watch(placeByIdProvider(placeId)).value;
 
     if (place == null) {
       return _TapCard(
@@ -466,8 +615,9 @@ class _HistoryCard extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
               child: Text(
                 l10n.historyEmpty,
-                style: theme.textTheme.bodyMedium
-                    ?.copyWith(color: scheme.onSurfaceVariant),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
               ),
             )
           else
@@ -507,9 +657,12 @@ class _EventRow extends ConsumerWidget {
           formatDate(event.purchasedOn!, l10n.localeName),
       ].join(' · ');
       if (meta.isNotEmpty) {
-        whenLine = Text(meta,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: scheme.onSurfaceVariant));
+        whenLine = Text(
+          meta,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: scheme.onSurfaceVariant,
+          ),
+        );
       }
     } else if (event.kind == EventKind.lent) {
       icon = Icons.people_alt_outlined;
@@ -519,8 +672,9 @@ class _EventRow extends ConsumerWidget {
       title = l10n.lentToPerson(borrower?.name ?? '—');
       whenLine = Text(
         l10n.lentOn(formatDate(event.at, l10n.localeName)),
-        style: theme.textTheme.bodySmall
-            ?.copyWith(color: scheme.onSurfaceVariant),
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: scheme.onSurfaceVariant,
+        ),
       );
     } else if (event.kind == EventKind.returned) {
       icon = Icons.assignment_turned_in_outlined;
@@ -529,12 +683,19 @@ class _EventRow extends ConsumerWidget {
       icon = Icons.sticky_note_2_outlined;
       // The note's body is the headline; its title (if any) is rarely used.
       title = event.notes ?? event.title ?? l10n.addNote;
-      whenLine = Text(l10n.onDate(formatDate(event.at, l10n.localeName)),
-          style: theme.textTheme.bodySmall
-              ?.copyWith(color: scheme.onSurfaceVariant));
+      whenLine = Text(
+        l10n.onDate(formatDate(event.at, l10n.localeName)),
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: scheme.onSurfaceVariant,
+        ),
+      );
       trailing = IconButton(
         tooltip: l10n.menuRemove,
-        icon: Icon(Icons.close, size: AppIconSize.sm, color: scheme.onSurfaceVariant),
+        icon: Icon(
+          Icons.close,
+          size: AppIconSize.sm,
+          color: scheme.onSurfaceVariant,
+        ),
         onPressed: () => _removeEvent(context, ref, event.id),
       );
     } else {
@@ -545,13 +706,20 @@ class _EventRow extends ConsumerWidget {
         // Upcoming or today — calm amber attention, never alarm.
         whenLine = _AttentionPill(text: relativeDay(l10n, event.at));
       } else {
-        whenLine = Text(l10n.onDate(formatDate(event.at, l10n.localeName)),
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: scheme.onSurfaceVariant));
+        whenLine = Text(
+          l10n.onDate(formatDate(event.at, l10n.localeName)),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: scheme.onSurfaceVariant,
+          ),
+        );
       }
       trailing = IconButton(
         tooltip: l10n.menuRemove,
-        icon: Icon(Icons.close, size: AppIconSize.sm, color: scheme.onSurfaceVariant),
+        icon: Icon(
+          Icons.close,
+          size: AppIconSize.sm,
+          color: scheme.onSurfaceVariant,
+        ),
         onPressed: () => _removeEvent(context, ref, event.id),
       );
     }
@@ -592,14 +760,19 @@ class _AttentionPill extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
         color: context.brand.attention,
         borderRadius: AppRadii.borderSm,
       ),
-      child: Text(text,
-          style: theme.textTheme.labelSmall
-              ?.copyWith(color: context.brand.onAttention)),
+      child: Text(
+        text,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: context.brand.onAttention,
+        ),
+      ),
     );
   }
 }
@@ -643,14 +816,20 @@ class _TapCard extends StatelessWidget {
                   children: [
                     Text(title, style: theme.textTheme.titleMedium),
                     const SizedBox(height: AppSpacing.xs),
-                    Text(subtitle,
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(color: scheme.onSurfaceVariant)),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              Icon(trailing ?? Icons.chevron_right,
-                  size: AppIconSize.md, color: scheme.onSurfaceVariant),
+              Icon(
+                trailing ?? Icons.chevron_right,
+                size: AppIconSize.md,
+                color: scheme.onSurfaceVariant,
+              ),
             ],
           ),
         ),
@@ -693,9 +872,12 @@ class _InfoCard extends StatelessWidget {
               children: [
                 Text(title, style: theme.textTheme.titleMedium),
                 const SizedBox(height: AppSpacing.xs),
-                Text(subtitle,
-                    style: theme.textTheme.bodyMedium
-                        ?.copyWith(color: scheme.onSurfaceVariant)),
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),
@@ -709,9 +891,10 @@ class _InfoCard extends StatelessWidget {
 /// tapping the image opens it full-screen and a pencil replaces it — the two
 /// actions are deliberately separate (see [CoverArea]).
 class _Cover extends ConsumerWidget {
-  const _Cover({required this.possession});
+  const _Cover({required this.possession, this.inactive = false});
 
   final Possession possession;
+  final bool inactive;
 
   static const double _height = 220;
 
@@ -720,14 +903,15 @@ class _Cover extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final fileId = possession.coverFileId;
 
-    // No cover yet → the calm "add a photo" invitation.
+    // No cover yet → the calm "add a photo" invitation (disabled when inactive:
+    // adding a photo is enrichment, withheld until restored).
     if (fileId == null) {
       return CoverArea(
         height: _height,
         image: null,
         addLabel: l10n.addPhoto,
         editTooltip: l10n.photoEditTooltip,
-        onAdd: () => _addPhotos(context, ref, possession.id),
+        onAdd: inactive ? null : () => _addPhotos(context, ref, possession.id),
       );
     }
 
@@ -739,7 +923,9 @@ class _Cover extends ConsumerWidget {
       return SizedBox(
         height: _height,
         width: double.infinity,
-        child: ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerLow),
+        child: ColoredBox(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+        ),
       );
     }
 
@@ -757,7 +943,11 @@ class _Cover extends ConsumerWidget {
         Routes.photoName,
         pathParameters: {'id': possession.id},
       ),
-      onEdit: () => _replaceCover(context, ref, possession.id),
+      // Viewing always works; replacing the cover is enrichment (withheld while
+      // inactive) — the pencil disappears until restored.
+      onEdit: inactive
+          ? null
+          : () => _replaceCover(context, ref, possession.id),
     );
   }
 }
@@ -766,13 +956,15 @@ class _Cover extends ConsumerWidget {
 /// so an object with nothing (or only the empty-cover invitation above) stays
 /// uncluttered. Cover first, with a subtle badge; a trailing tile adds more.
 class _Gallery extends ConsumerWidget {
-  const _Gallery({required this.possession});
+  const _Gallery({required this.possession, this.inactive = false});
 
   final Possession possession;
+  final bool inactive;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final photos = ref.watch(possessionPhotosProvider(possession.id)).value ??
+    final photos =
+        ref.watch(possessionPhotosProvider(possession.id)).value ??
         const <PhotoWithFile>[];
     if (photos.isEmpty) return const SizedBox.shrink();
 
@@ -800,6 +992,7 @@ class _Gallery extends ConsumerWidget {
           queryParameters: {'i': '$i'},
         ),
         onAdd: () => _addPhotos(context, ref, possession.id),
+        showAdd: !inactive,
       ),
     );
   }
@@ -833,7 +1026,10 @@ class _MoreMenu extends ConsumerWidget {
 // ---- Actions ----
 
 Future<void> _rename(
-    BuildContext context, WidgetRef ref, Possession possession) async {
+  BuildContext context,
+  WidgetRef ref,
+  Possession possession,
+) async {
   final l10n = AppLocalizations.of(context);
   final controller = TextEditingController(text: possession.title);
   final newTitle = await showModalBottomSheet<String>(
@@ -874,18 +1070,19 @@ Future<void> _rename(
 
 /// True when the thing is actively lent — used to block actions that would
 /// conflict with an open loan, with a calm explanation instead of silent damage.
-Future<bool> _guardLent(
-    BuildContext context, WidgetRef ref, String id) async {
+Future<bool> _guardLent(BuildContext context, WidgetRef ref, String id) async {
   final loan = await ref.read(eventsDaoProvider).watchActiveLoan(id).first;
   if (loan == null) return false;
   if (context.mounted) {
     final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
-      ..showSnackBar(SnackBar(
-        behavior: SnackBarBehavior.floating,
-        content: Text(l10n.resolveLoanBeforeArchive),
-      ));
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(l10n.resolveLoanBeforeArchive),
+        ),
+      );
   }
   return true;
 }
@@ -901,12 +1098,16 @@ Future<void> _archive(BuildContext context, WidgetRef ref, String id) async {
   if (router.canPop()) router.pop();
   messenger
     ..clearSnackBars()
-    ..showSnackBar(SnackBar(
-      behavior: SnackBarBehavior.floating,
-      content: Text(l10n.archivedSnack),
-      action:
-          SnackBarAction(label: l10n.undo, onPressed: () => dao.restore(id)),
-    ));
+    ..showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(l10n.archivedSnack),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () => dao.restore(id),
+        ),
+      ),
+    );
 }
 
 Future<void> _remove(BuildContext context, WidgetRef ref, String id) async {
@@ -920,27 +1121,39 @@ Future<void> _remove(BuildContext context, WidgetRef ref, String id) async {
   if (router.canPop()) router.pop();
   messenger
     ..clearSnackBars()
-    ..showSnackBar(SnackBar(
-      behavior: SnackBarBehavior.floating,
-      content: Text(l10n.removedSnack),
-      action:
-          SnackBarAction(label: l10n.undo, onPressed: () => dao.restore(id)),
-    ));
+    ..showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(l10n.removedSnack),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () => dao.restore(id),
+        ),
+      ),
+    );
 }
 
-Future<void> _removeEvent(BuildContext context, WidgetRef ref, String id) async {
+Future<void> _removeEvent(
+  BuildContext context,
+  WidgetRef ref,
+  String id,
+) async {
   final l10n = AppLocalizations.of(context);
   final dao = ref.read(eventsDaoProvider);
   await dao.deleteEvent(id);
   if (!context.mounted) return;
   ScaffoldMessenger.of(context)
     ..clearSnackBars()
-    ..showSnackBar(SnackBar(
-      behavior: SnackBarBehavior.floating,
-      content: Text(l10n.eventRemovedSnack),
-      action: SnackBarAction(
-          label: l10n.undo, onPressed: () => dao.restoreEvent(id)),
-    ));
+    ..showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(l10n.eventRemovedSnack),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () => dao.restoreEvent(id),
+        ),
+      ),
+    );
 }
 
 /// Add one or more photos — the hub "Foto" action and the empty-cover
@@ -952,17 +1165,19 @@ Future<void> _addPhotos(BuildContext context, WidgetRef ref, String id) async {
   final dao = ref.read(possessionsDaoProvider);
   if (photos.length == 1) {
     final ph = photos.first;
-    await dao.addPhoto(id,
-        relativePath: ph.relativePath,
-        mimeType: ph.mimeType,
-        byteSize: ph.byteSize);
+    await dao.addPhoto(
+      id,
+      relativePath: ph.relativePath,
+      mimeType: ph.mimeType,
+      byteSize: ph.byteSize,
+    );
   } else {
     await dao.addPhotos(id, [
       for (final ph in photos)
         (
           relativePath: ph.relativePath,
           mimeType: ph.mimeType,
-          byteSize: ph.byteSize
+          byteSize: ph.byteSize,
         ),
     ]);
   }
@@ -971,10 +1186,15 @@ Future<void> _addPhotos(BuildContext context, WidgetRef ref, String id) async {
 /// Replace the cover via the pencil: capture one image, add it and promote it to
 /// cover. The previous cover stays in the gallery (demoted, never orphaned).
 Future<void> _replaceCover(
-    BuildContext context, WidgetRef ref, String id) async {
+  BuildContext context,
+  WidgetRef ref,
+  String id,
+) async {
   final photo = await chooseAndCapturePhoto(context);
   if (photo == null) return;
-  await ref.read(possessionsDaoProvider).addPhoto(
+  await ref
+      .read(possessionsDaoProvider)
+      .addPhoto(
         id,
         relativePath: photo.relativePath,
         mimeType: photo.mimeType,
@@ -987,24 +1207,34 @@ Future<void> _replaceCover(
 /// and the place card, so "assign a place" behaves identically wherever it is
 /// reached.
 Future<void> _pickPlace(
-    BuildContext context, WidgetRef ref, Possession possession) async {
+  BuildContext context,
+  WidgetRef ref,
+  Possession possession,
+) async {
   // A lent thing has no place; assigning one would contradict the loan.
-  final loan = await ref.read(eventsDaoProvider).watchActiveLoan(possession.id).first;
+  final loan = await ref
+      .read(eventsDaoProvider)
+      .watchActiveLoan(possession.id)
+      .first;
   if (loan != null) {
     if (context.mounted) {
       final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
-        ..showSnackBar(SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(l10n.cannotAssignPlaceWhileLent),
-        ));
+        ..showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Text(l10n.cannotAssignPlaceWhileLent),
+          ),
+        );
     }
     return;
   }
   if (!context.mounted) return;
-  final choice =
-      await showPlacePicker(context, currentPlaceId: possession.placeId);
+  final choice = await showPlacePicker(
+    context,
+    currentPlaceId: possession.placeId,
+  );
   if (choice == null) return;
   await ref
       .read(possessionsDaoProvider)
@@ -1025,8 +1255,9 @@ class _Calm extends StatelessWidget {
         child: Text(
           message,
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyLarge
-              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       ),
     );

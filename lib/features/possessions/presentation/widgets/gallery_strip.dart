@@ -20,6 +20,7 @@ class GalleryStrip extends StatelessWidget {
     required this.docsPath,
     required this.onOpen,
     required this.onAdd,
+    this.showAdd = true,
   });
 
   final List<PhotoWithFile> photos;
@@ -27,6 +28,10 @@ class GalleryStrip extends StatelessWidget {
   final String? docsPath;
   final void Function(int index) onOpen;
   final VoidCallback onAdd;
+
+  /// Whether to show the trailing "add another" tile — false for an inactive
+  /// possession, where adding photos is withheld until it is restored.
+  final bool showAdd;
 
   static const double _size = 84;
 
@@ -39,7 +44,7 @@ class GalleryStrip extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
-        itemCount: photos.length + 1, // + the trailing add tile
+        itemCount: photos.length + (showAdd ? 1 : 0), // + trailing add tile
         separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
         itemBuilder: (context, i) {
           if (i == photos.length) {

@@ -20,7 +20,7 @@ class PhotoWithFile {
 ///
 /// Reads are **reactive** (Drift `Stream`s). No repository layer sits above
 /// this — the DAO *is* the data layer.
-@DriftAccessor(tables: [Possessions, Files, PossessionPhotos])
+@DriftAccessor(tables: [Possessions, Files, PossessionPhotos, Places])
 class PossessionsDao extends DatabaseAccessor<AppDatabase>
     with _$PossessionsDaoMixin {
   PossessionsDao(super.db);
@@ -149,7 +149,10 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
     );
   }
 
-  /// Undo for both archive and delete: back to active and un-tombstoned.
+  /// Undo for both archive and delete: back to active and un-tombstoned. Kept
+  /// for the immediate snackbar Undo on the detail screen; the Archivio surface
+  /// uses the precise [restoreArchived] / [restoreRemoved] instead, which honour
+  /// the status ≠ deletion distinction.
   Future<void> restore(String id) {
     return (update(possessions)..where((t) => t.id.equals(id))).write(
       PossessionsCompanion(
@@ -158,6 +161,82 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
         updatedAt: Value(DateTime.now()),
       ),
     );
+  }
+
+  // ---- Archivio (M5.3): consult & restore inactive/removed things ----
+
+  /// "Conservati": non-deleted possessions that are not active (archived, and —
+  /// safely — any transferred/lost/disposed rows). Most recently updated first.
+  Stream<List<Possession>> watchArchived() {
+    return (select(possessions)
+          ..where(
+            (t) =>
+                t.deletedAt.isNull() &
+                t.status.equalsValue(PossessionStatus.active).not(),
+          )
+          ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]))
+        .watch();
+  }
+
+  /// "Rimossi": soft-deleted possessions, whatever their lifecycle status. Most
+  /// recently removed/updated first.
+  Stream<List<Possession>> watchRemoved() {
+    return (select(possessions)
+          ..where((t) => t.deletedAt.isNotNull())
+          ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]))
+        .watch();
+  }
+
+  /// The place to keep after a restore: the current one only if it still exists
+  /// and is active; otherwise none (never a dangling reference to a deleted
+  /// place). Assumes it runs inside a transaction.
+  Future<String?> _resolveRestoredPlace(String? placeId) async {
+    if (placeId == null) return null;
+    final place =
+        await (select(places)
+              ..where((t) => t.id.equals(placeId) & t.deletedAt.isNull()))
+            .getSingleOrNull();
+    return place?.id;
+  }
+
+  /// Restore from "Conservati": lifecycle back to active, deletion untouched
+  /// (stays null). A retained place is kept only if still valid, so the thing
+  /// returns to Home and to its place — never to a deleted one. Everything else
+  /// (photos, events, loan history, notes, acquisition) is preserved.
+  Future<void> restoreArchived(String id) {
+    return transaction(() async {
+      final p = await (select(
+        possessions,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      if (p == null) return;
+      await (update(possessions)..where((t) => t.id.equals(id))).write(
+        PossessionsCompanion(
+          status: const Value(PossessionStatus.active),
+          placeId: Value(await _resolveRestoredPlace(p.placeId)),
+          updatedAt: Value(DateTime.now()),
+        ),
+      );
+    });
+  }
+
+  /// Restore from "Rimossi": clear the tombstone but **preserve the lifecycle
+  /// status** (status ≠ deletion) — an undeleted active thing returns to Home,
+  /// an undeleted archived thing returns to Conservati. A retained place is kept
+  /// only if still valid.
+  Future<void> restoreRemoved(String id) {
+    return transaction(() async {
+      final p = await (select(
+        possessions,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      if (p == null) return;
+      await (update(possessions)..where((t) => t.id.equals(id))).write(
+        PossessionsCompanion(
+          deletedAt: const Value(null),
+          placeId: Value(await _resolveRestoredPlace(p.placeId)),
+          updatedAt: Value(DateTime.now()),
+        ),
+      );
+    });
   }
 
   // ---- Photo gallery (M5.1) ----
