@@ -111,52 +111,135 @@ void main() {
   }
 
   File live() => File(p.join(docs.path, 'project_kobe.sqlite'));
-  File marker() => File(p.join(docs.path, 'restore_pending.json'));
+  File pending() => File(p.join(docs.path, 'restore_pending.json'));
+  File unconfirmed() => File(p.join(docs.path, 'restore_unconfirmed.json'));
+  File confirmed() => File(p.join(docs.path, 'restore_confirmed.json'));
   File receipt() => File(p.join(docs.path, 'restore_result.json'));
+  Directory recoveryDb() =>
+      Directory(p.join(docs.path, 'recovery', 'current', 'op1', 'db'));
 
-  test('happy path installs new data, keeps recovery, writes success', () {
+  // ---- Install (pre-DB): now stops at "unconfirmed", never final success ----
+
+  test('install records unconfirmed state (not final success), keeps recovery, '
+      'writes NO success receipt yet', () {
     final s = scenario(phase: RestorePhase.prepared);
     final out = RestoreSwapper(docs).run();
-    expect(out.kind, RestoreOutcomeKind.committed);
+    expect(out.kind, RestoreOutcomeKind.installedUnconfirmed);
     expect(sha(live()), s.newSha); // new DB live
     expect(File(p.join(docs.path, 'photos', 'new.jpg')).existsSync(), isTrue);
     expect(File(p.join(docs.path, 'photos', 'old.jpg')).existsSync(), isFalse);
-    // Old data preserved in recovery, marker gone, success receipt.
+    // Unconfirmed marker written; pending gone; recovery kept; NO receipt.
+    expect(unconfirmed().existsSync(), isTrue);
+    expect(pending().existsSync(), isFalse);
+    expect(confirmed().existsSync(), isFalse);
     expect(
-      File(
-        p.join(
-          docs.path,
-          'recovery',
-          'current',
-          'op1',
-          'db',
-          'project_kobe.sqlite',
-        ),
-      ).existsSync(),
+      File(p.join(recoveryDb().path, 'project_kobe.sqlite')).existsSync(),
       isTrue,
     );
-    expect(marker().existsSync(), isFalse);
-    expect(receipt().readAsStringSync().contains('success'), isTrue);
+    expect(receipt().existsSync(), isFalse);
   });
 
-  test('re-running after commit is a no-op', () {
-    scenario(phase: RestorePhase.prepared);
-    RestoreSwapper(docs).run();
-    final liveAfter = sha(live());
-    final out2 = RestoreSwapper(docs).run();
-    expect(out2.kind, RestoreOutcomeKind.none);
-    expect(sha(live()), liveAfter);
-  });
-
-  test('resumes from newDataInstalling to committed', () {
+  test('resumes from newDataInstalling to an unconfirmed install', () {
     final s = scenario(
       phase: RestorePhase.newDataInstalling,
       oldAlreadyMoved: true,
     );
     final out = RestoreSwapper(docs).run();
-    expect(out.kind, RestoreOutcomeKind.committed);
+    expect(out.kind, RestoreOutcomeKind.installedUnconfirmed);
     expect(sha(live()), s.newSha);
+    expect(unconfirmed().existsSync(), isTrue);
+    expect(receipt().existsSync(), isFalse);
   });
+
+  // ---- Confirmation (normal app launch, real Drift query) ----
+
+  test('a successful probe writes confirmed state + success receipt and drops '
+      'unconfirmed', () async {
+    scenario(phase: RestorePhase.prepared);
+    final sw = RestoreSwapper(docs);
+    sw.run(); // install → unconfirmed
+    expect(receipt().existsSync(), isFalse); // absent before the query
+
+    await sw.confirmInstalled(() async => true);
+    expect(confirmed().existsSync(), isTrue);
+    expect(unconfirmed().existsSync(), isFalse);
+    expect(receipt().readAsStringSync().contains('success'), isTrue);
+  });
+
+  test('next startup with a confirmed marker removes recovery', () {
+    scenario(phase: RestorePhase.prepared);
+    final sw = RestoreSwapper(docs);
+    sw.run(); // install → unconfirmed
+    // Simulate the app confirming (as confirmInstalled would).
+    RestoreConfirmed.writeAtomic(
+      confirmed(),
+      const RestoreConfirmed(
+        operationId: 'op1',
+        recoveryRelPath: 'recovery/current/op1',
+        confirmedAtUtc: '2026-07-18T00:00:00.000Z',
+      ),
+    );
+    unconfirmed().deleteSync();
+
+    final out = RestoreSwapper(docs).run();
+    expect(out.kind, RestoreOutcomeKind.none);
+    expect(confirmed().existsSync(), isFalse);
+    expect(Directory(p.join(docs.path, 'recovery')).existsSync(), isFalse);
+  });
+
+  // ---- Unconfirmed on next startup → roll back (the core new guarantee) ----
+
+  test('next startup with an unconfirmed install rolls back to the old data '
+      '(process killed before confirmation)', () {
+    final s = scenario(phase: RestorePhase.prepared);
+    RestoreSwapper(docs).run(); // install → unconfirmed, then "process dies"
+    expect(unconfirmed().existsSync(), isTrue);
+
+    final out = RestoreSwapper(docs).run(); // next startup
+    expect(out.kind, RestoreOutcomeKind.rolledBack);
+    expect(sha(live()), s.oldSha); // old data restored
+    expect(File(p.join(docs.path, 'photos', 'old.jpg')).existsSync(), isTrue);
+    expect(File(p.join(docs.path, 'photos', 'new.jpg')).existsSync(), isFalse);
+    expect(unconfirmed().existsSync(), isFalse);
+    expect(Directory(p.join(docs.path, 'recovery')).existsSync(), isFalse);
+    expect(receipt().readAsStringSync().contains('rolledBack'), isTrue);
+  });
+
+  test('a failed Drift probe leaves recovery + unconfirmed intact; the next '
+      'startup rolls back', () async {
+    final s = scenario(phase: RestorePhase.prepared);
+    final sw = RestoreSwapper(docs);
+    sw.run(); // install → unconfirmed
+
+    await sw.confirmInstalled(() async => false); // query failed
+    expect(unconfirmed().existsSync(), isTrue); // still unconfirmed
+    expect(confirmed().existsSync(), isFalse);
+    expect(receipt().existsSync(), isFalse);
+    expect(
+      File(p.join(recoveryDb().path, 'project_kobe.sqlite')).existsSync(),
+      isTrue,
+    ); // recovery intact
+
+    final out = RestoreSwapper(docs).run(); // next startup
+    expect(out.kind, RestoreOutcomeKind.rolledBack);
+    expect(sha(live()), s.oldSha);
+  });
+
+  test(
+    'a probe that throws is treated as failure (leaves unconfirmed)',
+    () async {
+      scenario(phase: RestorePhase.prepared);
+      final sw = RestoreSwapper(docs);
+      sw.run();
+      await sw.confirmInstalled(
+        () async => throw StateError('drift open failed'),
+      );
+      expect(unconfirmed().existsSync(), isTrue);
+      expect(receipt().existsSync(), isFalse);
+    },
+  );
+
+  // ---- Rollback safety during install ----
 
   test(
     'prepared-hash mismatch rolls back WITHOUT touching untouched live data',
@@ -167,7 +250,6 @@ void main() {
       );
       final out = RestoreSwapper(docs).run();
       expect(out.kind, RestoreOutcomeKind.rolledBack);
-      // Old data is exactly as it was — nothing lost.
       expect(sha(live()), s.oldSha);
       expect(File(p.join(docs.path, 'photos', 'old.jpg')).existsSync(), isTrue);
       expect(
@@ -178,32 +260,95 @@ void main() {
   );
 
   test('installed-integrity failure rolls back to the old data', () {
-    // Prepared DB is well-formed but wrong schema version → verify fails.
     final s = scenario(phase: RestorePhase.prepared, preparedUserVersion: 6);
     final out = RestoreSwapper(docs).run();
     expect(out.kind, RestoreOutcomeKind.rolledBack);
-    expect(sha(live()), s.oldSha); // old restored
+    expect(sha(live()), s.oldSha);
     expect(File(p.join(docs.path, 'photos', 'old.jpg')).existsSync(), isTrue);
   });
 
   test('boot-loop guard forces rollback past the attempt limit', () {
     final s = scenario(
       phase: RestorePhase.prepared,
-      attemptCount: kMaxRestoreAttempts, // next attempt exceeds the limit
+      attemptCount: kMaxRestoreAttempts,
     );
     final out = RestoreSwapper(docs).run();
     expect(out.kind, RestoreOutcomeKind.rolledBack);
     expect(sha(live()), s.oldSha);
   });
 
-  test('a corrupt marker is cleaned and live data left intact', () {
+  // ---- Recovery cleanup authorization ----
+
+  test('no pending marker alone never authorizes recovery deletion', () {
+    // A recovery snapshot exists with no markers at all.
+    final rec = Directory(p.join(docs.path, 'recovery', 'current', 'op9'))
+      ..createSync(recursive: true);
+    File(p.join(rec.path, 'db', 'project_kobe.sqlite'))
+      ..createSync(recursive: true)
+      ..writeAsStringSync('OLD');
+
+    final out = RestoreSwapper(docs).run();
+    expect(out.kind, RestoreOutcomeKind.none);
+    expect(rec.existsSync(), isTrue); // preserved
+  });
+
+  test('unknown/orphan recovery is preserved (even via bootstrap sweep)', () {
+    final rec = Directory(p.join(docs.path, 'recovery', 'orphan'))
+      ..createSync(recursive: true);
+    File(p.join(rec.path, 'something')).writeAsStringSync('x');
+
+    final sw = RestoreSwapper(docs);
+    expect(sw.run().kind, RestoreOutcomeKind.none);
+    sw.sweepStaging();
+    expect(rec.existsSync(), isTrue);
+  });
+
+  // ---- Corrupt marker handling ----
+
+  test(
+    'a corrupt pending marker with recovery present enters the fatal path and '
+    'deletes nothing',
+    () {
+      final oldDb = makeDb(
+        p.join(docs.path, 'project_kobe.sqlite'),
+        tag: 'OLD',
+      );
+      final oldSha = sha(oldDb);
+      Directory(
+        p.join(docs.path, 'recovery', 'current', 'opX'),
+      ).createSync(recursive: true);
+      pending().writeAsStringSync('{ not json');
+
+      final out = RestoreSwapper(docs).run();
+      expect(out.kind, RestoreOutcomeKind.fatal);
+      expect(pending().existsSync(), isTrue); // preserved, not guessed away
+      expect(
+        Directory(p.join(docs.path, 'recovery', 'current', 'opX')).existsSync(),
+        isTrue,
+      );
+      expect(sha(live()), oldSha);
+    },
+  );
+
+  test('a corrupt pending marker with no restore data is safely cleaned', () {
     final oldDb = makeDb(p.join(docs.path, 'project_kobe.sqlite'), tag: 'OLD');
     final oldSha = sha(oldDb);
-    marker().writeAsStringSync('{ not json');
+    pending().writeAsStringSync('{ not json');
     final out = RestoreSwapper(docs).run();
-    expect(out.kind, RestoreOutcomeKind.rolledBack);
-    expect(marker().existsSync(), isFalse);
+    expect(out.kind, RestoreOutcomeKind.none);
+    expect(pending().existsSync(), isFalse);
     expect(sha(live()), oldSha);
+  });
+
+  // ---- Receipt is consumed exactly once ----
+
+  test('the restore receipt is consumed exactly once', () async {
+    scenario(phase: RestorePhase.prepared);
+    final sw = RestoreSwapper(docs);
+    sw.run();
+    await sw.confirmInstalled(() async => true);
+    expect(sw.consumeReceipt(), 'success');
+    expect(sw.consumeReceipt(), isNull); // never repeats
   });
 
   test('no marker → none', () {

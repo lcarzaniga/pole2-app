@@ -128,3 +128,103 @@ class RestoreMarker {
     }
   }
 }
+
+/// Written the moment the pre-DB swap has installed and verified the restored
+/// data (raw sqlite level) — but **before** the normal Drift app launch has
+/// proven it can open, migrate and query. Its presence on a later startup means
+/// "the restored app never confirmed" → roll back. No password/personal content.
+class RestoreUnconfirmed {
+  const RestoreUnconfirmed({
+    required this.operationId,
+    required this.recoveryRelPath,
+    required this.installedDbSha256,
+    required this.createdAtUtc,
+    this.markerVersion = 1,
+  });
+
+  final int markerVersion;
+  final String operationId;
+  final String recoveryRelPath;
+  final String installedDbSha256;
+  final String createdAtUtc;
+
+  Map<String, dynamic> toJson() => {
+    'markerVersion': markerVersion,
+    'operationId': operationId,
+    'recoveryRelPath': recoveryRelPath,
+    'installedDbSha256': installedDbSha256,
+    'createdAtUtc': createdAtUtc,
+  };
+
+  static RestoreUnconfirmed fromJson(Map<String, dynamic> j) =>
+      RestoreUnconfirmed(
+        markerVersion: (j['markerVersion'] as num?)?.toInt() ?? 1,
+        operationId: j['operationId'] as String,
+        recoveryRelPath: j['recoveryRelPath'] as String,
+        installedDbSha256: j['installedDbSha256'] as String,
+        createdAtUtc: j['createdAtUtc'] as String,
+      );
+
+  static void writeAtomic(File f, RestoreUnconfirmed m) {
+    final tmp = File('${f.path}.tmp');
+    tmp.writeAsStringSync(jsonEncode(m.toJson()), flush: true);
+    tmp.renameSync(f.path);
+  }
+
+  /// Returns the marker, null if absent, or throws-free 'corrupt' sentinel via
+  /// [corrupt] flag: callers must distinguish "absent" from "present but bad".
+  static RestoreUnconfirmed? readOrNull(File f) {
+    if (!f.existsSync()) return null;
+    try {
+      return fromJson(jsonDecode(f.readAsStringSync()) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
+/// Written by the *normal* app launch once Drift has opened the restored data
+/// and a real query has succeeded. Authorizes deleting the emergency recovery
+/// snapshot on the next startup.
+class RestoreConfirmed {
+  const RestoreConfirmed({
+    required this.operationId,
+    required this.recoveryRelPath,
+    required this.confirmedAtUtc,
+    this.markerVersion = 1,
+  });
+
+  final int markerVersion;
+  final String operationId;
+  final String recoveryRelPath;
+  final String confirmedAtUtc;
+
+  Map<String, dynamic> toJson() => {
+    'markerVersion': markerVersion,
+    'operationId': operationId,
+    'recoveryRelPath': recoveryRelPath,
+    'confirmedAtUtc': confirmedAtUtc,
+  };
+
+  static RestoreConfirmed fromJson(Map<String, dynamic> j) => RestoreConfirmed(
+    markerVersion: (j['markerVersion'] as num?)?.toInt() ?? 1,
+    operationId: j['operationId'] as String,
+    recoveryRelPath: j['recoveryRelPath'] as String,
+    confirmedAtUtc: j['confirmedAtUtc'] as String,
+  );
+
+  static void writeAtomic(File f, RestoreConfirmed m) {
+    final tmp = File('${f.path}.tmp');
+    tmp.writeAsStringSync(jsonEncode(m.toJson()), flush: true);
+    tmp.renameSync(f.path);
+  }
+
+  static RestoreConfirmed? readOrNull(File f) {
+    if (!f.existsSync()) return null;
+    try {
+      return fromJson(jsonDecode(f.readAsStringSync()) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
+  }
+}

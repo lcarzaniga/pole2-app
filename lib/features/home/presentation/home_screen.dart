@@ -8,18 +8,36 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/brand/hex_background.dart';
 import '../../../shared/brand/turtle_shell_menu.dart';
+import '../../../core/providers/database_provider.dart';
 import '../../../shared/photo_capture.dart';
+import '../../backup/restore/restore_confirm.dart';
 import '../../backup/restore/restore_receipt.dart';
 import '../../possessions/application/possession_providers.dart';
 import '../../possessions/presentation/possessions_home_view.dart';
 import '../../update/update_gate.dart';
 import 'widgets/home_empty_state.dart';
 
-/// One-time consumption of the restore result receipt written by the pre-DB
-/// swap — surfaced calmly on Home, then never repeated.
-final _restoreReceiptProvider = FutureProvider<String?>(
-  (ref) => consumeRestoreReceipt(),
-);
+/// Confirms a freshly restored install and then reports its outcome once.
+///
+/// The pre-DB swap only records an *unconfirmed* install. Here — after the
+/// normal app has started — we run a real read through the normal Drift provider
+/// (proving open + migrations + query all work) to confirm the restore, which
+/// writes the one-time success receipt. If nothing is pending this is a cheap
+/// no-op; if the app was actually broken, the probe fails and the next launch
+/// rolls back. Then the receipt (success from here, or rollback from a previous
+/// startup) is consumed exactly once and surfaced calmly on Home.
+final _restoreReceiptProvider = FutureProvider<String?>((ref) async {
+  final db = ref.read(databaseProvider);
+  await confirmRestoreIfPending(
+    probe: () async {
+      // Minimal known-safe read through the normal Drift database: forces open,
+      // migrations and open callbacks, then touches a real restored table.
+      await db.customSelect('SELECT COUNT(*) FROM possessions').get();
+      return true;
+    },
+  );
+  return consumeRestoreReceipt();
+});
 
 /// The home screen — the digital home's front door.
 ///

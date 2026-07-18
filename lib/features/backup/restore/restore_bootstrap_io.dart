@@ -1,48 +1,28 @@
-import 'dart:io';
-
-import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'restore_swapper.dart';
 
-/// Resolves a pending restore (swap or rollback) and cleans transient state.
-/// Called once from `main()` before `runApp`. Best-effort and never throws — a
-/// bootstrap failure must not prevent the app from starting.
+/// Resolves restore state before the normal database opens. Called once from
+/// `main()` before `runApp`. Best-effort and never throws — a bootstrap failure
+/// must not prevent the app from starting.
+///
+/// Recovery cleanup is authorized *only* inside [RestoreSwapper.run] — by a
+/// confirmed marker or a completed rollback. The bootstrap never deletes a
+/// recovery snapshot merely because a marker is absent; it only sweeps unmarked
+/// staging (and only when no swap is in flight).
 Future<void> runRestoreBootstrap() async {
   try {
     final docs = await getApplicationDocumentsDirectory();
-    final outcome = RestoreSwapper(docs).run();
+    final swapper = RestoreSwapper(docs);
+    final outcome = swapper.run();
 
-    switch (outcome.kind) {
-      case RestoreOutcomeKind.none:
-      case RestoreOutcomeKind.rolledBack:
-        // No pending restore (or it rolled back): safe to sweep leftover
-        // staging and last time's recovery snapshot.
-        _sweepStaging(docs);
-        _cleanRecovery(docs);
-      case RestoreOutcomeKind.committed:
-        // A restore just committed: keep one recovery snapshot through this
-        // launch; only sweep staging.
-        _sweepStaging(docs);
-      case RestoreOutcomeKind.fatal:
-        // Keep staging + recovery + marker for manual safety; touch nothing.
-        break;
+    // Never sweep anything on the fatal path — everything is preserved for
+    // manual recovery. Staging is transient and safe to sweep otherwise; the
+    // swapper guards it against sweeping while a swap/confirmation is pending.
+    if (outcome.kind != RestoreOutcomeKind.fatal) {
+      swapper.sweepStaging();
     }
   } catch (_) {
     // Never block startup on a bootstrap error.
   }
-}
-
-void _sweepStaging(Directory docs) {
-  final staging = Directory(p.join(docs.path, 'restore_staging'));
-  try {
-    if (staging.existsSync()) staging.deleteSync(recursive: true);
-  } catch (_) {}
-}
-
-void _cleanRecovery(Directory docs) {
-  final recovery = Directory(p.join(docs.path, 'recovery'));
-  try {
-    if (recovery.existsSync()) recovery.deleteSync(recursive: true);
-  } catch (_) {}
 }
