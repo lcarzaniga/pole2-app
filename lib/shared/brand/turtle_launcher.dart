@@ -113,6 +113,20 @@ class _TurtleLauncherState extends ConsumerState<TurtleLauncher>
     }
   }
 
+  /// Android Back: while the bloom is open, close it and consume the event, so
+  /// Back dismisses the overlay instead of leaving Home. Works with or without a
+  /// Router (the launcher is already a [WidgetsBindingObserver]); observers are
+  /// consulted before the navigator, so a closed shell lets Back proceed
+  /// normally.
+  @override
+  Future<bool> didPopRoute() async {
+    if (_open) {
+      _closeShell();
+      return true;
+    }
+    return false;
+  }
+
   bool get _reduceMotion =>
       MediaQuery.maybeOf(context)?.disableAnimations ?? false;
 

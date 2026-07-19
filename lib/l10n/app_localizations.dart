@@ -140,47 +140,29 @@ abstract class AppLocalizations {
   /// **'Chiudi'**
   String get a11yClose;
 
-  /// No description provided for @actionObject.
-  ///
-  /// In it, this message translates to:
-  /// **'Un oggetto'**
-  String get actionObject;
-
   /// No description provided for @actionPhoto.
   ///
   /// In it, this message translates to:
-  /// **'Una foto'**
+  /// **'Dalla foto'**
   String get actionPhoto;
 
-  /// No description provided for @actionDocument.
+  /// No description provided for @actionObject.
   ///
   /// In it, this message translates to:
-  /// **'Un documento'**
-  String get actionDocument;
+  /// **'Dal nome'**
+  String get actionObject;
 
-  /// No description provided for @actionReminder.
+  /// No description provided for @a11yActionPhoto.
   ///
   /// In it, this message translates to:
-  /// **'Un promemoria'**
-  String get actionReminder;
+  /// **'Crea un oggetto partendo da una foto'**
+  String get a11yActionPhoto;
 
-  /// No description provided for @actionNote.
+  /// No description provided for @a11yActionObject.
   ///
   /// In it, this message translates to:
-  /// **'Una nota'**
-  String get actionNote;
-
-  /// No description provided for @actionDetail.
-  ///
-  /// In it, this message translates to:
-  /// **'Un dettaglio'**
-  String get actionDetail;
-
-  /// No description provided for @quickActionSoon.
-  ///
-  /// In it, this message translates to:
-  /// **'Presto. Per ora, inizia conservando un oggetto.'**
-  String get quickActionSoon;
+  /// **'Crea un oggetto partendo dal nome'**
+  String get a11yActionObject;
 
   /// No description provided for @photoSourceTitle.
   ///

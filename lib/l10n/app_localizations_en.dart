@@ -31,26 +31,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get a11yClose => 'Chiudi';
 
   @override
-  String get actionObject => 'Un oggetto';
+  String get actionPhoto => 'Dalla foto';
 
   @override
-  String get actionPhoto => 'Una foto';
+  String get actionObject => 'Dal nome';
 
   @override
-  String get actionDocument => 'Un documento';
+  String get a11yActionPhoto => 'Crea un oggetto partendo da una foto';
 
   @override
-  String get actionReminder => 'Un promemoria';
-
-  @override
-  String get actionNote => 'Una nota';
-
-  @override
-  String get actionDetail => 'Un dettaglio';
-
-  @override
-  String get quickActionSoon =>
-      'Presto. Per ora, inizia conservando un oggetto.';
+  String get a11yActionObject => 'Crea un oggetto partendo dal nome';
 
   @override
   String get photoSourceTitle => 'Aggiungi una foto';

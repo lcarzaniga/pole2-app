@@ -48,21 +48,24 @@ void main() {
   // tests an in-memory mock so it never hits an unregistered plugin.
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  testWidgets('The real app builds without error (router + onGenerateTitle)',
-      (tester) async {
+  testWidgets('The real app builds without error (router + onGenerateTitle)', (
+    tester,
+  ) async {
     // Pumps the actual KobeApp (not a stripped-down MaterialApp), so app-level
     // wiring like onGenerateTitle and the GoRouter is exercised. This catches
     // crashes that a bare MaterialApp harness would miss.
     final db = AppDatabase.forTesting(NativeDatabase.memory());
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        databaseProvider.overrideWith((ref) {
-          ref.onDispose(db.close);
-          return db;
-        }),
-      ],
-      child: const KobeApp(),
-    ));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          databaseProvider.overrideWith((ref) {
+            ref.onDispose(db.close);
+            return db;
+          }),
+        ],
+        child: const KobeApp(),
+      ),
+    );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
 
@@ -83,9 +86,12 @@ void main() {
     await _teardown(tester);
   });
 
-  testWidgets('With no possessions, Home shows the calm Italian empty state',
-      (tester) async {
-    await tester.pumpWidget(_framed(AppDatabase.forTesting(NativeDatabase.memory())));
+  testWidgets('With no possessions, Home shows the calm Italian empty state', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _framed(AppDatabase.forTesting(NativeDatabase.memory())),
+    );
     await tester.pumpAndSettle();
 
     expect(find.byType(PoleWordmark), findsOneWidget);
@@ -96,50 +102,125 @@ void main() {
     await _teardown(tester);
   });
 
-  testWidgets('Tapping the turtle blooms the shell into exactly six actions',
-      (tester) async {
+  testWidgets('Tapping the turtle blooms exactly the two creation actions', (
+    tester,
+  ) async {
     // A real phone portrait (≈ Galaxy S23 logical size), so the centred bloom
-    // and all six labels sit inside safe bounds — the geometry we ship.
+    // and both labels sit inside safe bounds — the geometry we ship.
     tester.view.physicalSize = const Size(360, 780);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(_framed(AppDatabase.forTesting(NativeDatabase.memory())));
+    await tester.pumpWidget(
+      _framed(AppDatabase.forTesting(NativeDatabase.memory())),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(find.bySemanticsLabel('Conserva qualcosa'));
     await tester.pumpAndSettle();
 
-    // Exactly the six labels, in the consistent "Un/Una …" grammatical form.
-    const labels = [
+    // Exactly the two starting methods.
+    expect(find.text('Dalla foto'), findsOneWidget);
+    expect(find.text('Dal nome'), findsOneWidget);
+    expect(find.byType(TurtleShellMenu), findsOneWidget);
+
+    // None of the removed placeholder cells remain.
+    for (final gone in const [
       'Un oggetto',
       'Una foto',
       'Un documento',
       'Un promemoria',
       'Una nota',
       'Un dettaglio',
-    ];
-    for (final label in labels) {
-      expect(find.text(label), findsOneWidget);
+    ]) {
+      expect(find.text(gone), findsNothing);
     }
-    // No stray seventh hexagon action tile.
-    expect(find.byType(TurtleShellMenu), findsOneWidget);
 
-    // A not-yet-wired action closes the shell and shows a calm, human message.
-    await tester.tap(find.text('Una nota'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.textContaining('inizia conservando'), findsOneWidget);
+    // Complete spoken labels are present for assistive tech (not icon-only).
+    expect(
+      find.bySemanticsLabel('Crea un oggetto partendo da una foto'),
+      findsOneWidget,
+    );
+    expect(
+      find.bySemanticsLabel('Crea un oggetto partendo dal nome'),
+      findsOneWidget,
+    );
 
-    await tester.pump(const Duration(seconds: 3));
+    // Tapping outside the bloom (the scrim) closes it.
+    await tester.tapAt(const Offset(8, 8));
     await tester.pumpAndSettle();
+    expect(find.text('Dalla foto'), findsNothing);
+    expect(find.text('Dal nome'), findsNothing);
 
     await _teardown(tester);
   });
 
-  testWidgets('Home shows a calm deadline summary when a date is upcoming',
-      (tester) async {
+  testWidgets(
+    'The two-cell bloom fits a narrow 320dp screen without overflow',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 720);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        _framed(AppDatabase.forTesting(NativeDatabase.memory())),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.bySemanticsLabel('Conserva qualcosa'));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Dalla foto'), findsOneWidget);
+      expect(find.text('Dal nome'), findsOneWidget);
+
+      await _teardown(tester);
+    },
+  );
+
+  testWidgets(
+    'Reduce Motion reveals the bloom instantly (no animation needed)',
+    (tester) async {
+      // _framed already sets disableAnimations: true.
+      await tester.pumpWidget(
+        _framed(AppDatabase.forTesting(NativeDatabase.memory())),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.bySemanticsLabel('Conserva qualcosa'));
+      await tester
+          .pump(); // a single frame — nothing to settle under Reduce Motion
+      expect(find.text('Dalla foto'), findsOneWidget);
+      expect(find.text('Dal nome'), findsOneWidget);
+
+      await _teardown(tester);
+    },
+  );
+
+  testWidgets('Populated Home uses the same two-action launcher', (
+    tester,
+  ) async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    await db.possessionsDao.createPossession(title: 'Trapano');
+
+    await tester.pumpWidget(_framed(db));
+    await tester.pumpAndSettle();
+    // The list (not the empty state) is showing.
+    expect(find.text('Trapano'), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel('Conserva qualcosa'));
+    await tester.pumpAndSettle();
+    expect(find.text('Dalla foto'), findsOneWidget);
+    expect(find.text('Dal nome'), findsOneWidget);
+
+    await _teardown(tester);
+  });
+
+  testWidgets('Home shows a calm deadline summary when a date is upcoming', (
+    tester,
+  ) async {
     final db = AppDatabase.forTesting(NativeDatabase.memory());
     final p = await db.possessionsDao.createPossession(title: 'Frigorifero');
     await db.eventsDao.createReminder(

@@ -11,13 +11,10 @@
   "a11yKeepSomething": "Conserva qualcosa",
   "a11yClose": "Chiudi",
 
-  "actionObject": "Un oggetto",
-  "actionPhoto": "Una foto",
-  "actionDocument": "Un documento",
-  "actionReminder": "Un promemoria",
-  "actionNote": "Una nota",
-  "actionDetail": "Un dettaglio",
-  "quickActionSoon": "Presto. Per ora, inizia conservando un oggetto.",
+  "actionPhoto": "Dalla foto",
+  "actionObject": "Dal nome",
+  "a11yActionPhoto": "Crea un oggetto partendo da una foto",
+  "a11yActionObject": "Crea un oggetto partendo dal nome",
 
   "photoSourceTitle": "Aggiungi una foto",
   "photoTakePhoto": "Scatta una foto",

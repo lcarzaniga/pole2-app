@@ -67,32 +67,28 @@ class HomeScreen extends ConsumerWidget {
         );
     });
 
+    // Guards against a rapid double-tap opening two creation routes or two photo
+    // pickers. Held for the whole navigation (awaited), reset when Home is next
+    // active. Both paths create the same entity — an object — differing only in
+    // how the user starts.
+    var launching = false;
     Future<void> handleQuickAction(QuickAction action) async {
-      // "Un oggetto" opens the full creation flow; "Una foto" captures first,
-      // then starts a new thing from that photo. The rest are calm placeholders
-      // that point back to what the user can do now.
-      switch (action) {
-        case QuickAction.object:
-          context.pushNamed(Routes.newPossessionName);
-          return;
-        case QuickAction.photo:
-          final photo = await chooseAndCapturePhoto(context);
-          if (photo == null || !context.mounted) return;
-          context.pushNamed(Routes.newPossessionName, extra: photo);
-          return;
-        case QuickAction.document:
-        case QuickAction.reminder:
-        case QuickAction.note:
-        case QuickAction.detail:
-          ScaffoldMessenger.of(context)
-            ..clearSnackBars()
-            ..showSnackBar(
-              SnackBar(
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 3),
-                content: Text(l10n.quickActionSoon),
-              ),
-            );
+      if (launching) return;
+      launching = true;
+      try {
+        switch (action) {
+          case QuickAction.object:
+            // "Dal nome": the normal title-first creation flow, no photo.
+            await context.pushNamed(Routes.newPossessionName);
+          case QuickAction.photo:
+            // "Dalla foto": capture (camera/gallery) first, then create with the
+            // photo already attached. A cancelled capture creates nothing.
+            final photo = await chooseAndCapturePhoto(context);
+            if (photo == null || !context.mounted) return;
+            await context.pushNamed(Routes.newPossessionName, extra: photo);
+        }
+      } finally {
+        launching = false;
       }
     }
 
