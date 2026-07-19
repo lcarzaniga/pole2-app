@@ -198,9 +198,17 @@
   "sortTooltip": "Ordina",
   "sortNewest": "Più recenti",
   "sortName": "Nome",
-  "filterTooltip": "Filtra per luogo",
-  "filterAllPlaces": "Tutti i luoghi",
+  "filterTooltip": "Dove si trova",
   "filterNoPlace": "Senza luogo",
+  "custodyAll": "Tutti",
+  "custodyInPlace": "In: {path}",
+  "@custodyInPlace": {
+    "placeholders": { "path": { "type": "String" } }
+  },
+  "custodyWithPerson": "Con: {name}",
+  "@custodyWithPerson": {
+    "placeholders": { "name": { "type": "String" } }
+  },
   "photoEditTooltip": "Cambia foto",
   "photoView": "Vedi la foto",
 

@@ -941,20 +941,32 @@ abstract class AppLocalizations {
   /// No description provided for @filterTooltip.
   ///
   /// In it, this message translates to:
-  /// **'Filtra per luogo'**
+  /// **'Dove si trova'**
   String get filterTooltip;
-
-  /// No description provided for @filterAllPlaces.
-  ///
-  /// In it, this message translates to:
-  /// **'Tutti i luoghi'**
-  String get filterAllPlaces;
 
   /// No description provided for @filterNoPlace.
   ///
   /// In it, this message translates to:
   /// **'Senza luogo'**
   String get filterNoPlace;
+
+  /// No description provided for @custodyAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutti'**
+  String get custodyAll;
+
+  /// No description provided for @custodyInPlace.
+  ///
+  /// In it, this message translates to:
+  /// **'In: {path}'**
+  String custodyInPlace(String path);
+
+  /// No description provided for @custodyWithPerson.
+  ///
+  /// In it, this message translates to:
+  /// **'Con: {name}'**
+  String custodyWithPerson(String name);
 
   /// No description provided for @photoEditTooltip.
   ///

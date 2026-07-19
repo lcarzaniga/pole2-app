@@ -15,6 +15,7 @@ import '../../../shared/brand/turtle_launcher.dart';
 import '../../../shared/brand/turtle_shell_menu.dart';
 import '../../../shared/format.dart';
 import '../../../shared/phrasing.dart';
+import '../../people/application/people_providers.dart';
 import '../../places/application/place_providers.dart';
 import '../../places/application/place_tree.dart';
 import '../application/event_providers.dart';
@@ -33,10 +34,19 @@ List<Place> _placesByPath(PlaceTree tree) {
   return all;
 }
 
+/// A calm, compact path for a chip: `Casa › … › Armadio` when deep, so it never
+/// overflows a narrow screen. The full path stays available for accessibility.
+String _compactPath(PlaceTree tree, String id) {
+  final names = tree.pathTo(id).map((p) => p.name).toList();
+  if (names.length <= 2) return names.join(' › ');
+  return '${names.first} › … › ${names.last}';
+}
+
 /// The Home once things exist: an optional calm deadline summary, calm
-/// search / sort / filter controls, the list, and the turtle as a persistent
+/// search / sort / custody controls, the list, and the turtle as a persistent
 /// bottom anchor for keeping more. Filtering and sorting are applied to the
-/// already-loaded list via [applyPossessionQuery] — no extra data path.
+/// already-loaded list via [applyPossessionQuery] — no extra data path. The
+/// active-loan relationship comes from one grouped stream (never per-card).
 class PossessionsHomeView extends ConsumerStatefulWidget {
   const PossessionsHomeView({
     super.key,
@@ -66,20 +76,43 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final tree = ref.watch(placeTreeProvider);
-    // A specific-place filter includes the whole subtree (M5.4).
-    final subtree = _query.place.isSpecific && _query.place.id != null
-        ? tree.subtreeIds(_query.place.id!)
+    final loansByPossession = ref.watch(homeLoansByPossessionProvider);
+    final loanPeople = ref.watch(loanPeopleProvider);
+
+    // Resolve the effective filter: if the selected Place was deleted or the
+    // last loan to the selected person ended, fall back calmly to "Tutti"
+    // (scheduled, never a state mutation during build).
+    final custody = resolveCustody(
+      _query.custody,
+      validPlaceIds: {for (final p in tree.allPlaces) p.id},
+      loanPersonIds: {for (final p in loanPeople) p.id},
+    );
+    if (custody != _query.custody) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _query = _query.copyWith(custody: custody));
+      });
+    }
+
+    final subtree = custody.isPlace && custody.id != null
+        ? tree.subtreeIds(custody.id!)
         : null;
+    // possession id → active borrower party id, for the person filter and to
+    // keep lent things out of "Senza luogo".
+    final loanPersonByPossession = <String, String>{
+      for (final e in loansByPossession.entries) e.key: e.value.party.id,
+    };
+
     final visible = applyPossessionQuery(
       widget.possessions,
-      _query,
+      _query.copyWith(custody: custody),
       placeSubtreeIds: subtree,
+      loanPersonByPossession: loanPersonByPossession,
     );
 
-    // Kobe the persistent anchor, now ~2× — a visual target with responsive
-    // caps so it never dominates a narrow screen and its bloomed shell always
-    // fits. The list reserves clearance below itself equal to the turtle plus a
-    // gap, so items never sit under it.
+    // Kobe the persistent anchor — a visual target with responsive caps so it
+    // never dominates a narrow screen and its bloomed shell always fits. The
+    // list reserves clearance below itself equal to the turtle plus a gap, so
+    // items never sit under it (and above the system navigation).
     final width = MediaQuery.of(context).size.width;
     final turtleSize = math.max(
       130.0,
@@ -95,10 +128,21 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
         const _DeadlineSummary(),
         _Controls(
           controller: _search,
-          query: _query,
+          query: _query.copyWith(custody: custody),
           tree: tree,
+          loanPeople: loanPeople,
           onChanged: (q) => setState(() => _query = q),
         ),
+        if (!custody.isAll)
+          _ActiveFilterChip(
+            custody: custody,
+            tree: tree,
+            loanPeople: loanPeople,
+            onClear: () => setState(
+              () =>
+                  _query = _query.copyWith(custody: const CustodyFilter.all()),
+            ),
+          ),
         Expanded(
           child: Stack(
             children: [
@@ -126,8 +170,13 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
                   itemCount: visible.length,
                   separatorBuilder: (_, _) =>
                       const SizedBox(height: AppSpacing.md),
-                  itemBuilder: (context, i) =>
-                      _PossessionCard(possession: visible[i]),
+                  itemBuilder: (context, i) {
+                    final p = visible[i];
+                    return _PossessionCard(
+                      possession: p,
+                      borrowerName: loansByPossession[p.id]?.party.name,
+                    );
+                  },
                 ),
               Positioned(
                 left: 0,
@@ -153,20 +202,22 @@ class _PossessionsHomeViewState extends ConsumerState<PossessionsHomeView> {
   }
 }
 
-/// The calm search field plus quiet sort and place-filter controls. Sits above
-/// the list; collapses to nothing more than a search box until the user reaches
-/// for sort or filter.
+/// The calm search field plus quiet sort and the unified "Dove si trova" custody
+/// filter. Sits above the list; collapses to nothing more than a search box
+/// until the user reaches for sort or filter.
 class _Controls extends StatelessWidget {
   const _Controls({
     required this.controller,
     required this.query,
     required this.tree,
+    required this.loanPeople,
     required this.onChanged,
   });
 
   final TextEditingController controller;
   final PossessionQuery query;
   final PlaceTree tree;
+  final List<Party> loanPeople;
   final ValueChanged<PossessionQuery> onChanged;
 
   @override
@@ -174,7 +225,7 @@ class _Controls extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
-    final filtering = !query.place.isAll;
+    final filtering = !query.custody.isAll;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -226,36 +277,146 @@ class _Controls extends StatelessWidget {
               ),
             ],
           ),
-          PopupMenuButton<PlaceFilter>(
-            tooltip: l10n.filterTooltip,
+          PopupMenuButton<CustodyFilter>(
+            tooltip: l10n.filterTooltip, // "Dove si trova"
             icon: Icon(
               Icons.filter_list,
               color: filtering ? scheme.primary : scheme.onSurfaceVariant,
             ),
-            onSelected: (f) => onChanged(query.copyWith(place: f)),
+            onSelected: (f) => onChanged(query.copyWith(custody: f)),
             itemBuilder: (_) => [
               CheckedPopupMenuItem(
-                value: const PlaceFilter.all(),
-                checked: query.place == const PlaceFilter.all(),
-                child: Text(l10n.filterAllPlaces),
+                value: const CustodyFilter.all(),
+                checked: query.custody.isAll,
+                child: Text(l10n.custodyAll),
               ),
               CheckedPopupMenuItem(
-                value: const PlaceFilter.none(),
-                checked: query.place == const PlaceFilter.none(),
+                value: const CustodyFilter.noLocation(),
+                checked: query.custody.isNoLocation,
                 child: Text(l10n.filterNoPlace),
               ),
-              if (tree.allPlaces.isNotEmpty) const PopupMenuDivider(),
-              // Every place (any level), shown with its full path so duplicate
-              // names stay unambiguous. Selecting one filters its whole subtree.
-              for (final p in _placesByPath(tree))
-                CheckedPopupMenuItem(
-                  value: PlaceFilter.place(p.id),
-                  checked: query.place == PlaceFilter.place(p.id),
-                  child: Text(tree.pathLabel(p.id)),
-                ),
+              if (tree.allPlaces.isNotEmpty) ...[
+                _sectionHeader(context, l10n.placesMenu),
+                for (final p in _placesByPath(tree))
+                  CheckedPopupMenuItem(
+                    value: CustodyFilter.place(p.id),
+                    checked: query.custody == CustodyFilter.place(p.id),
+                    child: Tooltip(
+                      message: tree.pathLabel(p.id),
+                      child: Text(
+                        tree.pathLabel(p.id),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ),
+              ],
+              if (loanPeople.isNotEmpty) ...[
+                _sectionHeader(context, l10n.peopleMenu),
+                for (final person in loanPeople)
+                  CheckedPopupMenuItem(
+                    value: CustodyFilter.person(person.id),
+                    checked: query.custody == CustodyFilter.person(person.id),
+                    child: Text(
+                      person.name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+              ],
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  /// A non-selectable section label inside the filter menu.
+  PopupMenuItem<CustodyFilter> _sectionHeader(
+    BuildContext context,
+    String label,
+  ) {
+    final theme = Theme.of(context);
+    return PopupMenuItem<CustodyFilter>(
+      enabled: false,
+      height: AppSpacing.xl,
+      child: Text(
+        label.toUpperCase(),
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+}
+
+/// The current custody filter as a calm, dismissible chip — "Senza luogo",
+/// "In: Casa › … › Armadio", or "Con: Carlo". Colour is never the only cue; the
+/// full place path / person name stays available to accessibility.
+class _ActiveFilterChip extends StatelessWidget {
+  const _ActiveFilterChip({
+    required this.custody,
+    required this.tree,
+    required this.loanPeople,
+    required this.onClear,
+  });
+
+  final CustodyFilter custody;
+  final PlaceTree tree;
+  final List<Party> loanPeople;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    late final String label;
+    late final String semantics;
+    late final IconData icon;
+    if (custody.isNoLocation) {
+      label = l10n.filterNoPlace;
+      semantics = label;
+      icon = Icons.location_off_outlined;
+    } else if (custody.isPlace && custody.id != null) {
+      label = l10n.custodyInPlace(_compactPath(tree, custody.id!));
+      semantics = l10n.custodyInPlace(tree.pathLabel(custody.id!));
+      icon = Icons.place_outlined;
+    } else {
+      final name = loanPeople
+          .firstWhere(
+            (p) => p.id == custody.id,
+            orElse: () => loanPeople.isNotEmpty
+                ? loanPeople.first
+                : Party(
+                    id: '',
+                    name: '',
+                    createdAt: DateTime(2000),
+                    updatedAt: DateTime(2000),
+                  ),
+          )
+          .name;
+      label = l10n.custodyWithPerson(name);
+      semantics = label;
+      icon = Icons.person_outline;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
+      ),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Semantics(
+          label: semantics,
+          child: InputChip(
+            avatar: Icon(icon, size: AppIconSize.sm),
+            label: Text(label, overflow: TextOverflow.ellipsis),
+            onDeleted: onClear,
+          ),
+        ),
       ),
     );
   }
@@ -328,26 +489,25 @@ class _DeadlineSummary extends ConsumerWidget {
   }
 }
 
-class _PossessionCard extends ConsumerWidget {
-  const _PossessionCard({required this.possession});
+/// A single Home card — now purely presentational. The active-loan borrower is
+/// resolved once by the list from the grouped stream and passed in, so there is
+/// no per-card provider subscription.
+class _PossessionCard extends StatelessWidget {
+  const _PossessionCard({required this.possession, this.borrowerName});
 
   final Possession possession;
+  final String? borrowerName;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
 
     // A lent thing stays on Home with a subtle, non-alarming custody line that
     // replaces the category subtitle (never the title).
-    final loan = ref.watch(activeLoanProvider(possession.id)).value;
-    final borrower = loan?.partyId == null
-        ? null
-        : ref.watch(partyProvider(loan!.partyId!)).value;
-
     Widget? subtitle;
-    if (loan != null) {
+    if (borrowerName != null) {
       subtitle = Row(
         children: [
           Icon(
@@ -358,7 +518,7 @@ class _PossessionCard extends ConsumerWidget {
           const SizedBox(width: AppSpacing.xs),
           Flexible(
             child: Text(
-              l10n.lentToPerson(borrower?.name ?? '—'),
+              l10n.lentToPerson(borrowerName!),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: scheme.onSurfaceVariant,
               ),

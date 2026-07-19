@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/database/app_database.dart';
 import '../../../core/providers/database_provider.dart';
 import '../../possessions/application/event_providers.dart';
 import '../domain/custody.dart';
@@ -53,6 +54,24 @@ final peopleWithCountsProvider = Provider<List<PersonSummary>>((ref) {
   list.sort(
     (a, b) => a.party.name.toLowerCase().compareTo(b.party.name.toLowerCase()),
   );
+  return list;
+});
+
+/// Grouped active loans keyed by possession id — the single source the Home list
+/// reads once (instead of one `activeLoanProvider` stream per visible card) to
+/// resolve each card's "Prestato a …" borrower and the person custody filter.
+final homeLoansByPossessionProvider = Provider<Map<String, LoanView>>((ref) {
+  final loans = ref.watch(activeLoansProvider).value ?? const [];
+  return {for (final l in loans) l.possession.id: l};
+});
+
+/// The people who currently have at least one active loan, alphabetical — the
+/// only people offered in the Home custody filter (others live in Persone).
+final loanPeopleProvider = Provider<List<Party>>((ref) {
+  final loans = ref.watch(activeLoansProvider).value ?? const [];
+  final byId = <String, Party>{for (final l in loans) l.party.id: l.party};
+  final list = byId.values.toList()
+    ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   return list;
 });
 

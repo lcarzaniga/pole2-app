@@ -493,13 +493,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortName => 'Nome';
 
   @override
-  String get filterTooltip => 'Filtra per luogo';
-
-  @override
-  String get filterAllPlaces => 'Tutti i luoghi';
+  String get filterTooltip => 'Dove si trova';
 
   @override
   String get filterNoPlace => 'Senza luogo';
+
+  @override
+  String get custodyAll => 'Tutti';
+
+  @override
+  String custodyInPlace(String path) {
+    return 'In: $path';
+  }
+
+  @override
+  String custodyWithPerson(String name) {
+    return 'Con: $name';
+  }
 
   @override
   String get photoEditTooltip => 'Cambia foto';

@@ -4,80 +4,119 @@ import '../../../core/database/app_database.dart';
 /// when the collection grows.
 enum PossessionSort { newest, name }
 
-/// Which places the Home list is narrowed to.
-enum _PlaceScope { all, none, specific }
+/// The mutually-exclusive custody scopes behind "Dove si trova".
+enum _CustodyScope { all, noLocation, place, person }
 
-/// A place filter for the Home list: everything, only things with no place, or
-/// one specific place. A small closed set kept as a value type so it compares
-/// cleanly for the filter menu's selected state.
-class PlaceFilter {
-  const PlaceFilter.all() : id = null, _scope = _PlaceScope.all;
-  const PlaceFilter.none() : id = null, _scope = _PlaceScope.none;
-  const PlaceFilter.place(String this.id) : _scope = _PlaceScope.specific;
+/// The unified Home custody filter — answers "Dove si trova questa cosa?":
+/// everything, things with no place *and no active loan*, one Place subtree, or
+/// things currently lent to one person. Place and Person are never combined. A
+/// small closed value type so it compares cleanly for the filter menu's
+/// selected state.
+class CustodyFilter {
+  const CustodyFilter.all() : id = null, _scope = _CustodyScope.all;
+  const CustodyFilter.noLocation()
+    : id = null,
+      _scope = _CustodyScope.noLocation;
+  const CustodyFilter.place(String this.id) : _scope = _CustodyScope.place;
+  const CustodyFilter.person(String this.id) : _scope = _CustodyScope.person;
 
-  /// The place id when this filter targets a specific place; otherwise null.
+  /// The place id (place scope) or borrower party id (person scope); else null.
   final String? id;
-  final _PlaceScope _scope;
+  final _CustodyScope _scope;
 
-  bool get isAll => _scope == _PlaceScope.all;
+  bool get isAll => _scope == _CustodyScope.all;
+  bool get isNoLocation => _scope == _CustodyScope.noLocation;
+  bool get isPlace => _scope == _CustodyScope.place;
+  bool get isPerson => _scope == _CustodyScope.person;
 
-  bool get isSpecific => _scope == _PlaceScope.specific;
-
-  /// [subtreeIds] is the selected place plus all its descendants (M5.4): a
-  /// specific-place filter includes the whole subtree, so "Casa" shows things in
-  /// Casa and every nested place. Falls back to an exact match if not supplied.
-  bool _matches(Possession p, Set<String>? subtreeIds) => switch (_scope) {
-    _PlaceScope.all => true,
-    _PlaceScope.none => p.placeId == null,
-    _PlaceScope.specific =>
-      p.placeId != null && (subtreeIds?.contains(p.placeId) ?? p.placeId == id),
+  /// [placeSubtreeIds] is the selected place plus its descendants (M5.4).
+  /// [loanPersonByPossession] maps a possession id → its active borrower's party
+  /// id (from the M7.1 grouped loan stream) — the single source of truth for
+  /// "is this lent, and to whom".
+  bool _matches(
+    Possession p, {
+    Set<String>? placeSubtreeIds,
+    Map<String, String>? loanPersonByPossession,
+  }) => switch (_scope) {
+    _CustodyScope.all => true,
+    // A lent possession has placeId == null but is NOT "senza luogo": it belongs
+    // under its borrower. So exclude anything with an active loan here.
+    _CustodyScope.noLocation =>
+      p.placeId == null &&
+          !(loanPersonByPossession?.containsKey(p.id) ?? false),
+    _CustodyScope.place =>
+      p.placeId != null &&
+          (placeSubtreeIds?.contains(p.placeId) ?? p.placeId == id),
+    _CustodyScope.person => loanPersonByPossession?[p.id] == id,
   };
 
   @override
   bool operator ==(Object other) =>
-      other is PlaceFilter && other._scope == _scope && other.id == id;
+      other is CustodyFilter && other._scope == _scope && other.id == id;
 
   @override
   int get hashCode => Object.hash(_scope, id);
 }
 
-/// The Home list's live query: free-text search, sort order, and place filter.
+/// Falls back to [CustodyFilter.all] when [custody] is no longer a valid option
+/// — a selected Place was deleted (its id left [validPlaceIds]) or the last loan
+/// to a selected person ended (their id left [loanPersonIds]). Pure, so the
+/// Home view can resolve the effective filter without mutating state in build.
+CustodyFilter resolveCustody(
+  CustodyFilter custody, {
+  required Set<String> validPlaceIds,
+  required Set<String> loanPersonIds,
+}) {
+  if (custody.isPlace && !validPlaceIds.contains(custody.id)) {
+    return const CustodyFilter.all();
+  }
+  if (custody.isPerson && !loanPersonIds.contains(custody.id)) {
+    return const CustodyFilter.all();
+  }
+  return custody;
+}
+
+/// The Home list's live query: free-text search, sort order, and custody filter.
 class PossessionQuery {
   const PossessionQuery({
     this.search = '',
     this.sort = PossessionSort.newest,
-    this.place = const PlaceFilter.all(),
+    this.custody = const CustodyFilter.all(),
   });
 
   final String search;
   final PossessionSort sort;
-  final PlaceFilter place;
+  final CustodyFilter custody;
 
   /// True when the list is showing everything, newest-first — the calm default.
   bool get isDefault =>
-      search.trim().isEmpty && sort == PossessionSort.newest && place.isAll;
+      search.trim().isEmpty && sort == PossessionSort.newest && custody.isAll;
 
   PossessionQuery copyWith({
     String? search,
     PossessionSort? sort,
-    PlaceFilter? place,
+    CustodyFilter? custody,
   }) => PossessionQuery(
     search: search ?? this.search,
     sort: sort ?? this.sort,
-    place: place ?? this.place,
+    custody: custody ?? this.custody,
   );
 }
 
 /// Applies a [PossessionQuery] to an already-loaded list — pure, so it is unit
 /// testable without any database or widgets. Search matches title or category
-/// (case-insensitive); the place filter narrows; then the chosen sort orders a
+/// (case-insensitive); the custody filter narrows; then the chosen sort orders a
 /// fresh copy (the input is never mutated).
+///
 /// [placeSubtreeIds] (when a specific place is selected) is that place plus its
-/// descendants, so the hierarchical Home filter includes the whole subtree.
+/// descendants. [loanPersonByPossession] (possession id → borrower party id) is
+/// the grouped active-loan relationship, used for the person filter and to keep
+/// lent things out of "Senza luogo".
 List<Possession> applyPossessionQuery(
   List<Possession> items,
   PossessionQuery query, {
   Set<String>? placeSubtreeIds,
+  Map<String, String>? loanPersonByPossession,
 }) {
   final needle = query.search.trim().toLowerCase();
   final filtered = items.where((p) {
@@ -86,7 +125,11 @@ List<Possession> applyPossessionQuery(
       final inCategory = p.category?.toLowerCase().contains(needle) ?? false;
       if (!inTitle && !inCategory) return false;
     }
-    return query.place._matches(p, placeSubtreeIds);
+    return query.custody._matches(
+      p,
+      placeSubtreeIds: placeSubtreeIds,
+      loanPersonByPossession: loanPersonByPossession,
+    );
   }).toList();
 
   switch (query.sort) {

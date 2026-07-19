@@ -44,53 +44,164 @@ void main() {
     expect(out.map((p) => p.title), ['Alpha', 'bravo']);
   });
 
-  test('filter by a specific place, no place, or all', () async {
-    final garage = await db.placesDao.create(name: 'Garage');
-    final inGarage = await make('Trapano', placeId: garage);
-    final loose = await make('Chiavi'); // no place
-    final all = [inGarage, loose];
-
-    expect(
-      applyPossessionQuery(
-        all,
-        PossessionQuery(place: PlaceFilter.place(garage)),
-      ).map((p) => p.title),
-      ['Trapano'],
-    );
-    expect(
-      applyPossessionQuery(
-        all,
-        const PossessionQuery(place: PlaceFilter.none()),
-      ).map((p) => p.title),
-      ['Chiavi'],
-    );
+  test('custody: all returns every active input', () async {
+    final all = [await make('A'), await make('B')];
     expect(applyPossessionQuery(all, const PossessionQuery()).length, 2);
   });
 
-  test('a specific-place filter includes the whole subtree (M5.4)', () async {
+  test('custody: place filter includes the whole subtree (M5.4)', () async {
     final casa = await db.placesDao.create(name: 'Casa');
     final armadio = await db.placesDao.create(name: 'Armadio', parentId: casa);
     final inCasa = await make('Quadro', placeId: casa);
     final inArmadio = await make('Maglione', placeId: armadio);
     final all = [inCasa, inArmadio];
 
-    // Filtering on Casa includes its descendant Armadio's objects too.
     expect(
       applyPossessionQuery(
         all,
-        PossessionQuery(place: PlaceFilter.place(casa)),
+        PossessionQuery(custody: CustodyFilter.place(casa)),
         placeSubtreeIds: {casa, armadio},
       ).map((p) => p.title).toSet(),
       {'Quadro', 'Maglione'},
     );
-    // Filtering on Armadio includes only its subtree.
     expect(
       applyPossessionQuery(
         all,
-        PossessionQuery(place: PlaceFilter.place(armadio)),
+        PossessionQuery(custody: CustodyFilter.place(armadio)),
         placeSubtreeIds: {armadio},
       ).map((p) => p.title),
       ['Maglione'],
     );
+  });
+
+  test(
+    'custody: noLocation includes a genuinely unassigned possession',
+    () async {
+      final loose = await make('Chiavi'); // placeId null, not lent
+      final garage = await db.placesDao.create(name: 'Garage');
+      final placed = await make('Trapano', placeId: garage);
+      final out = applyPossessionQuery([
+        loose,
+        placed,
+      ], const PossessionQuery(custody: CustodyFilter.noLocation()));
+      expect(out.map((p) => p.title), ['Chiavi']);
+    },
+  );
+
+  test(
+    'custody: noLocation EXCLUDES a lent possession (placeId null)',
+    () async {
+      final lent = await make('Trapano'); // placeId null (lending cleared it)
+      final loose = await make('Chiavi');
+      final loans = {lent.id: 'personA'};
+      final out = applyPossessionQuery(
+        [lent, loose],
+        const PossessionQuery(custody: CustodyFilter.noLocation()),
+        loanPersonByPossession: loans,
+      );
+      // The lent thing belongs under its borrower, never under "Senza luogo".
+      expect(out.map((p) => p.title), ['Chiavi']);
+    },
+  );
+
+  test(
+    'custody: person filter includes only active loans to that person',
+    () async {
+      final toA = await make('Trapano');
+      final toB = await make('Scala');
+      final loose = await make('Chiavi');
+      final loans = {toA.id: 'A', toB.id: 'B'};
+
+      final out = applyPossessionQuery(
+        [toA, toB, loose],
+        const PossessionQuery(custody: CustodyFilter.person('A')),
+        loanPersonByPossession: loans,
+      );
+      expect(out.map((p) => p.title), [
+        'Trapano',
+      ]); // only A's, not B's or loose
+    },
+  );
+
+  test('custody: search composes with the person filter', () async {
+    final drill = await make('Trapano rosso');
+    final ladder = await make('Trapano blu'); // also matches "trapano"
+    final other = await make('Scala');
+    final loans = {drill.id: 'A', ladder.id: 'A', other.id: 'A'};
+    final out = applyPossessionQuery(
+      [drill, ladder, other],
+      const PossessionQuery(
+        search: 'rosso',
+        custody: CustodyFilter.person('A'),
+      ),
+      loanPersonByPossession: loans,
+    );
+    expect(out.map((p) => p.title), ['Trapano rosso']);
+  });
+
+  test(
+    'custody: sorting composes with a place filter, no duplicates',
+    () async {
+      final casa = await db.placesDao.create(name: 'Casa');
+      final b = await make('bravo', placeId: casa);
+      final a = await make('Alpha', placeId: casa);
+      final out = applyPossessionQuery(
+        [b, a],
+        PossessionQuery(
+          custody: CustodyFilter.place(casa),
+          sort: PossessionSort.name,
+        ),
+        placeSubtreeIds: {casa},
+      );
+      expect(out.map((p) => p.title), ['Alpha', 'bravo']);
+      expect(out.length, out.toSet().length); // no duplicates
+    },
+  );
+
+  group('resolveCustody fallback', () {
+    test('a deleted Place falls back to Tutti', () {
+      final r = resolveCustody(
+        const CustodyFilter.place('gone'),
+        validPlaceIds: {'casa'},
+        loanPersonIds: {},
+      );
+      expect(r.isAll, isTrue);
+    });
+
+    test('a person with no active loan falls back to Tutti', () {
+      final r = resolveCustody(
+        const CustodyFilter.person('carlo'),
+        validPlaceIds: {},
+        loanPersonIds: {'anna'},
+      );
+      expect(r.isAll, isTrue);
+    });
+
+    test('valid selections are preserved', () {
+      expect(
+        resolveCustody(
+          const CustodyFilter.place('casa'),
+          validPlaceIds: {'casa'},
+          loanPersonIds: {},
+        ),
+        const CustodyFilter.place('casa'),
+      );
+      expect(
+        resolveCustody(
+          const CustodyFilter.person('anna'),
+          validPlaceIds: {},
+          loanPersonIds: {'anna'},
+        ),
+        const CustodyFilter.person('anna'),
+      );
+      expect(
+        resolveCustody(
+          const CustodyFilter.noLocation(),
+          validPlaceIds: {},
+          loanPersonIds: {},
+        ),
+        const CustodyFilter.noLocation(),
+      );
+    });
   });
 }
