@@ -441,5 +441,54 @@
   "restoreErrUnreadable": "Non è stato possibile leggere il file scelto. Riprova.",
   "restoreErrEmpty": "Il file scelto è vuoto.",
   "restoreErrNotBackup": "Questo file non è un backup di Pole².",
-  "restoreErrGeneric": "Non è stato possibile leggere il backup."
+  "restoreErrGeneric": "Non è stato possibile leggere il backup.",
+
+  "peopleMenu": "Persone",
+  "peopleTitle": "Persone",
+  "peopleSearchHint": "Cerca una persona",
+  "peopleEmpty": "Le persone a cui presti o dai qualcosa compaiono qui.",
+  "peopleAddTooltip": "Aggiungi persona",
+  "peopleAddTitle": "Aggiungi persona",
+  "peopleCountLent": "{count} in prestito",
+  "@peopleCountLent": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "peopleCountGiven": "{count, plural, =1{1 dato} other{{count} dati}}",
+  "@peopleCountGiven": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "personSectionLent": "In prestito",
+  "personSectionGiven": "Dati",
+  "personSectionHistory": "Storico",
+  "personGivenOn": "Dato il {date}",
+  "@personGivenOn": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "personHistReturned": "Restituito il {date}",
+  "@personHistReturned": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "personHistGiven": "Dato il {date}",
+  "@personHistGiven": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "personHistReacquired": "Ripreso il {date}",
+  "@personHistReacquired": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "personEmpty": "Ancora nessun collegamento con le tue cose.",
+  "personRename": "Rinomina",
+  "personRenameTitle": "Rinomina persona",
+  "personRenameDuplicate": "Esiste già una persona con questo nome.",
+  "personDelete": "Rimuovi",
+  "personDeleteTitle": "Rimuovere {name}?",
+  "@personDeleteTitle": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "personDeleteBody": "La cronologia resta leggibile. Puoi rimuovere una persona solo quando non ha nulla in prestito o che le hai dato.",
+  "personDeleteBlocked": "Non puoi rimuovere {name} finché ha qualcosa in prestito o che le hai dato.",
+  "@personDeleteBlocked": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "personDeletedSnack": "Persona rimossa."
 }

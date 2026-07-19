@@ -6,6 +6,8 @@ import '../../features/backup/presentation/backup_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/places/presentation/place_contents_screen.dart';
 import '../../features/places/presentation/place_review_screen.dart';
+import '../../features/people/presentation/people_browser_screen.dart';
+import '../../features/people/presentation/person_detail_screen.dart';
 import '../../features/places/presentation/places_browser_screen.dart';
 import '../../features/possessions/presentation/acquisition_editor_screen.dart';
 import '../../features/possessions/presentation/create_possession_screen.dart';
@@ -48,6 +50,17 @@ GoRouter appRouter(Ref ref) {
         path: Routes.placesPath,
         name: Routes.placesName,
         builder: (context, state) => const PlacesBrowserScreen(),
+      ),
+      GoRoute(
+        path: Routes.peoplePath,
+        name: Routes.peopleName,
+        builder: (context, state) => const PeopleBrowserScreen(),
+      ),
+      GoRoute(
+        path: Routes.personPath,
+        name: Routes.personName,
+        builder: (context, state) =>
+            PersonDetailScreen(id: state.pathParameters['id']!),
       ),
       GoRoute(
         path: Routes.backupPath,

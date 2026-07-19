@@ -102,10 +102,12 @@ class HomeScreen extends ConsumerWidget {
             onSelected: (value) {
               if (value == 'archive') context.pushNamed(Routes.archiveName);
               if (value == 'places') context.pushNamed(Routes.placesName);
+              if (value == 'people') context.pushNamed(Routes.peopleName);
               if (value == 'backup') context.pushNamed(Routes.backupName);
             },
             itemBuilder: (context) => [
               PopupMenuItem(value: 'places', child: Text(l10n.placesMenu)),
+              PopupMenuItem(value: 'people', child: Text(l10n.peopleMenu)),
               PopupMenuItem(value: 'archive', child: Text(l10n.archiveMenu)),
               PopupMenuItem(value: 'backup', child: Text(l10n.backupMenu)),
             ],

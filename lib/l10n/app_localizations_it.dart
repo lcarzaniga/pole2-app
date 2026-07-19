@@ -1106,4 +1106,100 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get restoreErrGeneric => 'Non è stato possibile leggere il backup.';
+
+  @override
+  String get peopleMenu => 'Persone';
+
+  @override
+  String get peopleTitle => 'Persone';
+
+  @override
+  String get peopleSearchHint => 'Cerca una persona';
+
+  @override
+  String get peopleEmpty =>
+      'Le persone a cui presti o dai qualcosa compaiono qui.';
+
+  @override
+  String get peopleAddTooltip => 'Aggiungi persona';
+
+  @override
+  String get peopleAddTitle => 'Aggiungi persona';
+
+  @override
+  String peopleCountLent(int count) {
+    return '$count in prestito';
+  }
+
+  @override
+  String peopleCountGiven(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dati',
+      one: '1 dato',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get personSectionLent => 'In prestito';
+
+  @override
+  String get personSectionGiven => 'Dati';
+
+  @override
+  String get personSectionHistory => 'Storico';
+
+  @override
+  String personGivenOn(String date) {
+    return 'Dato il $date';
+  }
+
+  @override
+  String personHistReturned(String date) {
+    return 'Restituito il $date';
+  }
+
+  @override
+  String personHistGiven(String date) {
+    return 'Dato il $date';
+  }
+
+  @override
+  String personHistReacquired(String date) {
+    return 'Ripreso il $date';
+  }
+
+  @override
+  String get personEmpty => 'Ancora nessun collegamento con le tue cose.';
+
+  @override
+  String get personRename => 'Rinomina';
+
+  @override
+  String get personRenameTitle => 'Rinomina persona';
+
+  @override
+  String get personRenameDuplicate => 'Esiste già una persona con questo nome.';
+
+  @override
+  String get personDelete => 'Rimuovi';
+
+  @override
+  String personDeleteTitle(String name) {
+    return 'Rimuovere $name?';
+  }
+
+  @override
+  String get personDeleteBody =>
+      'La cronologia resta leggibile. Puoi rimuovere una persona solo quando non ha nulla in prestito o che le hai dato.';
+
+  @override
+  String personDeleteBlocked(String name) {
+    return 'Non puoi rimuovere $name finché ha qualcosa in prestito o che le hai dato.';
+  }
+
+  @override
+  String get personDeletedSnack => 'Persona rimossa.';
 }

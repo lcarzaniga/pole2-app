@@ -1969,6 +1969,150 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Non è stato possibile leggere il backup.'**
   String get restoreErrGeneric;
+
+  /// No description provided for @peopleMenu.
+  ///
+  /// In it, this message translates to:
+  /// **'Persone'**
+  String get peopleMenu;
+
+  /// No description provided for @peopleTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Persone'**
+  String get peopleTitle;
+
+  /// No description provided for @peopleSearchHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca una persona'**
+  String get peopleSearchHint;
+
+  /// No description provided for @peopleEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Le persone a cui presti o dai qualcosa compaiono qui.'**
+  String get peopleEmpty;
+
+  /// No description provided for @peopleAddTooltip.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi persona'**
+  String get peopleAddTooltip;
+
+  /// No description provided for @peopleAddTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi persona'**
+  String get peopleAddTitle;
+
+  /// No description provided for @peopleCountLent.
+  ///
+  /// In it, this message translates to:
+  /// **'{count} in prestito'**
+  String peopleCountLent(int count);
+
+  /// No description provided for @peopleCountGiven.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =1{1 dato} other{{count} dati}}'**
+  String peopleCountGiven(int count);
+
+  /// No description provided for @personSectionLent.
+  ///
+  /// In it, this message translates to:
+  /// **'In prestito'**
+  String get personSectionLent;
+
+  /// No description provided for @personSectionGiven.
+  ///
+  /// In it, this message translates to:
+  /// **'Dati'**
+  String get personSectionGiven;
+
+  /// No description provided for @personSectionHistory.
+  ///
+  /// In it, this message translates to:
+  /// **'Storico'**
+  String get personSectionHistory;
+
+  /// No description provided for @personGivenOn.
+  ///
+  /// In it, this message translates to:
+  /// **'Dato il {date}'**
+  String personGivenOn(String date);
+
+  /// No description provided for @personHistReturned.
+  ///
+  /// In it, this message translates to:
+  /// **'Restituito il {date}'**
+  String personHistReturned(String date);
+
+  /// No description provided for @personHistGiven.
+  ///
+  /// In it, this message translates to:
+  /// **'Dato il {date}'**
+  String personHistGiven(String date);
+
+  /// No description provided for @personHistReacquired.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripreso il {date}'**
+  String personHistReacquired(String date);
+
+  /// No description provided for @personEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Ancora nessun collegamento con le tue cose.'**
+  String get personEmpty;
+
+  /// No description provided for @personRename.
+  ///
+  /// In it, this message translates to:
+  /// **'Rinomina'**
+  String get personRename;
+
+  /// No description provided for @personRenameTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Rinomina persona'**
+  String get personRenameTitle;
+
+  /// No description provided for @personRenameDuplicate.
+  ///
+  /// In it, this message translates to:
+  /// **'Esiste già una persona con questo nome.'**
+  String get personRenameDuplicate;
+
+  /// No description provided for @personDelete.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi'**
+  String get personDelete;
+
+  /// No description provided for @personDeleteTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovere {name}?'**
+  String personDeleteTitle(String name);
+
+  /// No description provided for @personDeleteBody.
+  ///
+  /// In it, this message translates to:
+  /// **'La cronologia resta leggibile. Puoi rimuovere una persona solo quando non ha nulla in prestito o che le hai dato.'**
+  String get personDeleteBody;
+
+  /// No description provided for @personDeleteBlocked.
+  ///
+  /// In it, this message translates to:
+  /// **'Non puoi rimuovere {name} finché ha qualcosa in prestito o che le hai dato.'**
+  String personDeleteBlocked(String name);
+
+  /// No description provided for @personDeletedSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'Persona rimossa.'**
+  String get personDeletedSnack;
 }
 
 class _AppLocalizationsDelegate

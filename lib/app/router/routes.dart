@@ -19,6 +19,14 @@ abstract final class Routes {
   static const String placesName = 'places';
   static const String placesPath = '/places';
 
+  /// Persone: the browser of people you lend/give things to.
+  static const String peopleName = 'people';
+  static const String peoplePath = '/people';
+
+  /// A single person's detail (loans, gifts, history). Path param: `id`.
+  static const String personName = 'person';
+  static const String personPath = '/person/:id';
+
   /// Backup e ripristino.
   static const String backupName = 'backup';
   static const String backupPath = '/backup';
