@@ -61,3 +61,16 @@ Future<int> copyUriToFile({
   });
   return written ?? 0;
 }
+
+/// Deliberately terminates the app process for the restore-restart flow: the
+/// native side finishes the task and kills the process so the next launch runs
+/// the pre-DB swap. Only valid after the durable pending marker exists. On
+/// success the process ends and this never returns; it throws only if the
+/// native close could not be started (caller then shows manual instructions).
+/// The token is a non-secret guard for this deliberate flow.
+Future<void> closeForRestore() async {
+  if (!Platform.isAndroid) return;
+  await _channel.invokeMethod<void>('closeForRestore', {
+    'token': 'restore-restart',
+  });
+}

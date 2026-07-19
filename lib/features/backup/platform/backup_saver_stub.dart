@@ -22,3 +22,5 @@ Future<int> copyUriToFile({
 }) async {
   throw UnsupportedError('Backup restore is not supported on this platform.');
 }
+
+Future<void> closeForRestore() async {}

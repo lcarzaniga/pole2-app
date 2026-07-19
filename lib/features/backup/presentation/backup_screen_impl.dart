@@ -93,6 +93,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     'unreadableSource' || 'copyFailed' => l10n.restoreErrUnreadable,
     'emptyBackup' => l10n.restoreErrEmpty,
     'notABackup' => l10n.restoreErrNotBackup,
+    'markerMissing' => l10n.restoreErrPrepareFailed,
     _ => l10n.restoreErrGeneric,
   };
 
@@ -208,20 +209,69 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   }
 
   Future<void> _showCloseForRestore() async {
-    final l10n = AppLocalizations.of(context);
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.restoreCloseTitle),
-        content: Text(l10n.restoreCloseBody),
-        actions: [
-          FilledButton(
-            onPressed: () =>
-                ref.read(restoreControllerProvider.notifier).closeApp(),
-            child: Text(l10n.restoreCloseButton),
-          ),
-        ],
+      builder: (ctx) => PopScope(
+        canPop: false,
+        child: Consumer(
+          builder: (context, ref2, _) {
+            final l10n = AppLocalizations.of(context);
+            final status = ref2.watch(
+              restoreControllerProvider.select((s) => s.status),
+            );
+            final notifier = ref2.read(restoreControllerProvider.notifier);
+
+            // If we've fallen out of the close flow (e.g. missing marker →
+            // failed), dismiss so the screen-level listener can report it.
+            if (status != RestoreStatus.awaitingReopen &&
+                status != RestoreStatus.closing &&
+                status != RestoreStatus.awaitingManualClose) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (Navigator.of(ctx).canPop()) Navigator.of(ctx).pop();
+              });
+              return const SizedBox.shrink();
+            }
+
+            final closing = status == RestoreStatus.closing;
+            final manual = status == RestoreStatus.awaitingManualClose;
+            final body = manual
+                ? l10n.restoreCloseManual
+                : l10n.restoreCloseBody;
+
+            return AlertDialog(
+              title: Text(l10n.restoreCloseTitle),
+              // liveRegion so TalkBack announces the closing / manual message.
+              content: Semantics(liveRegion: true, child: Text(body)),
+              actions: [
+                if (manual)
+                  TextButton(
+                    onPressed: () => notifier.closeApp(),
+                    child: Text(l10n.updateRetry),
+                  )
+                else
+                  FilledButton(
+                    onPressed: closing ? null : () => notifier.closeApp(),
+                    child: closing
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox.square(
+                                dimension: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                              const SizedBox(width: AppSpacing.sm),
+                              Text(l10n.restoreClosing),
+                            ],
+                          )
+                        : Text(l10n.restoreCloseButton),
+                  ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -367,14 +417,16 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
               onPressed: (busy || restore.isBusy)
                   ? null
                   : () => ref.read(restoreControllerProvider.notifier).start(),
-              icon: restore.isBusy
+              icon: restore.isVerifying
                   ? const SizedBox.square(
                       dimension: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.settings_backup_restore),
               label: Text(
-                restore.isBusy ? l10n.restorePreparing : l10n.restoreAction,
+                restore.isVerifying
+                    ? l10n.restorePreparing
+                    : l10n.restoreAction,
               ),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(52),

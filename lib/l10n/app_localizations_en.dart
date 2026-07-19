@@ -1069,6 +1069,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restoreCloseButton => 'Chiudi Pole²';
 
   @override
+  String get restoreClosing => 'Chiusura…';
+
+  @override
+  String get restoreCloseManual =>
+      'Chiudi Pole² dalle applicazioni recenti e riaprila per completare il ripristino.';
+
+  @override
+  String get restoreErrPrepareFailed =>
+      'Non siamo riusciti a preparare il ripristino. I tuoi dati sono rimasti al loro posto.';
+
+  @override
   String get restoreDoneMessage =>
       'Backup ripristinato. Le tue cose sono di nuovo al loro posto.';
 

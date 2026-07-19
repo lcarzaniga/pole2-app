@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -24,6 +26,8 @@ enum RestoreStatus {
   readyForConfirmation,
   writingMarker,
   awaitingReopen,
+  closing,
+  awaitingManualClose,
   completed,
   failed,
   cancelled,
@@ -45,6 +49,15 @@ class RestoreState {
       status != RestoreStatus.completed &&
       status != RestoreStatus.failed &&
       status != RestoreStatus.cancelled;
+
+  /// True only while actually inspecting the picked file (before confirmation).
+  /// The close/reopen states are busy but must not read as "verifying".
+  bool get isVerifying =>
+      status == RestoreStatus.picking ||
+      status == RestoreStatus.copying ||
+      status == RestoreStatus.readingHeader ||
+      status == RestoreStatus.preparing ||
+      status == RestoreStatus.writingMarker;
 
   RestoreState copyWith({
     RestoreStatus? status,
@@ -253,15 +266,57 @@ class RestoreController extends Notifier<RestoreState> {
     }
   }
 
-  /// Closes the database and terminates the process so the next launch runs the
-  /// pre-DB swap. Called from the "close now" button after confirmation.
+  /// Terminates the process so the next launch runs the pre-DB swap. Called from
+  /// the "Chiudi Pole²" button after confirmation.
+  ///
+  /// The old implementation awaited `AppDatabase.close()` unconditionally, which
+  /// hangs while Home and other widgets still hold live Drift stream
+  /// subscriptions — so `exit(0)` was never reached and the app stayed stuck
+  /// behind the dialog. Now the DB close is best-effort with a short timeout,
+  /// and the process is killed natively regardless (the durable marker + the
+  /// preserved sqlite/WAL/SHM trio make an unclean termination recoverable).
+  /// The pending marker is never touched here.
   Future<void> closeApp() async {
-    try {
-      await _db.close();
-    } catch (_) {}
-    await SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
-    // Guarantee a clean process end so the pre-DB bootstrap runs on reopen.
-    exit(0);
+    // Single-flight: ignore repeated taps while a close is already in progress.
+    if (state.status == RestoreStatus.closing) return;
+    // Only from the post-confirmation states (initial close or a manual retry).
+    if (state.status != RestoreStatus.awaitingReopen &&
+        state.status != RestoreStatus.awaitingManualClose) {
+      return;
+    }
+    // Disable the button immediately.
+    state = const RestoreState(status: RestoreStatus.closing);
+
+    final result = await runRestoreClose(
+      // Safety: never kill the process unless the durable marker exists & is
+      // valid. Without it the bootstrap would have nothing to resume.
+      markerValid: () async {
+        final docs = await getApplicationDocumentsDirectory();
+        return RestoreMarker.readOrNull(
+              File(p.join(docs.path, 'restore_pending.json')),
+            ) !=
+            null;
+      },
+      closeDb: () => _db.close(),
+      nativeClose: saf.closeForRestore,
+      diag: _diag,
+    );
+
+    switch (result) {
+      case RestoreCloseResult.markerMissing:
+        _fail('markerMissing');
+      case RestoreCloseResult.manualFallback:
+        // Native close returned/threw without terminating us → manual
+        // instructions; never revert to an editable state.
+        state = const RestoreState(status: RestoreStatus.awaitingManualClose);
+    }
+  }
+
+  void _diag(String stage) {
+    assert(() {
+      developer.log(stage, name: 'Pole2Restore');
+      return true;
+    }());
   }
 
   /// Cancel before the marker exists — cleans staging, changes nothing live.
@@ -321,3 +376,41 @@ String restoreCopyErrorCode(String nativeCode) => switch (nativeCode) {
   'bad_dest' => 'stagingError',
   _ => 'copyFailed',
 };
+
+enum RestoreCloseResult { markerMissing, manualFallback }
+
+/// The deliberate close sequence, pure of Flutter/platform deps (all effects
+/// injected) so the whole decision path is unit-testable:
+///  1. require a valid durable marker — else [RestoreCloseResult.markerMissing]
+///     and native close is NOT attempted;
+///  2. best-effort [closeDb] with [timeout] — success, timeout or throw all
+///     continue (the marker + preserved sqlite/WAL/SHM trio make an unclean
+///     termination recoverable);
+///  3. [nativeClose] the process. On a real device the process dies inside it
+///     and this never returns; if it returns/throws we did NOT terminate, so
+///     [RestoreCloseResult.manualFallback] is returned.
+///
+/// Never touches the marker. [diag] receives only stage labels — no data/paths.
+Future<RestoreCloseResult> runRestoreClose({
+  required Future<bool> Function() markerValid,
+  required Future<void> Function() closeDb,
+  required Future<void> Function() nativeClose,
+  required void Function(String stage) diag,
+  Duration timeout = const Duration(seconds: 2),
+}) async {
+  if (!await markerValid()) return RestoreCloseResult.markerMissing;
+
+  diag('close_started');
+  try {
+    await closeDb().timeout(timeout);
+    diag('close_completed');
+  } catch (_) {
+    diag('close_timeout');
+  }
+
+  diag('native_close_requested');
+  try {
+    await nativeClose();
+  } catch (_) {}
+  return RestoreCloseResult.manualFallback;
+}

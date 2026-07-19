@@ -1904,6 +1904,24 @@ abstract class AppLocalizations {
   /// **'Chiudi Pole²'**
   String get restoreCloseButton;
 
+  /// No description provided for @restoreClosing.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiusura…'**
+  String get restoreClosing;
+
+  /// No description provided for @restoreCloseManual.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiudi Pole² dalle applicazioni recenti e riaprila per completare il ripristino.'**
+  String get restoreCloseManual;
+
+  /// No description provided for @restoreErrPrepareFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Non siamo riusciti a preparare il ripristino. I tuoi dati sono rimasti al loro posto.'**
+  String get restoreErrPrepareFailed;
+
   /// No description provided for @restoreDoneMessage.
   ///
   /// In it, this message translates to:

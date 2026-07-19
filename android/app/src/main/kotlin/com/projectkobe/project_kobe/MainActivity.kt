@@ -86,12 +86,38 @@ class MainActivity : FlutterActivity() {
                             copyUriToFile(uri, dest, result)
                         }
                     }
+                    "closeForRestore" -> closeForRestore(call.argument<String>("token"), result)
                     else -> result.notImplemented()
                 }
             }
     }
 
     // ---- Backup (SAF) ----
+
+    /**
+     * Deliberately terminates the app for the restore-restart flow. Runs on the
+     * main thread: finishes and removes the task, then kills our own process so
+     * the Dart VM / provider container cannot linger (SystemNavigator.pop /
+     * Dart exit(0) alone proved insufficient on some devices). Gated by a
+     * non-secret token so it can only be reached from that deliberate flow;
+     * callers must already have written the durable pending marker.
+     */
+    private fun closeForRestore(token: String?, result: MethodChannel.Result) {
+        if (token != "restore-restart") {
+            result.error("bad_token", "closeForRestore requires the restore-restart token", null)
+            return
+        }
+        runOnUiThread {
+            try {
+                finishAndRemoveTask()
+            } catch (_: Exception) {
+                try { finishAffinity() } catch (_: Exception) {}
+            }
+            // The process ends here; the pending Dart result never resolves,
+            // which is the intended "we actually closed" outcome.
+            android.os.Process.killProcess(android.os.Process.myPid())
+        }
+    }
 
     private fun freeBytes(): Long =
         try {
