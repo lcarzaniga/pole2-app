@@ -89,6 +89,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     'passwordOrCorrupt' => l10n.restoreErrPassword,
     'missingActiveMedia' => l10n.restoreErrIncompleteMedia,
     'lowSpace' => l10n.restoreErrLowSpace,
+    'accessDenied' => l10n.restoreErrAccess,
+    'unreadableSource' || 'copyFailed' => l10n.restoreErrUnreadable,
+    'emptyBackup' => l10n.restoreErrEmpty,
+    'notABackup' => l10n.restoreErrNotBackup,
     _ => l10n.restoreErrGeneric,
   };
 

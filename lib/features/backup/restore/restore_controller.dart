@@ -82,50 +82,98 @@ class RestoreController extends Notifier<RestoreState> {
 
   /// Pick a file, copy it into staging, read its header. If encrypted, waits for
   /// [submitPassword]; otherwise proceeds to prepare immediately.
+  ///
+  /// Each stage before password/decryption — pick, copy, staged-file check,
+  /// header read — fails with its own [RestoreState.errorCode] so an access or
+  /// copy problem is never shown as "corrupt backup". No secrets, backup
+  /// contents, or full URIs/paths are logged.
   Future<void> start() async {
     if (state.isBusy || _exportBusy) return;
     _reset();
+
+    // Stage: pick a document.
     state = const RestoreState(status: RestoreStatus.picking);
+    String? uri;
     try {
-      final uri = await saf.openBackupDocument();
-      if (uri == null) {
-        state = const RestoreState(status: RestoreStatus.cancelled);
-        return;
-      }
-      state = const RestoreState(status: RestoreStatus.copying);
+      uri = await saf.openBackupDocument();
+    } on PlatformException catch (e) {
+      _fail(e.code == 'open_denied' ? 'accessDenied' : 'generic');
+      return;
+    } catch (_) {
+      _fail('generic');
+      return;
+    }
+    if (uri == null) {
+      state = const RestoreState(status: RestoreStatus.cancelled);
+      return;
+    }
+
+    // Stage: copy the picked document into app-private restore staging, then
+    // verify the copy actually completed before reading anything.
+    state = const RestoreState(status: RestoreStatus.copying);
+    Directory? staging;
+    try {
       final docs = await getApplicationDocumentsDirectory();
       final opId = _uuid.v4();
-      final staging = Directory(p.join(docs.path, 'restore_staging', opId))
+      staging = Directory(p.join(docs.path, 'restore_staging', opId))
         ..createSync(recursive: true);
       final source = File(p.join(staging.path, 'source.pole2backup'));
-      final copied = await saf.copyUriToFile(uri: uri, destPath: source.path);
-      if (copied <= 0) {
+
+      final int copied;
+      try {
+        copied = await saf.copyUriToFile(uri: uri, destPath: source.path);
+      } on PlatformException catch (e) {
         _cleanup(staging);
-        state = const RestoreState(
-          status: RestoreStatus.failed,
-          errorCode: 'generic',
-        );
+        _fail(restoreCopyErrorCode(e.code));
         return;
       }
+      if (copied <= 0) {
+        _cleanup(staging);
+        _fail('emptyBackup');
+        return;
+      }
+      // The staged file must exist and its length must match the bytes the
+      // native copy reported — otherwise the copy was incomplete.
+      if (!source.existsSync() || source.lengthSync() != copied) {
+        _cleanup(staging);
+        _fail('copyFailed');
+        return;
+      }
+
       _source = source;
       _staging = staging;
       _operationId = opId;
+    } catch (_) {
+      if (staging != null) _cleanup(staging);
+      _reset();
+      _fail('stagingError');
+      return;
+    }
 
+    // Stage: read the header (magic/version). Format problems here mean "not a
+    // Pole² backup" or "too new" — never conflated with the copy/access stages.
+    try {
       state = const RestoreState(status: RestoreStatus.readingHeader);
-      final header = await BackupContainer.readHeader(source);
+      final header = await BackupContainer.readHeader(_source!);
       if (header.encrypted) {
         state = const RestoreState(status: RestoreStatus.awaitingPassword);
       } else {
         await _prepare(null);
       }
+    } on BackupUnsupportedVersionException {
+      _cleanupCurrent();
+      _fail('newerFormat');
+    } on BackupFormatException {
+      _cleanupCurrent();
+      _fail('notABackup');
     } catch (_) {
       _cleanupCurrent();
-      state = const RestoreState(
-        status: RestoreStatus.failed,
-        errorCode: 'generic',
-      );
+      _fail('generic');
     }
   }
+
+  void _fail(String code) =>
+      state = RestoreState(status: RestoreStatus.failed, errorCode: code);
 
   /// Supplies the password for an encrypted backup and prepares it.
   Future<void> submitPassword(String password) async {
@@ -260,3 +308,16 @@ class RestoreController extends Notifier<RestoreState> {
     _prepared = null;
   }
 }
+
+/// Maps a native `copyUriToFile` error code (see `MainActivity.copyUriToFile`)
+/// to a calm, specific restore error code. Kept pure and top-level so the
+/// native → UI contract is unit-testable. An access/copy problem must never be
+/// mapped to a backup-format ("corrupt") code.
+String restoreCopyErrorCode(String nativeCode) => switch (nativeCode) {
+  'open_denied' => 'accessDenied',
+  'open_failed' => 'unreadableSource',
+  'copy_io_failed' => 'copyFailed',
+  'empty_document' => 'emptyBackup',
+  'bad_dest' => 'stagingError',
+  _ => 'copyFailed',
+};

@@ -6,10 +6,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.StatFs
 import android.provider.Settings
+import android.util.Log
 import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.util.PathUtils
 import java.io.File
 
 /**
@@ -128,6 +130,9 @@ class MainActivity : FlutterActivity() {
             // custom .pole2backup extension and would otherwise hide the file.
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
+                // The copy happens immediately, so a transient read grant is
+                // enough; we never take a persistable permission.
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 type = "*/*"
                 putExtra(
                     Intent.EXTRA_MIME_TYPES,
@@ -163,45 +168,110 @@ class MainActivity : FlutterActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    /**
+     * The set of app-private roots a staging path may live under. Includes
+     * Flutter's official data directory (`app_flutter`), which is what
+     * `getApplicationDocumentsDirectory()` returns on Android — a sibling of
+     * `files`/`cache`, so a `files`/`cache`-only allowlist wrongly rejects it.
+     * Resolved to canonical paths so `../` and symlink escapes can't slip past.
+     */
+    private fun approvedRoots(): List<String> =
+        listOfNotNull(cacheDir, filesDir, dataDirectoryOrNull())
+            .mapNotNull { try { it.canonicalPath } catch (_: Exception) { null } }
+
+    private fun dataDirectoryOrNull(): File? =
+        try { File(PathUtils.getDataDirectory(applicationContext)) } catch (_: Exception) { null }
+
+    /**
+     * Canonical containment with a path-separator boundary: accepts the root
+     * itself and its descendants, rejects similarly-prefixed siblings
+     * (e.g. `/data/.../filesX` under `/data/.../files`). [canonicalPath] must
+     * already be canonicalized by the caller.
+     */
+    private fun isInsideApprovedRoot(canonicalPath: String): Boolean =
+        approvedRoots().any { root ->
+            canonicalPath == root || canonicalPath.startsWith(root + File.separator)
+        }
+
+    private val isDebuggable: Boolean
+        get() = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+
+    /** Debug-only diagnostic — never logs the full URI, path, contents or secrets. */
+    private fun copyDiag(stage: String, uri: Uri, e: Throwable?, written: Long, dest: File) {
+        if (!isDebuggable) return
+        val destRoot = try {
+            val c = dest.canonicalPath
+            when {
+                c.startsWith(cacheDir.canonicalPath) -> "cache"
+                c.startsWith(filesDir.canonicalPath) -> "files"
+                else -> "app_flutter"
+            }
+        } catch (_: Exception) { "unknown" }
+        Log.d(
+            "Pole2Restore",
+            "stage=$stage scheme=${uri.scheme} provider=${uri.authority} " +
+                "err=${e?.javaClass?.simpleName} written=$written destRoot=$destRoot",
+        )
+    }
+
     private fun copyUriToFile(uriString: String, destPath: String, result: MethodChannel.Result) {
-        // The destination must be inside the app's own private restore staging.
+        // The destination must be inside the app's own private storage.
         val dest = File(destPath)
         val canonical = try {
             dest.canonicalPath
         } catch (e: Exception) {
-            result.error("bad_dest", e.message, null)
+            result.error("bad_dest", "invalid destination", null)
             return
         }
-        val allowed = listOf(cacheDir, filesDir).mapNotNull {
-            try { it.canonicalPath } catch (_: Exception) { null }
-        }
-        if (allowed.none { canonical.startsWith(it) }) {
+        if (!isInsideApprovedRoot(canonical)) {
             result.error("bad_dest", "destination not in app storage", null)
             return
         }
         val uri = Uri.parse(uriString)
         Thread {
             var written = 0L
+            val input = try {
+                contentResolver.openInputStream(uri)
+            } catch (e: SecurityException) {
+                copyDiag("open", uri, e, 0L, dest)
+                runOnUiThread { result.error("open_denied", "no access to the selected file", null) }
+                return@Thread
+            } catch (e: Exception) {
+                copyDiag("open", uri, e, 0L, dest)
+                runOnUiThread { result.error("open_failed", "could not open the selected file", null) }
+                return@Thread
+            }
+            if (input == null) {
+                copyDiag("open", uri, null, 0L, dest)
+                runOnUiThread { result.error("open_failed", "could not open the selected file", null) }
+                return@Thread
+            }
             try {
                 dest.parentFile?.mkdirs()
-                contentResolver.openInputStream(uri)?.use { input ->
+                input.use { inp ->
                     dest.outputStream().use { out ->
                         val buf = ByteArray(64 * 1024)
                         while (true) {
-                            val n = input.read(buf)
+                            val n = inp.read(buf)
                             if (n < 0) break
                             out.write(buf, 0, n)
                             written += n
                         }
                         out.flush()
                     }
-                } ?: throw IllegalStateException("no input stream")
-                if (written <= 0L) throw IllegalStateException("empty document")
-                runOnUiThread { result.success(written) }
+                }
             } catch (e: Exception) {
+                copyDiag("copy", uri, e, written, dest)
                 try { if (dest.exists()) dest.delete() } catch (_: Exception) {}
-                runOnUiThread { result.error("copy_failed", e.message, null) }
+                runOnUiThread { result.error("copy_io_failed", "could not read the selected file", null) }
+                return@Thread
             }
+            if (written <= 0L) {
+                try { if (dest.exists()) dest.delete() } catch (_: Exception) {}
+                runOnUiThread { result.error("empty_document", "the selected file is empty", null) }
+                return@Thread
+            }
+            runOnUiThread { result.success(written) }
         }.start()
     }
 
@@ -211,13 +281,10 @@ class MainActivity : FlutterActivity() {
         val canonical = try {
             source.canonicalPath
         } catch (e: Exception) {
-            result.error("bad_source", e.message, null)
+            result.error("bad_source", "invalid source", null)
             return
         }
-        val allowed = listOf(cacheDir, filesDir).mapNotNull {
-            try { it.canonicalPath } catch (_: Exception) { null }
-        }
-        if (allowed.none { canonical.startsWith(it) } || !source.exists()) {
+        if (!isInsideApprovedRoot(canonical) || !source.exists()) {
             result.error("bad_source", "source not in app storage", null)
             return
         }
@@ -239,7 +306,7 @@ class MainActivity : FlutterActivity() {
                 } ?: throw IllegalStateException("no output stream")
                 runOnUiThread { result.success(written) }
             } catch (e: Exception) {
-                runOnUiThread { result.error("copy_failed", e.message, null) }
+                runOnUiThread { result.error("copy_failed", "could not write the backup", null) }
             }
         }.start()
     }

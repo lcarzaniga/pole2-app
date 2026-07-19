@@ -1090,5 +1090,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restoreErrLowSpace => 'Spazio insufficiente per il ripristino.';
 
   @override
+  String get restoreErrAccess =>
+      'Pole² non ha ricevuto l\'accesso al file scelto. Prova a selezionarlo di nuovo.';
+
+  @override
+  String get restoreErrUnreadable =>
+      'Non è stato possibile leggere il file scelto. Riprova.';
+
+  @override
+  String get restoreErrEmpty => 'Il file scelto è vuoto.';
+
+  @override
+  String get restoreErrNotBackup => 'Questo file non è un backup di Pole².';
+
+  @override
   String get restoreErrGeneric => 'Non è stato possibile leggere il backup.';
 }

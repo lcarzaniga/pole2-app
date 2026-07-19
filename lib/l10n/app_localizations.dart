@@ -1940,6 +1940,30 @@ abstract class AppLocalizations {
   /// **'Spazio insufficiente per il ripristino.'**
   String get restoreErrLowSpace;
 
+  /// No description provided for @restoreErrAccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Pole² non ha ricevuto l\'accesso al file scelto. Prova a selezionarlo di nuovo.'**
+  String get restoreErrAccess;
+
+  /// No description provided for @restoreErrUnreadable.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile leggere il file scelto. Riprova.'**
+  String get restoreErrUnreadable;
+
+  /// No description provided for @restoreErrEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Il file scelto è vuoto.'**
+  String get restoreErrEmpty;
+
+  /// No description provided for @restoreErrNotBackup.
+  ///
+  /// In it, this message translates to:
+  /// **'Questo file non è un backup di Pole².'**
+  String get restoreErrNotBackup;
+
   /// No description provided for @restoreErrGeneric.
   ///
   /// In it, this message translates to:

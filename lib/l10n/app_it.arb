@@ -437,5 +437,9 @@
   "restoreErrPassword": "Password errata oppure backup danneggiato.",
   "restoreErrIncompleteMedia": "Nel backup mancano delle foto necessarie.",
   "restoreErrLowSpace": "Spazio insufficiente per il ripristino.",
+  "restoreErrAccess": "Pole² non ha ricevuto l'accesso al file scelto. Prova a selezionarlo di nuovo.",
+  "restoreErrUnreadable": "Non è stato possibile leggere il file scelto. Riprova.",
+  "restoreErrEmpty": "Il file scelto è vuoto.",
+  "restoreErrNotBackup": "Questo file non è un backup di Pole².",
   "restoreErrGeneric": "Non è stato possibile leggere il backup."
 }
