@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_spacing.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/safe_insets.dart';
 import '../../../shared/format.dart';
 import '../application/event_providers.dart';
 import '../application/possession_providers.dart';
@@ -136,7 +137,10 @@ class _GiveEditorScreenState extends ConsumerState<GiveEditorScreen> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: padWithSafeBottom(
+          context,
+          const EdgeInsets.all(AppSpacing.lg),
+        ),
         children: [
           InkWell(
             onTap: _pickRecipient,

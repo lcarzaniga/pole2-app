@@ -9,6 +9,7 @@ import 'package:project_kobe/core/providers/database_provider.dart';
 import 'package:project_kobe/features/home/presentation/home_screen.dart';
 import 'package:project_kobe/l10n/app_localizations.dart';
 import 'package:project_kobe/shared/brand/pole_wordmark.dart';
+import 'package:project_kobe/shared/brand/turtle_mascot.dart';
 import 'package:project_kobe/shared/brand/turtle_shell_menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -239,4 +240,55 @@ void main() {
 
     await _teardown(tester);
   });
+
+  testWidgets(
+    'With a bottom nav inset, Kobe stays reachable and blooms two cells',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 780);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            databaseProvider.overrideWith((ref) {
+              ref.onDispose(db.close);
+              return db;
+            }),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            locale: const Locale('it'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            // A 56px three-button nav inset, Reduce Motion on for an instant bloom.
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                disableAnimations: true,
+                padding: const EdgeInsets.only(bottom: 56),
+                viewPadding: const EdgeInsets.only(bottom: 56),
+              ),
+              child: child!,
+            ),
+            home: const HomeScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // The resting turtle sits above the 56px system-navigation region.
+      final turtleBottom = tester.getRect(find.byType(TurtleMascot)).bottom;
+      expect(turtleBottom, lessThanOrEqualTo(780.0 - 56.0));
+
+      // And it still blooms exactly the two creation cells.
+      await tester.tap(find.bySemanticsLabel('Conserva qualcosa'));
+      await tester.pumpAndSettle();
+      expect(find.text('Dalla foto'), findsOneWidget);
+      expect(find.text('Dal nome'), findsOneWidget);
+
+      await _teardown(tester);
+    },
+  );
 }

@@ -7,6 +7,7 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/database/tables/enums.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/safe_insets.dart';
 import '../../../shared/brand/hex_background.dart';
 import '../../../shared/format.dart';
 import '../../places/presentation/widgets/possession_thumb.dart';
@@ -143,7 +144,10 @@ class _Section extends ConsumerWidget {
           return _Message(title: l10n.archiveSearchNoResults);
         }
         return ListView.separated(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: padWithSafeBottom(
+            context,
+            const EdgeInsets.all(AppSpacing.lg),
+          ),
           itemCount: visible.length,
           separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
           itemBuilder: (context, i) {

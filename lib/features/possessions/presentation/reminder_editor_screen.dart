@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/database/tables/enums.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/safe_insets.dart';
 import '../../../shared/format.dart';
 import '../../../shared/phrasing.dart';
 import '../application/event_providers.dart';
@@ -41,7 +42,9 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
 
   Future<void> _save() async {
     if (!_canSave) return;
-    await ref.read(eventsDaoProvider).createReminder(
+    await ref
+        .read(eventsDaoProvider)
+        .createReminder(
           possessionId: widget.possessionId,
           title: _title.text.trim(),
           at: _date!,
@@ -92,7 +95,10 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: padWithSafeBottom(
+          context,
+          const EdgeInsets.all(AppSpacing.lg),
+        ),
         children: [
           TextField(
             controller: _title,
@@ -125,8 +131,9 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
                     ? l10n.chooseDate
                     : formatDate(_date!, l10n.localeName),
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color:
-                      _date == null ? scheme.onSurfaceVariant : scheme.onSurface,
+                  color: _date == null
+                      ? scheme.onSurfaceVariant
+                      : scheme.onSurface,
                 ),
               ),
             ),

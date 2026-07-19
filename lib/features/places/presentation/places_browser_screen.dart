@@ -6,6 +6,7 @@ import '../../../app/router/routes.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/database/app_database.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/safe_insets.dart';
 import '../../../shared/brand/hex_background.dart';
 import '../application/place_providers.dart';
 
@@ -39,7 +40,10 @@ class PlacesBrowserScreen extends ConsumerWidget {
           data: (list) => list.isEmpty
               ? _Empty(onAdd: () => _addRoot(context, ref))
               : ListView.separated(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  padding: padWithSafeBottom(
+                    context,
+                    const EdgeInsets.all(AppSpacing.lg),
+                  ),
                   itemCount: list.length,
                   separatorBuilder: (_, _) =>
                       const SizedBox(height: AppSpacing.md),

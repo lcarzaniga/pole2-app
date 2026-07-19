@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_spacing.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/safe_insets.dart';
 import '../application/event_providers.dart';
 import '../application/possession_providers.dart';
 import 'widgets/entity_context_title.dart';
@@ -34,10 +35,9 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
 
   Future<void> _save() async {
     if (!_canSave) return;
-    await ref.read(eventsDaoProvider).createNote(
-          possessionId: widget.possessionId,
-          body: _body.text.trim(),
-        );
+    await ref
+        .read(eventsDaoProvider)
+        .createNote(possessionId: widget.possessionId, body: _body.text.trim());
     HapticFeedback.lightImpact();
     if (mounted) context.pop();
   }
@@ -61,7 +61,10 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: padWithSafeBottom(
+          context,
+          const EdgeInsets.all(AppSpacing.lg),
+        ),
         children: [
           TextField(
             controller: _body,

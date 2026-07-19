@@ -8,6 +8,7 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/database/daos/places_dao.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/safe_insets.dart';
 import '../../../shared/brand/hex_background.dart';
 import '../../possessions/application/possession_providers.dart';
 import '../application/place_providers.dart';
@@ -104,6 +105,7 @@ class _Contents extends ConsumerWidget {
 
     if (children.isEmpty && items.isEmpty) {
       return ListView(
+        padding: padWithSafeBottom(context, EdgeInsets.zero),
         children: [
           _Breadcrumb(placeId: placeId),
           const SizedBox(height: AppSpacing.xxl),
@@ -113,7 +115,10 @@ class _Contents extends ConsumerWidget {
     }
 
     return ListView(
-      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+      padding: padWithSafeBottom(
+        context,
+        const EdgeInsets.only(bottom: AppSpacing.xl),
+      ),
       children: [
         _Breadcrumb(placeId: placeId),
         if (children.isNotEmpty) ...[

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_spacing.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/safe_insets.dart';
 import '../../../shared/brand/hex_background.dart';
 import '../../../shared/format.dart';
 import '../application/backup_controller.dart';
@@ -314,7 +315,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       appBar: AppBar(title: Text(l10n.backupTitle)),
       body: HexBackground(
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: padWithSafeBottom(
+            context,
+            const EdgeInsets.all(AppSpacing.lg),
+          ),
           children: [
             Text(l10n.backupIntro, style: theme.textTheme.bodyLarge),
             const SizedBox(height: AppSpacing.sm),

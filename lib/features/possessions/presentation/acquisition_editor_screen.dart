@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/database/tables/enums.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/safe_insets.dart';
 import '../../../shared/format.dart';
 import '../../../shared/phrasing.dart';
 import '../application/event_providers.dart';
@@ -52,8 +53,9 @@ class _AcquisitionEditorScreenState
       _note.text = acq.notes ?? '';
       if (acq.amountMinor != null) {
         final v = acq.amountMinor! / 100;
-        _price.text =
-            v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(2);
+        _price.text = v == v.roundToDouble()
+            ? v.toStringAsFixed(0)
+            : v.toStringAsFixed(2);
       }
       if (acq.partyId != null) {
         final party = await dao.watchParty(acq.partyId!).first;
@@ -81,7 +83,9 @@ class _AcquisitionEditorScreenState
 
   Future<void> _save() async {
     final amount = _parsePrice();
-    await ref.read(eventsDaoProvider).saveAcquisition(
+    await ref
+        .read(eventsDaoProvider)
+        .saveAcquisition(
           possessionId: widget.possessionId,
           type: _type,
           purchasedOn: _purchasedOn,
@@ -123,12 +127,13 @@ class _AcquisitionEditorScreenState
           objectName: possession.value?.title,
           action: l10n.acquisitionTitle,
         ),
-        actions: [
-          TextButton(onPressed: _save, child: Text(l10n.saveButton)),
-        ],
+        actions: [TextButton(onPressed: _save, child: Text(l10n.saveButton))],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: padWithSafeBottom(
+          context,
+          const EdgeInsets.all(AppSpacing.lg),
+        ),
         children: [
           Text(l10n.howDidYouGetIt, style: theme.textTheme.labelLarge),
           const SizedBox(height: AppSpacing.sm),
@@ -141,7 +146,7 @@ class _AcquisitionEditorScreenState
                   selected: _type == t,
                   onSelected: (s) => setState(() => _type = s ? t : null),
                 ),
-          ],
+            ],
           ),
           const SizedBox(height: AppSpacing.xl),
           _DateField(
@@ -166,8 +171,9 @@ class _AcquisitionEditorScreenState
               Expanded(
                 child: TextField(
                   controller: _price,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   decoration: InputDecoration(labelText: l10n.priceLabel),
                 ),
               ),
@@ -193,8 +199,9 @@ class _AcquisitionEditorScreenState
           const SizedBox(height: AppSpacing.xl),
           Text(
             l10n.acquisitionReassure,
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(color: scheme.onSurfaceVariant),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -226,10 +233,7 @@ class _DateField extends StatelessWidget {
         labelText: label,
         suffixIcon: value == null
             ? const Icon(Icons.calendar_today_outlined)
-            : IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: onClear,
-              ),
+            : IconButton(icon: const Icon(Icons.clear), onPressed: onClear),
       ),
       child: InkWell(
         onTap: onTap,
