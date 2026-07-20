@@ -1212,4 +1212,76 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get personDeletedSnack => 'Persona rimossa.';
+
+  @override
+  String get infoMenu => 'Informazioni e supporto';
+
+  @override
+  String get infoTitle => 'Informazioni e supporto';
+
+  @override
+  String get infoSlogan =>
+      'Custodisci ciò che conta, conta ciò che custodisci.';
+
+  @override
+  String infoVersion(String version, String build) {
+    return 'Versione $version · build $build';
+  }
+
+  @override
+  String get infoVersionUnknown => 'Versione non disponibile';
+
+  @override
+  String get infoLocalFirst =>
+      'I dati di Pole² restano sul tuo dispositivo, salvo i backup che scegli di esportare.';
+
+  @override
+  String get infoLinksTitle => 'Sul sito';
+
+  @override
+  String get infoLinkSite => 'Sito di Pole²';
+
+  @override
+  String get infoLinkSiteSub => 'La casa pubblica di Pole²';
+
+  @override
+  String get infoLinkGuide => 'Guida';
+
+  @override
+  String get infoLinkGuideSub => 'Come si usa, con calma';
+
+  @override
+  String get infoLinkNews => 'Novità';
+
+  @override
+  String get infoLinkNewsSub => 'Cosa è cambiato';
+
+  @override
+  String get infoLinkSupport => 'Supporto';
+
+  @override
+  String get infoLinkSupportSub => 'Scrivici se qualcosa non torna';
+
+  @override
+  String get infoLinkPrivacy => 'Privacy';
+
+  @override
+  String get infoLinkPrivacySub => 'Cosa resta sul dispositivo';
+
+  @override
+  String infoLinkSemantics(String label) {
+    return '$label. Si apre nel browser.';
+  }
+
+  @override
+  String get infoLinkFootnote =>
+      'I link si aprono nel tuo browser. Il supporto riceve solo la versione installata.';
+
+  @override
+  String get infoOpenFailed =>
+      'Non è stato possibile aprire il link. Puoi visitare pole2.app dal tuo browser.';
+
+  @override
+  String get infoOpenNoBrowser =>
+      'Non c\'è un browser su questo dispositivo. Puoi visitare pole2.app da un altro dispositivo.';
 }

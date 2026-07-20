@@ -498,5 +498,38 @@
   "@personDeleteBlocked": {
     "placeholders": { "name": { "type": "String" } }
   },
-  "personDeletedSnack": "Persona rimossa."
+  "personDeletedSnack": "Persona rimossa.",
+
+  "infoMenu": "Informazioni e supporto",
+  "infoTitle": "Informazioni e supporto",
+  "infoSlogan": "Custodisci ciò che conta, conta ciò che custodisci.",
+  "infoVersion": "Versione {version} · build {build}",
+  "@infoVersion": {
+    "description": "The installed version and build, read at runtime from the package itself — never hard-coded.",
+    "placeholders": {
+      "version": { "type": "String" },
+      "build": { "type": "String" }
+    }
+  },
+  "infoVersionUnknown": "Versione non disponibile",
+  "infoLocalFirst": "I dati di Pole² restano sul tuo dispositivo, salvo i backup che scegli di esportare.",
+  "infoLinksTitle": "Sul sito",
+  "infoLinkSite": "Sito di Pole²",
+  "infoLinkSiteSub": "La casa pubblica di Pole²",
+  "infoLinkGuide": "Guida",
+  "infoLinkGuideSub": "Come si usa, con calma",
+  "infoLinkNews": "Novità",
+  "infoLinkNewsSub": "Cosa è cambiato",
+  "infoLinkSupport": "Supporto",
+  "infoLinkSupportSub": "Scrivici se qualcosa non torna",
+  "infoLinkPrivacy": "Privacy",
+  "infoLinkPrivacySub": "Cosa resta sul dispositivo",
+  "infoLinkSemantics": "{label}. Si apre nel browser.",
+  "@infoLinkSemantics": {
+    "description": "Spoken label for a link row: the purpose plus the fact that it leaves the app.",
+    "placeholders": { "label": { "type": "String" } }
+  },
+  "infoLinkFootnote": "I link si aprono nel tuo browser. Il supporto riceve solo la versione installata.",
+  "infoOpenFailed": "Non è stato possibile aprire il link. Puoi visitare pole2.app dal tuo browser.",
+  "infoOpenNoBrowser": "Non c'è un browser su questo dispositivo. Puoi visitare pole2.app da un altro dispositivo."
 }

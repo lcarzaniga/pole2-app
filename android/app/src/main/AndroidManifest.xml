@@ -58,5 +58,13 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- Package visibility (Android 11+) for opening the canonical Pole²
+             pages in the user's own browser. This is a *visibility* declaration,
+             not a permission: it lets the system resolve an https ACTION_VIEW
+             to an installed browser. No browsing data is read. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
     </queries>
 </manifest>

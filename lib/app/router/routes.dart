@@ -31,6 +31,10 @@ abstract final class Routes {
   static const String backupName = 'backup';
   static const String backupPath = '/backup';
 
+  /// Informazioni e supporto: identity, installed build, and the public pages.
+  static const String informationName = 'information';
+  static const String informationPath = '/information';
+
   /// Create a new possession.
   static const String newPossessionName = 'new-possession';
   static const String newPossessionPath = '/possession/new';

@@ -2125,6 +2125,132 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Persona rimossa.'**
   String get personDeletedSnack;
+
+  /// No description provided for @infoMenu.
+  ///
+  /// In it, this message translates to:
+  /// **'Informazioni e supporto'**
+  String get infoMenu;
+
+  /// No description provided for @infoTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Informazioni e supporto'**
+  String get infoTitle;
+
+  /// No description provided for @infoSlogan.
+  ///
+  /// In it, this message translates to:
+  /// **'Custodisci ciò che conta, conta ciò che custodisci.'**
+  String get infoSlogan;
+
+  /// The installed version and build, read at runtime from the package itself — never hard-coded.
+  ///
+  /// In it, this message translates to:
+  /// **'Versione {version} · build {build}'**
+  String infoVersion(String version, String build);
+
+  /// No description provided for @infoVersionUnknown.
+  ///
+  /// In it, this message translates to:
+  /// **'Versione non disponibile'**
+  String get infoVersionUnknown;
+
+  /// No description provided for @infoLocalFirst.
+  ///
+  /// In it, this message translates to:
+  /// **'I dati di Pole² restano sul tuo dispositivo, salvo i backup che scegli di esportare.'**
+  String get infoLocalFirst;
+
+  /// No description provided for @infoLinksTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Sul sito'**
+  String get infoLinksTitle;
+
+  /// No description provided for @infoLinkSite.
+  ///
+  /// In it, this message translates to:
+  /// **'Sito di Pole²'**
+  String get infoLinkSite;
+
+  /// No description provided for @infoLinkSiteSub.
+  ///
+  /// In it, this message translates to:
+  /// **'La casa pubblica di Pole²'**
+  String get infoLinkSiteSub;
+
+  /// No description provided for @infoLinkGuide.
+  ///
+  /// In it, this message translates to:
+  /// **'Guida'**
+  String get infoLinkGuide;
+
+  /// No description provided for @infoLinkGuideSub.
+  ///
+  /// In it, this message translates to:
+  /// **'Come si usa, con calma'**
+  String get infoLinkGuideSub;
+
+  /// No description provided for @infoLinkNews.
+  ///
+  /// In it, this message translates to:
+  /// **'Novità'**
+  String get infoLinkNews;
+
+  /// No description provided for @infoLinkNewsSub.
+  ///
+  /// In it, this message translates to:
+  /// **'Cosa è cambiato'**
+  String get infoLinkNewsSub;
+
+  /// No description provided for @infoLinkSupport.
+  ///
+  /// In it, this message translates to:
+  /// **'Supporto'**
+  String get infoLinkSupport;
+
+  /// No description provided for @infoLinkSupportSub.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivici se qualcosa non torna'**
+  String get infoLinkSupportSub;
+
+  /// No description provided for @infoLinkPrivacy.
+  ///
+  /// In it, this message translates to:
+  /// **'Privacy'**
+  String get infoLinkPrivacy;
+
+  /// No description provided for @infoLinkPrivacySub.
+  ///
+  /// In it, this message translates to:
+  /// **'Cosa resta sul dispositivo'**
+  String get infoLinkPrivacySub;
+
+  /// Spoken label for a link row: the purpose plus the fact that it leaves the app.
+  ///
+  /// In it, this message translates to:
+  /// **'{label}. Si apre nel browser.'**
+  String infoLinkSemantics(String label);
+
+  /// No description provided for @infoLinkFootnote.
+  ///
+  /// In it, this message translates to:
+  /// **'I link si aprono nel tuo browser. Il supporto riceve solo la versione installata.'**
+  String get infoLinkFootnote;
+
+  /// No description provided for @infoOpenFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile aprire il link. Puoi visitare pole2.app dal tuo browser.'**
+  String get infoOpenFailed;
+
+  /// No description provided for @infoOpenNoBrowser.
+  ///
+  /// In it, this message translates to:
+  /// **'Non c\'è un browser su questo dispositivo. Puoi visitare pole2.app da un altro dispositivo.'**
+  String get infoOpenNoBrowser;
 }
 
 class _AppLocalizationsDelegate

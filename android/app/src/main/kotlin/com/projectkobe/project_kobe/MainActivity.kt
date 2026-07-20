@@ -15,16 +15,19 @@ import io.flutter.util.PathUtils
 import java.io.File
 
 /**
- * Hosts two channels:
+ * Hosts three channels:
  *  - `pole2/installer`: the self-update installer (unchanged).
  *  - `pole2/backup`: Storage Access Framework export for M6.0 — create a
  *    user-chosen document and copy an already-finished, app-private backup file
  *    into it. No storage permission; the backup bytes never travel through the
  *    channel arguments; the copy runs off the main thread.
+ *  - `pole2/links`: opens a canonical Pole² https page in the user's own
+ *    browser (M7.3B). Exact-host allowlist, no permission, no WebView.
  */
 class MainActivity : FlutterActivity() {
     private val installerChannel = "pole2/installer"
     private val backupChannel = "pole2/backup"
+    private val linksChannel = "pole2/links"
     private val createDocRequest = 4011
     private val openDocRequest = 4012
 
@@ -90,6 +93,58 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, linksChannel)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "open" -> {
+                        val url = call.argument<String>("url")
+                        if (url == null) {
+                            result.error("bad_args", "url is required", null)
+                        } else {
+                            openExternal(url, result)
+                        }
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+    }
+
+    // ---- External links ----
+
+    /**
+     * Opens a canonical Pole² page in whatever browser the user already uses.
+     *
+     * Re-validates the URL **independently of Dart** (same rule as
+     * `isAllowedPole2Url`) so a bug or a future caller on the Dart side cannot
+     * alone turn this channel into an open redirector: exact host, https only,
+     * no embedded credentials, default port only. `CATEGORY_BROWSABLE` keeps
+     * the intent to things that genuinely display web pages.
+     */
+    private fun openExternal(url: String, result: MethodChannel.Result) {
+        val uri = try { Uri.parse(url) } catch (_: Exception) { null }
+        val allowed = uri != null &&
+            uri.isAbsolute &&
+            "https".equals(uri.scheme, ignoreCase = true) &&
+            uri.userInfo == null &&
+            "pole2.app".equals(uri.host, ignoreCase = true) &&
+            (uri.port == -1 || uri.port == 443)
+        if (!allowed) {
+            // Never log the URL itself.
+            result.error("rejected", "Only canonical https Pole² links may be opened", null)
+            return
+        }
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+            .addCategory(Intent.CATEGORY_BROWSABLE)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        try {
+            startActivity(intent)
+            result.success(true)
+        } catch (_: android.content.ActivityNotFoundException) {
+            result.error("no_handler", "No browser is available on this device", null)
+        } catch (e: Exception) {
+            result.error("open_failed", e.javaClass.simpleName, null)
+        }
     }
 
     // ---- Backup (SAF) ----
