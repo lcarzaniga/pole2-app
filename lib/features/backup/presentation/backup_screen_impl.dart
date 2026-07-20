@@ -14,7 +14,14 @@ import '../restore/restore_preparer.dart' show RestoreSummary;
 /// "Backup e ripristino": create a portable, integrity-checked backup of the
 /// database + photos (encrypted by default), and restore one (M6.1).
 class BackupScreen extends ConsumerStatefulWidget {
-  const BackupScreen({super.key});
+  const BackupScreen({super.key, this.launchedForUpdate = false});
+
+  /// When true the screen was opened by the updater's backup-before-update flow:
+  /// the restore section is hidden, a short intro explains the context, and the
+  /// outcome is returned to the caller — a successful save pops `true` (continue
+  /// to the update), a cancelled picker pops `false` (back to the update choice).
+  /// A failure stays put so the user can retry or press back.
+  final bool launchedForUpdate;
 
   @override
   ConsumerState<BackupScreen> createState() => _BackupScreenState();
@@ -51,6 +58,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     if (!mounted) return;
     final state = ref.read(backupControllerProvider);
     final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     String? msg;
     switch (state.status) {
       case BackupStatus.completed:
@@ -66,7 +74,11 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       default:
         msg = null;
     }
-    if (msg != null) {
+    // In update mode, failure keeps its snack; success/cancel are reported by
+    // popping (no snack needed — the update flow takes over).
+    final completed = state.status == BackupStatus.completed;
+    final cancelled = state.status == BackupStatus.cancelled;
+    if (msg != null && !(widget.launchedForUpdate && completed)) {
       messenger
         ..clearSnackBars()
         ..showSnackBar(
@@ -74,6 +86,13 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         );
     }
     controller.reset();
+
+    // Update mode: a saved backup continues the update (pop true); a cancelled
+    // destination picker returns to the three-way choice (pop false); a failure
+    // stays here so the user can retry or press back.
+    if (widget.launchedForUpdate && (completed || cancelled)) {
+      navigator.pop(completed);
+    }
   }
 
   void _snack(String msg) {
@@ -320,6 +339,22 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             const EdgeInsets.all(AppSpacing.lg),
           ),
           children: [
+            if (widget.launchedForUpdate) ...[
+              Card(
+                margin: EdgeInsets.zero,
+                color: scheme.secondaryContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Text(
+                    l10n.updateBackupScreenIntro,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: scheme.onSecondaryContainer,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+            ],
             Text(l10n.backupIntro, style: theme.textTheme.bodyLarge),
             const SizedBox(height: AppSpacing.sm),
             Text(
@@ -403,39 +438,48 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
               ),
             ),
 
-            const SizedBox(height: AppSpacing.xxl),
-            const Divider(),
-            const SizedBox(height: AppSpacing.md),
+            // Restore is hidden when the screen is opened to make a
+            // pre-update backup: restoring here would create the very
+            // restore-pending state that blocks the update.
+            if (!widget.launchedForUpdate) ...[
+              const SizedBox(height: AppSpacing.xxl),
+              const Divider(),
+              const SizedBox(height: AppSpacing.md),
 
-            // ---- Restore (M6.1) ----
-            Text(l10n.restoreSectionTitle, style: theme.textTheme.titleMedium),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              l10n.restoreIntro,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: scheme.onSurfaceVariant,
+              // ---- Restore (M6.1) ----
+              Text(
+                l10n.restoreSectionTitle,
+                style: theme.textTheme.titleMedium,
               ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            OutlinedButton.icon(
-              onPressed: (busy || restore.isBusy)
-                  ? null
-                  : () => ref.read(restoreControllerProvider.notifier).start(),
-              icon: restore.isVerifying
-                  ? const SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.settings_backup_restore),
-              label: Text(
-                restore.isVerifying
-                    ? l10n.restorePreparing
-                    : l10n.restoreAction,
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                l10n.restoreIntro,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
               ),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+              const SizedBox(height: AppSpacing.md),
+              OutlinedButton.icon(
+                onPressed: (busy || restore.isBusy)
+                    ? null
+                    : () =>
+                          ref.read(restoreControllerProvider.notifier).start(),
+                icon: restore.isVerifying
+                    ? const SizedBox.square(
+                        dimension: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.settings_backup_restore),
+                label: Text(
+                  restore.isVerifying
+                      ? l10n.restorePreparing
+                      : l10n.restoreAction,
+                ),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

@@ -770,6 +770,66 @@ abstract class AppLocalizations {
   /// **'Installazione non riuscita.'**
   String get updateErrorInstall;
 
+  /// No description provided for @updateRestoreBusy.
+  ///
+  /// In it, this message translates to:
+  /// **'Un ripristino è in corso. Riapri Pole² e completa il ripristino prima di aggiornare.'**
+  String get updateRestoreBusy;
+
+  /// No description provided for @updateBackupTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Prima di aggiornare, vuoi creare un backup?'**
+  String get updateBackupTitle;
+
+  /// No description provided for @updateBackupBody.
+  ///
+  /// In it, this message translates to:
+  /// **'È consigliato per questo aggiornamento. Il backup resta a te e puoi salvarlo dove preferisci.'**
+  String get updateBackupBody;
+
+  /// No description provided for @updateBackupCreate.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea backup'**
+  String get updateBackupCreate;
+
+  /// No description provided for @updateBackupContinueWithout.
+  ///
+  /// In it, this message translates to:
+  /// **'Continua senza backup'**
+  String get updateBackupContinueWithout;
+
+  /// No description provided for @updateBackupScreenIntro.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea un backup prima di installare l\'aggiornamento. Al termine, l\'aggiornamento riprende da solo.'**
+  String get updateBackupScreenIntro;
+
+  /// No description provided for @updateWithoutTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi continuare senza creare un backup?'**
+  String get updateWithoutTitle;
+
+  /// No description provided for @updateWithoutBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Di solito l\'aggiornamento mantiene i tuoi dati, ma per questa versione è consigliato un backup.'**
+  String get updateWithoutBody;
+
+  /// No description provided for @updateWithoutContinue.
+  ///
+  /// In it, this message translates to:
+  /// **'Continua'**
+  String get updateWithoutContinue;
+
+  /// No description provided for @updateWithoutBack.
+  ///
+  /// In it, this message translates to:
+  /// **'Indietro'**
+  String get updateWithoutBack;
+
   /// No description provided for @closeButton.
   ///
   /// In it, this message translates to:

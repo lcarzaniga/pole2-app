@@ -399,6 +399,40 @@ class AppLocalizationsIt extends AppLocalizations {
   String get updateErrorInstall => 'Installazione non riuscita.';
 
   @override
+  String get updateRestoreBusy =>
+      'Un ripristino è in corso. Riapri Pole² e completa il ripristino prima di aggiornare.';
+
+  @override
+  String get updateBackupTitle => 'Prima di aggiornare, vuoi creare un backup?';
+
+  @override
+  String get updateBackupBody =>
+      'È consigliato per questo aggiornamento. Il backup resta a te e puoi salvarlo dove preferisci.';
+
+  @override
+  String get updateBackupCreate => 'Crea backup';
+
+  @override
+  String get updateBackupContinueWithout => 'Continua senza backup';
+
+  @override
+  String get updateBackupScreenIntro =>
+      'Crea un backup prima di installare l\'aggiornamento. Al termine, l\'aggiornamento riprende da solo.';
+
+  @override
+  String get updateWithoutTitle => 'Vuoi continuare senza creare un backup?';
+
+  @override
+  String get updateWithoutBody =>
+      'Di solito l\'aggiornamento mantiene i tuoi dati, ma per questa versione è consigliato un backup.';
+
+  @override
+  String get updateWithoutContinue => 'Continua';
+
+  @override
+  String get updateWithoutBack => 'Indietro';
+
+  @override
   String get closeButton => 'Chiudi';
 
   @override

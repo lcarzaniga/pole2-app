@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,16 +11,21 @@ import 'update_service.dart';
 /// strictly-newer, non-dismissed release exists, shows the optional prompt.
 /// Fails silently on anything (offline, malformed, etc.) and renders [child]
 /// unchanged — it never blocks or gates the app.
-class UpdateGate extends StatefulWidget {
+///
+/// Deliberately checks **once per cold process start** (an `initState`
+/// post-frame callback guarded by `_ran`). There is intentionally no
+/// `AppLifecycleState.resumed` re-check: returning from the camera, gallery,
+/// browser, file picker or Android settings must not trigger another check.
+class UpdateGate extends ConsumerStatefulWidget {
   const UpdateGate({super.key, required this.child});
 
   final Widget child;
 
   @override
-  State<UpdateGate> createState() => _UpdateGateState();
+  ConsumerState<UpdateGate> createState() => _UpdateGateState();
 }
 
-class _UpdateGateState extends State<UpdateGate> {
+class _UpdateGateState extends ConsumerState<UpdateGate> {
   bool _ran = false;
 
   @override
@@ -46,7 +52,7 @@ class _UpdateGateState extends State<UpdateGate> {
       if (release.versionCode <= dismissed) return; // "Più tardi" for this one
 
       if (!mounted) return;
-      await showUpdateDialog(context, release);
+      await showUpdateDialog(context, ref, release);
     } catch (_) {
       // Silent — the updater must never disrupt the app.
     }

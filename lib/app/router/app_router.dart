@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../features/archive/presentation/archive_screen.dart';
+import '../../features/backup/presentation/backup_launch.dart';
 import '../../features/backup/presentation/backup_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/information/presentation/information_screen.dart';
@@ -66,7 +67,11 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: Routes.backupPath,
         name: Routes.backupName,
-        builder: (context, state) => const BackupScreen(),
+        // `extra == kBackupLaunchedForUpdate` opens the screen in the updater's
+        // backup-before-update mode (pops true on a saved backup).
+        builder: (context, state) => BackupScreen(
+          launchedForUpdate: state.extra == kBackupLaunchedForUpdate,
+        ),
       ),
       GoRoute(
         path: Routes.informationPath,

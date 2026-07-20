@@ -6,7 +6,11 @@ import '../../../l10n/app_localizations.dart';
 /// Web/other-platform stub: backup is a native-only feature, so this screen just
 /// explains it isn't available here. Imports nothing native (no `dart:io`).
 class BackupScreen extends StatelessWidget {
-  const BackupScreen({super.key});
+  const BackupScreen({super.key, this.launchedForUpdate = false});
+
+  /// Accepted for signature parity with the native screen; backup is native-only
+  /// so there is nothing to launch-for-update here.
+  final bool launchedForUpdate;
 
   @override
   Widget build(BuildContext context) {

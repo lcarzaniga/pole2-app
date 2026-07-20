@@ -76,6 +76,11 @@ dev_dependencies:
   # Generates Android adaptive/legacy launcher icons + web favicon from the
   # source PNGs in assets/branding/. Dev-only; nothing ships at runtime.
   flutter_launcher_icons: ^0.14.4
+  # Test-only: fake path_provider + plugin platform interface so the update
+  # downloader's temp-dir path is driven without a device (see
+  # update_downloader_guard_test.dart). Both are transitive runtime deps already.
+  path_provider_platform_interface: ^2.1.3
+  plugin_platform_interface: ^2.1.8
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
