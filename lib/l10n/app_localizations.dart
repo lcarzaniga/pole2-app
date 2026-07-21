@@ -2341,6 +2341,66 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui mantengono ciascuna la propria licenza.'**
   String get infoLicensesLegalese;
+
+  /// No description provided for @permanentDeleteAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina definitivamente'**
+  String get permanentDeleteAction;
+
+  /// Confirmation dialog title for permanently deleting one removed possession.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare definitivamente «{title}»?'**
+  String permanentDeleteTitle(String title);
+
+  /// No description provided for @permanentDeleteBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Questa azione non può essere annullata. L\'oggetto, la sua cronologia e le sue foto verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato prima d\'ora conterrà ancora questo oggetto: ripristinando quel backup, l\'oggetto potrà tornare.'**
+  String get permanentDeleteBody;
+
+  /// No description provided for @permanentDeleteConfirm.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina definitivamente'**
+  String get permanentDeleteConfirm;
+
+  /// No description provided for @permanentDeleteCancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get permanentDeleteCancel;
+
+  /// Success snackbar after permanent deletion.
+  ///
+  /// In it, this message translates to:
+  /// **'«{title}» eliminato da questo dispositivo.'**
+  String permanentDeleteDoneSnack(String title);
+
+  /// Shown when the rows were deleted but some orphan files could not be removed now.
+  ///
+  /// In it, this message translates to:
+  /// **'«{title}» è stato eliminato. Alcuni file verranno recuperati più tardi con «Libera spazio».'**
+  String permanentDeletePartialSnack(String title);
+
+  /// Shown when permanent deletion did not happen (nothing changed).
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile eliminare «{title}». Nulla è stato modificato.'**
+  String permanentDeleteFailedSnack(String title);
+
+  /// No description provided for @permanentDeleteBlockedBackup.
+  ///
+  /// In it, this message translates to:
+  /// **'Un backup è in corso. Attendi che finisca prima di eliminare.'**
+  String get permanentDeleteBlockedBackup;
+
+  /// No description provided for @permanentDeleteBlockedRestore.
+  ///
+  /// In it, this message translates to:
+  /// **'Un ripristino è in corso. Completalo prima di eliminare definitivamente.'**
+  String get permanentDeleteBlockedRestore;
 }
 
 class _AppLocalizationsDelegate

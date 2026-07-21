@@ -16,6 +16,32 @@ class PhotoWithFile {
   final StoredFile file;
 }
 
+/// The database-phase outcome of [PossessionsDao.permanentlyDelete].
+enum PermanentDeleteDbOutcome {
+  /// The removed possession and its owned rows were deleted in a transaction.
+  deleted,
+
+  /// The possession is not removed (`deletedAt == null`); nothing was changed.
+  notRemoved,
+
+  /// No such possession (including the idempotent already-deleted second call).
+  notFound,
+}
+
+/// Result of the transactional database phase: the [outcome] plus, when
+/// [PermanentDeleteDbOutcome.deleted], the **raw** relative paths of the media
+/// files whose backing [Files] rows were removed — candidates for byte cleanup
+/// by the caller (which normalizes and re-checks them before deleting bytes).
+class PermanentDeleteDbResult {
+  const PermanentDeleteDbResult(
+    this.outcome, {
+    this.removedFilePaths = const [],
+  });
+
+  final PermanentDeleteDbOutcome outcome;
+  final List<String> removedFilePaths;
+}
+
 /// Data access for possessions, their cover [Files], and the photo gallery.
 ///
 /// Reads are **reactive** (Drift `Stream`s). No repository layer sits above
@@ -523,5 +549,121 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
         );
       }
     });
+  }
+
+  // ---- Permanent deletion (M8.2A) ----
+
+  /// Permanently deletes one **removed** possession and every row it exclusively
+  /// owns, in a single transaction, returning the raw relative paths of the
+  /// media files whose backing [Files] rows were removed (byte-cleanup
+  /// candidates for the caller).
+  ///
+  /// Candidate media are collected **only** from this possession — its
+  /// `coverFileId` and every `possession_photos.file_id` for it, **including
+  /// soft-deleted rows**. Evidence files are never candidates here (their
+  /// lifecycle is deferred), although the possession's `possession_evidence`
+  /// **link** rows are deleted. A candidate [Files] row is removed only when,
+  /// after this possession's rows are gone, nothing surviving references its id:
+  /// no cover, no `possession_photos` row (active or soft-deleted), and no
+  /// `evidence_items` row. This never performs global Files garbage collection.
+  ///
+  /// `deletedAt` is re-checked **inside** the transaction, and all candidate
+  /// ids/paths are captured before any row is deleted, so a concurrent change
+  /// or a mid-flight failure can never delete a still-referenced file.
+  Future<PermanentDeleteDbResult> permanentlyDelete(String id) {
+    return transaction(() async {
+      final poss = await (select(
+        possessions,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      if (poss == null) {
+        return const PermanentDeleteDbResult(PermanentDeleteDbOutcome.notFound);
+      }
+      // Re-checked inside the transaction: only a removed thing may be deleted.
+      if (poss.deletedAt == null) {
+        return const PermanentDeleteDbResult(
+          PermanentDeleteDbOutcome.notRemoved,
+        );
+      }
+
+      // 1) Collect candidate file ids from this possession only, before any
+      // deletion: the cover plus every gallery photo (incl. soft-deleted).
+      final candidateIds = <String>{};
+      if (poss.coverFileId != null) candidateIds.add(poss.coverFileId!);
+      final photoRows = await (select(
+        possessionPhotos,
+      )..where((t) => t.possessionId.equals(id))).get();
+      for (final r in photoRows) {
+        candidateIds.add(r.fileId);
+      }
+
+      // Capture each candidate's raw relative path before its Files row goes.
+      final pathById = <String, String>{};
+      if (candidateIds.isNotEmpty) {
+        final fileRows = await (select(
+          files,
+        )..where((t) => t.id.isIn(candidateIds))).get();
+        for (final f in fileRows) {
+          pathById[f.id] = f.relativePath;
+        }
+      }
+
+      // 2) Delete owned rows in FK-safe order (children first, then the anchor).
+      final adb = attachedDatabase;
+      await (delete(adb.events)..where((t) => t.possessionId.equals(id))).go();
+      await (delete(
+        adb.possessionEvidence,
+      )..where((t) => t.possessionId.equals(id))).go();
+      await (delete(
+        adb.identifiers,
+      )..where((t) => t.possessionId.equals(id))).go();
+      await (delete(
+        adb.attributes,
+      )..where((t) => t.possessionId.equals(id))).go();
+      await (delete(
+        possessionPhotos,
+      )..where((t) => t.possessionId.equals(id))).go();
+      await (delete(possessions)..where((t) => t.id.equals(id))).go();
+
+      // 3) Delete a candidate Files row only when nothing surviving references
+      // its id — no cover, no photo (active/soft-deleted), no evidence.
+      final removedPaths = <String>[];
+      for (final fid in candidateIds) {
+        final coverRef =
+            await (select(possessions)
+                  ..where((t) => t.coverFileId.equals(fid))
+                  ..limit(1))
+                .getSingleOrNull();
+        if (coverRef != null) continue;
+        final photoRef =
+            await (select(possessionPhotos)
+                  ..where((t) => t.fileId.equals(fid))
+                  ..limit(1))
+                .getSingleOrNull();
+        if (photoRef != null) continue;
+        final evidenceRef =
+            await (select(adb.evidenceItems)
+                  ..where((t) => t.fileId.equals(fid))
+                  ..limit(1))
+                .getSingleOrNull();
+        if (evidenceRef != null) continue;
+
+        await (delete(files)..where((t) => t.id.equals(fid))).go();
+        final raw = pathById[fid];
+        if (raw != null) removedPaths.add(raw);
+      }
+
+      return PermanentDeleteDbResult(
+        PermanentDeleteDbOutcome.deleted,
+        removedFilePaths: removedPaths,
+      );
+    });
+  }
+
+  /// Raw `relativePath` of every surviving [Files] row. The caller normalizes
+  /// these to guard byte deletion against a path still mapped by another row
+  /// (the duplicate-path safety re-check, repeated after the commit).
+  Future<List<String>> survivingFileRelativePaths() async {
+    final rows = await select(files).get();
+    return [for (final f in rows) f.relativePath];
   }
 }

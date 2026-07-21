@@ -1336,4 +1336,45 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get infoLicensesLegalese =>
       'Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui mantengono ciascuna la propria licenza.';
+
+  @override
+  String get permanentDeleteAction => 'Elimina definitivamente';
+
+  @override
+  String permanentDeleteTitle(String title) {
+    return 'Eliminare definitivamente «$title»?';
+  }
+
+  @override
+  String get permanentDeleteBody =>
+      'Questa azione non può essere annullata. L\'oggetto, la sua cronologia e le sue foto verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato prima d\'ora conterrà ancora questo oggetto: ripristinando quel backup, l\'oggetto potrà tornare.';
+
+  @override
+  String get permanentDeleteConfirm => 'Elimina definitivamente';
+
+  @override
+  String get permanentDeleteCancel => 'Annulla';
+
+  @override
+  String permanentDeleteDoneSnack(String title) {
+    return '«$title» eliminato da questo dispositivo.';
+  }
+
+  @override
+  String permanentDeletePartialSnack(String title) {
+    return '«$title» è stato eliminato. Alcuni file verranno recuperati più tardi con «Libera spazio».';
+  }
+
+  @override
+  String permanentDeleteFailedSnack(String title) {
+    return 'Non è stato possibile eliminare «$title». Nulla è stato modificato.';
+  }
+
+  @override
+  String get permanentDeleteBlockedBackup =>
+      'Un backup è in corso. Attendi che finisca prima di eliminare.';
+
+  @override
+  String get permanentDeleteBlockedRestore =>
+      'Un ripristino è in corso. Completalo prima di eliminare definitivamente.';
 }

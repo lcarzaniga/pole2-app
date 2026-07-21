@@ -550,5 +550,31 @@
     "description": "Spoken label for the licenses row: the purpose plus the fact that it stays inside the app (no browser).",
     "placeholders": { "label": { "type": "String" } }
   },
-  "infoLicensesLegalese": "Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui mantengono ciascuna la propria licenza."
+  "infoLicensesLegalese": "Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui mantengono ciascuna la propria licenza.",
+  "permanentDeleteAction": "Elimina definitivamente",
+  "permanentDeleteTitle": "Eliminare definitivamente «{title}»?",
+  "@permanentDeleteTitle": {
+    "description": "Confirmation dialog title for permanently deleting one removed possession.",
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "permanentDeleteBody": "Questa azione non può essere annullata. L'oggetto, la sua cronologia e le sue foto verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato prima d'ora conterrà ancora questo oggetto: ripristinando quel backup, l'oggetto potrà tornare.",
+  "permanentDeleteConfirm": "Elimina definitivamente",
+  "permanentDeleteCancel": "Annulla",
+  "permanentDeleteDoneSnack": "«{title}» eliminato da questo dispositivo.",
+  "@permanentDeleteDoneSnack": {
+    "description": "Success snackbar after permanent deletion.",
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "permanentDeletePartialSnack": "«{title}» è stato eliminato. Alcuni file verranno recuperati più tardi con «Libera spazio».",
+  "@permanentDeletePartialSnack": {
+    "description": "Shown when the rows were deleted but some orphan files could not be removed now.",
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "permanentDeleteFailedSnack": "Non è stato possibile eliminare «{title}». Nulla è stato modificato.",
+  "@permanentDeleteFailedSnack": {
+    "description": "Shown when permanent deletion did not happen (nothing changed).",
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "permanentDeleteBlockedBackup": "Un backup è in corso. Attendi che finisca prima di eliminare.",
+  "permanentDeleteBlockedRestore": "Un ripristino è in corso. Completalo prima di eliminare definitivamente."
 }

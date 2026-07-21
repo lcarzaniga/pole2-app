@@ -21,6 +21,8 @@ import '../../places/presentation/place_picker.dart';
 import '../application/archive_query.dart';
 import '../application/event_providers.dart';
 import '../application/gallery_order.dart';
+import '../application/permanent_delete.dart';
+import '../application/permanent_delete_result.dart';
 import '../application/possession_providers.dart';
 import 'lend_editor_screen.dart';
 import 'reacquire_sheet.dart';
@@ -233,6 +235,32 @@ class _StatusBanner extends ConsumerWidget {
                     icon: const Icon(Icons.keyboard_return),
                     label: Text(l10n.reacquireAction),
                   )
+                : removed
+                // A removed thing can be restored, or — deliberately and
+                // irreversibly — deleted for good. The permanent action is the
+                // low-emphasis sibling of restore (never a red-filled button),
+                // and lives only here, in the removed thing's own detail.
+                ? Wrap(
+                    spacing: AppSpacing.md,
+                    runSpacing: AppSpacing.sm,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      FilledButton.tonalIcon(
+                        onPressed: () => _restore(context, ref, removed),
+                        icon: const Icon(Icons.restore),
+                        label: Text(l10n.archiveRestore),
+                      ),
+                      TextButton.icon(
+                        onPressed: () => _permanentlyDelete(context, ref),
+                        icon: const Icon(Icons.delete_forever_outlined),
+                        style: TextButton.styleFrom(
+                          foregroundColor: scheme.error,
+                          minimumSize: const Size(0, 48),
+                        ),
+                        label: Text(l10n.permanentDeleteAction),
+                      ),
+                    ],
+                  )
                 : FilledButton.tonalIcon(
                     onPressed: () => _restore(context, ref, removed),
                     icon: const Icon(Icons.restore),
@@ -242,6 +270,68 @@ class _StatusBanner extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Permanent, irreversible deletion of this removed thing: one calm, explicit
+  /// confirmation (no name-typing, no countdown, no red flood), then the guarded
+  /// coordinator. The result is reported honestly — including a partial
+  /// file-cleanup outcome — and, on success, we leave the (now gone) detail.
+  Future<void> _permanentlyDelete(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final router = GoRouter.of(context);
+    final title = possession.title;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        final scheme = Theme.of(ctx).colorScheme;
+        return AlertDialog(
+          icon: const Icon(Icons.delete_forever_outlined),
+          title: Text(l10n.permanentDeleteTitle(title)),
+          content: Text(l10n.permanentDeleteBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(l10n.permanentDeleteCancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              style: TextButton.styleFrom(foregroundColor: scheme.error),
+              child: Text(l10n.permanentDeleteConfirm),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true) return;
+
+    final result = await permanentlyDeletePossession(ref, possession.id);
+    if (!context.mounted) return;
+
+    final gone =
+        result.status == PermanentDeleteStatus.deleted ||
+        result.status == PermanentDeleteStatus.deletedWithPendingFileCleanup;
+    final message = switch (result.status) {
+      PermanentDeleteStatus.deleted => l10n.permanentDeleteDoneSnack(title),
+      PermanentDeleteStatus.deletedWithPendingFileCleanup =>
+        l10n.permanentDeletePartialSnack(title),
+      PermanentDeleteStatus.blockedByBackup =>
+        l10n.permanentDeleteBlockedBackup,
+      PermanentDeleteStatus.blockedByRestore =>
+        l10n.permanentDeleteBlockedRestore,
+      PermanentDeleteStatus.rejectedNotRemoved ||
+      PermanentDeleteStatus.notFound ||
+      PermanentDeleteStatus.failedBeforeCommit =>
+        l10n.permanentDeleteFailedSnack(title),
+    };
+
+    if (gone && router.canPop()) router.pop();
+    messenger
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(behavior: SnackBarBehavior.floating, content: Text(message)),
+      );
   }
 
   Future<void> _restore(
