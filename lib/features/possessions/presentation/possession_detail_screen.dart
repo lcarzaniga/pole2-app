@@ -320,8 +320,11 @@ class _StatusBanner extends ConsumerWidget {
         l10n.permanentDeleteBlockedBackup,
       PermanentDeleteStatus.blockedByRestore =>
         l10n.permanentDeleteBlockedRestore,
+      // staleSelection is a batch-only outcome; on the single path it cannot
+      // occur, but the switch must stay exhaustive — treat it as a calm no-op.
       PermanentDeleteStatus.rejectedNotRemoved ||
       PermanentDeleteStatus.notFound ||
+      PermanentDeleteStatus.staleSelection ||
       PermanentDeleteStatus.failedBeforeCommit =>
         l10n.permanentDeleteFailedSnack(title),
     };

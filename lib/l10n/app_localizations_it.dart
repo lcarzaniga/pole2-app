@@ -1377,4 +1377,74 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get permanentDeleteBlockedRestore =>
       'Un ripristino è in corso. Completalo prima di eliminare definitivamente.';
+
+  @override
+  String get selectAction => 'Seleziona';
+
+  @override
+  String selectionCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count selezionati',
+      one: '1 selezionato',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get selectionClose => 'Chiudi selezione';
+
+  @override
+  String get selectAll => 'Seleziona tutto';
+
+  @override
+  String get selectAllResults => 'Seleziona tutti i risultati';
+
+  @override
+  String permanentDeleteManyTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Eliminare definitivamente $count oggetti?',
+      one: 'Eliminare definitivamente 1 oggetto?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get permanentDeleteManyBody =>
+      'Questa azione non può essere annullata. Gli oggetti selezionati, la loro cronologia e le foto usate soltanto da loro verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare questi oggetti.';
+
+  @override
+  String permanentDeleteManyDoneSnack(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count oggetti eliminati da questo dispositivo.',
+      one: '1 oggetto eliminato da questo dispositivo.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String permanentDeleteManyPartialSnack(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count oggetti eliminati. Alcuni file verranno recuperati più tardi con «Libera spazio».',
+      one:
+          '1 oggetto eliminato. Alcuni file verranno recuperati più tardi con «Libera spazio».',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get permanentDeleteManyFailedSnack =>
+      'Non è stato possibile eliminare gli oggetti selezionati. Nulla è stato modificato.';
+
+  @override
+  String get permanentDeleteStaleSnack =>
+      'La selezione è cambiata. Nulla è stato eliminato.';
 }

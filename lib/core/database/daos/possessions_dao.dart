@@ -16,16 +16,24 @@ class PhotoWithFile {
   final StoredFile file;
 }
 
-/// The database-phase outcome of [PossessionsDao.permanentlyDelete].
+/// The database-phase outcome of the permanent-deletion engine.
 enum PermanentDeleteDbOutcome {
-  /// The removed possession and its owned rows were deleted in a transaction.
+  /// The selected possessions and their owned rows were deleted in one
+  /// transaction (all-or-nothing).
   deleted,
 
-  /// The possession is not removed (`deletedAt == null`); nothing was changed.
+  /// (Single only) the possession is not removed (`deletedAt == null`); nothing
+  /// was changed.
   notRemoved,
 
-  /// No such possession (including the idempotent already-deleted second call).
+  /// (Single only) no such possession — including the idempotent
+  /// already-deleted second call.
   notFound,
+
+  /// (Batch only) at least one selected id was missing, restored, or otherwise
+  /// ineligible when re-checked inside the transaction: the whole batch was
+  /// aborted and nothing was changed.
+  staleSelection,
 }
 
 /// Result of the transactional database phase: the [outcome] plus, when
@@ -570,6 +578,10 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
   /// `deletedAt` is re-checked **inside** the transaction, and all candidate
   /// ids/paths are captured before any row is deleted, so a concurrent change
   /// or a mid-flight failure can never delete a still-referenced file.
+  ///
+  /// Delegates to the shared batch engine ([permanentlyDeleteMany]'s core) so
+  /// there is exactly one deletion implementation; the single form only reports
+  /// the finer [PermanentDeleteDbOutcome.notFound] / `.notRemoved` distinction.
   Future<PermanentDeleteDbResult> permanentlyDelete(String id) {
     return transaction(() async {
       final poss = await (select(
@@ -578,85 +590,131 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
       if (poss == null) {
         return const PermanentDeleteDbResult(PermanentDeleteDbOutcome.notFound);
       }
-      // Re-checked inside the transaction: only a removed thing may be deleted.
       if (poss.deletedAt == null) {
         return const PermanentDeleteDbResult(
           PermanentDeleteDbOutcome.notRemoved,
         );
       }
+      return _deleteBatch([id]);
+    });
+  }
 
-      // 1) Collect candidate file ids from this possession only, before any
-      // deletion: the cover plus every gallery photo (incl. soft-deleted).
-      final candidateIds = <String>{};
-      if (poss.coverFileId != null) candidateIds.add(poss.coverFileId!);
-      final photoRows = await (select(
-        possessionPhotos,
-      )..where((t) => t.possessionId.equals(id))).get();
-      for (final r in photoRows) {
-        candidateIds.add(r.fileId);
-      }
-
-      // Capture each candidate's raw relative path before its Files row goes.
-      final pathById = <String, String>{};
-      if (candidateIds.isNotEmpty) {
-        final fileRows = await (select(
-          files,
-        )..where((t) => t.id.isIn(candidateIds))).get();
-        for (final f in fileRows) {
-          pathById[f.id] = f.relativePath;
+  /// M8.2B — permanently delete **several** removed possessions in one atomic
+  /// transaction (all selected or none), returning the raw relative paths of the
+  /// media files whose backing [Files] rows were removed.
+  ///
+  /// Every selected id is re-checked **inside** the transaction: if any is
+  /// missing, restored, or otherwise not removed (`deletedAt == null`), the whole
+  /// batch aborts with [PermanentDeleteDbOutcome.staleSelection] and nothing is
+  /// changed. Otherwise the same candidate/exclusivity rules as the single form
+  /// apply, over the **union** of the selected possessions:
+  /// candidates are only the selected `coverFileId`s and every
+  /// `possession_photos.file_id` of the selected (incl. soft-deleted); evidence
+  /// files are never candidates; no global Files garbage collection; Parties and
+  /// Places always survive.
+  Future<PermanentDeleteDbResult> permanentlyDeleteMany(List<String> ids) {
+    return transaction(() async {
+      // Re-check eligibility of *every* selected id before touching anything.
+      for (final id in ids) {
+        final poss =
+            await (select(possessions)
+                  ..where((t) => t.id.equals(id))
+                  ..limit(1))
+                .getSingleOrNull();
+        if (poss == null || poss.deletedAt == null) {
+          return const PermanentDeleteDbResult(
+            PermanentDeleteDbOutcome.staleSelection,
+          );
         }
       }
-
-      // 2) Delete owned rows in FK-safe order (children first, then the anchor).
-      final adb = attachedDatabase;
-      await (delete(adb.events)..where((t) => t.possessionId.equals(id))).go();
-      await (delete(
-        adb.possessionEvidence,
-      )..where((t) => t.possessionId.equals(id))).go();
-      await (delete(
-        adb.identifiers,
-      )..where((t) => t.possessionId.equals(id))).go();
-      await (delete(
-        adb.attributes,
-      )..where((t) => t.possessionId.equals(id))).go();
-      await (delete(
-        possessionPhotos,
-      )..where((t) => t.possessionId.equals(id))).go();
-      await (delete(possessions)..where((t) => t.id.equals(id))).go();
-
-      // 3) Delete a candidate Files row only when nothing surviving references
-      // its id — no cover, no photo (active/soft-deleted), no evidence.
-      final removedPaths = <String>[];
-      for (final fid in candidateIds) {
-        final coverRef =
-            await (select(possessions)
-                  ..where((t) => t.coverFileId.equals(fid))
-                  ..limit(1))
-                .getSingleOrNull();
-        if (coverRef != null) continue;
-        final photoRef =
-            await (select(possessionPhotos)
-                  ..where((t) => t.fileId.equals(fid))
-                  ..limit(1))
-                .getSingleOrNull();
-        if (photoRef != null) continue;
-        final evidenceRef =
-            await (select(adb.evidenceItems)
-                  ..where((t) => t.fileId.equals(fid))
-                  ..limit(1))
-                .getSingleOrNull();
-        if (evidenceRef != null) continue;
-
-        await (delete(files)..where((t) => t.id.equals(fid))).go();
-        final raw = pathById[fid];
-        if (raw != null) removedPaths.add(raw);
-      }
-
-      return PermanentDeleteDbResult(
-        PermanentDeleteDbOutcome.deleted,
-        removedFilePaths: removedPaths,
-      );
+      return _deleteBatch(ids);
     });
+  }
+
+  /// The single, shared deletion engine. **Assumes every id in [ids] is already
+  /// verified removed** and runs inside an open [transaction]. Captures the union
+  /// of candidate ids/paths before any deletion, deletes owned rows in FK-safe
+  /// order, then removes each candidate [Files] row only when nothing surviving
+  /// references its id.
+  Future<PermanentDeleteDbResult> _deleteBatch(List<String> ids) async {
+    if (ids.isEmpty) {
+      return const PermanentDeleteDbResult(PermanentDeleteDbOutcome.deleted);
+    }
+    final adb = attachedDatabase;
+
+    // 1) Union of candidate file ids from the selected possessions only, before
+    // any deletion: their covers plus every gallery photo (incl. soft-deleted).
+    final candidateIds = <String>{};
+    final possRows = await (select(
+      possessions,
+    )..where((t) => t.id.isIn(ids))).get();
+    for (final p in possRows) {
+      if (p.coverFileId != null) candidateIds.add(p.coverFileId!);
+    }
+    final photoRows = await (select(
+      possessionPhotos,
+    )..where((t) => t.possessionId.isIn(ids))).get();
+    for (final r in photoRows) {
+      candidateIds.add(r.fileId);
+    }
+
+    // Capture each candidate's raw relative path before its Files row goes.
+    final pathById = <String, String>{};
+    if (candidateIds.isNotEmpty) {
+      final fileRows = await (select(
+        files,
+      )..where((t) => t.id.isIn(candidateIds))).get();
+      for (final f in fileRows) {
+        pathById[f.id] = f.relativePath;
+      }
+    }
+
+    // 2) Delete owned rows in FK-safe order (children first, then the anchors).
+    await (delete(adb.events)..where((t) => t.possessionId.isIn(ids))).go();
+    await (delete(
+      adb.possessionEvidence,
+    )..where((t) => t.possessionId.isIn(ids))).go();
+    await (delete(
+      adb.identifiers,
+    )..where((t) => t.possessionId.isIn(ids))).go();
+    await (delete(adb.attributes)..where((t) => t.possessionId.isIn(ids))).go();
+    await (delete(
+      possessionPhotos,
+    )..where((t) => t.possessionId.isIn(ids))).go();
+    await (delete(possessions)..where((t) => t.id.isIn(ids))).go();
+
+    // 3) Delete a candidate Files row only when nothing surviving references its
+    // id — no cover, no photo (active/soft-deleted), no evidence.
+    final removedPaths = <String>[];
+    for (final fid in candidateIds) {
+      final coverRef =
+          await (select(possessions)
+                ..where((t) => t.coverFileId.equals(fid))
+                ..limit(1))
+              .getSingleOrNull();
+      if (coverRef != null) continue;
+      final photoRef =
+          await (select(possessionPhotos)
+                ..where((t) => t.fileId.equals(fid))
+                ..limit(1))
+              .getSingleOrNull();
+      if (photoRef != null) continue;
+      final evidenceRef =
+          await (select(adb.evidenceItems)
+                ..where((t) => t.fileId.equals(fid))
+                ..limit(1))
+              .getSingleOrNull();
+      if (evidenceRef != null) continue;
+
+      await (delete(files)..where((t) => t.id.equals(fid))).go();
+      final raw = pathById[fid];
+      if (raw != null) removedPaths.add(raw);
+    }
+
+    return PermanentDeleteDbResult(
+      PermanentDeleteDbOutcome.deleted,
+      removedFilePaths: removedPaths,
+    );
   }
 
   /// Raw `relativePath` of every surviving [Files] row. The caller normalizes

@@ -576,5 +576,32 @@
     "placeholders": { "title": { "type": "String" } }
   },
   "permanentDeleteBlockedBackup": "Un backup è in corso. Attendi che finisca prima di eliminare.",
-  "permanentDeleteBlockedRestore": "Un ripristino è in corso. Completalo prima di eliminare definitivamente."
+  "permanentDeleteBlockedRestore": "Un ripristino è in corso. Completalo prima di eliminare definitivamente.",
+  "selectAction": "Seleziona",
+  "selectionCount": "{count, plural, one{1 selezionato} other{{count} selezionati}}",
+  "@selectionCount": {
+    "description": "Contextual app bar title while selecting removed items.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "selectionClose": "Chiudi selezione",
+  "selectAll": "Seleziona tutto",
+  "selectAllResults": "Seleziona tutti i risultati",
+  "permanentDeleteManyTitle": "{count, plural, one{Eliminare definitivamente 1 oggetto?} other{Eliminare definitivamente {count} oggetti?}}",
+  "@permanentDeleteManyTitle": {
+    "description": "Confirmation dialog title for permanently deleting several removed possessions.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "permanentDeleteManyBody": "Questa azione non può essere annullata. Gli oggetti selezionati, la loro cronologia e le foto usate soltanto da loro verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare questi oggetti.",
+  "permanentDeleteManyDoneSnack": "{count, plural, one{1 oggetto eliminato da questo dispositivo.} other{{count} oggetti eliminati da questo dispositivo.}}",
+  "@permanentDeleteManyDoneSnack": {
+    "description": "Success snackbar after batch permanent deletion.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "permanentDeleteManyPartialSnack": "{count, plural, one{1 oggetto eliminato. Alcuni file verranno recuperati più tardi con «Libera spazio».} other{{count} oggetti eliminati. Alcuni file verranno recuperati più tardi con «Libera spazio».}}",
+  "@permanentDeleteManyPartialSnack": {
+    "description": "Batch deletion succeeded but some orphan files could not be removed now.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "permanentDeleteManyFailedSnack": "Non è stato possibile eliminare gli oggetti selezionati. Nulla è stato modificato.",
+  "permanentDeleteStaleSnack": "La selezione è cambiata. Nulla è stato eliminato."
 }

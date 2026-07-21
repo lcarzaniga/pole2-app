@@ -8,8 +8,8 @@ import 'permanent_delete_cleanup.dart';
 import 'permanent_delete_result.dart';
 import 'possession_providers.dart';
 
-/// UI-facing entry point for M8.2A permanent deletion: reads the operation
-/// guards from the (read-only) facades, then delegates to the pure
+/// UI-facing entry point for single-item permanent deletion (M8.2A): reads the
+/// operation guards from the (read-only) facades, then delegates to the pure
 /// [runPermanentDelete] core.
 ///
 /// Web-safe: it speaks only to facades ([isRestorePendingOnDisk],
@@ -28,18 +28,65 @@ Future<PermanentDeleteResult> permanentlyDeletePossession(
   );
 }
 
-/// The pure coordinator core: guards → the transactional database phase → the
-/// post-commit filesystem cleanup, mapped to a single [PermanentDeleteResult].
-/// Takes plain values (no [WidgetRef]) so it is fully unit-testable.
-///
-/// The database commit is the atomic safety boundary: if the process dies (or
-/// cleanup fails) after it, the leftover files are already unreferenced orphans
-/// — reclaimable later — never a still-referenced file and never corruption.
+/// UI-facing entry point for batch permanent deletion (M8.2B): same guards, then
+/// the pure [runPermanentDeleteMany] core.
+Future<PermanentDeleteResult> permanentlyDeletePossessions(
+  WidgetRef ref,
+  List<String> ids,
+) async {
+  final restoreBlocked = await isRestorePendingOnDisk() || isRestoreBusy(ref);
+  return runPermanentDeleteMany(
+    dao: ref.read(possessionsDaoProvider),
+    ids: ids,
+    blockedByRestore: restoreBlocked,
+    blockedByBackup: isBackupBusy(ref),
+  );
+}
+
+/// The pure single-item coordinator core: guards → the transactional database
+/// phase → the post-commit filesystem cleanup. Takes plain values (no
+/// [WidgetRef]) so it is fully unit-testable.
 Future<PermanentDeleteResult> runPermanentDelete({
   required PossessionsDao dao,
   required String id,
   bool blockedByRestore = false,
   bool blockedByBackup = false,
+}) {
+  return _run(
+    dao: dao,
+    blockedByRestore: blockedByRestore,
+    blockedByBackup: blockedByBackup,
+    dbPhase: () => dao.permanentlyDelete(id),
+  );
+}
+
+/// The pure batch coordinator core: same guards → the atomic batch database
+/// phase → the post-commit filesystem cleanup.
+Future<PermanentDeleteResult> runPermanentDeleteMany({
+  required PossessionsDao dao,
+  required List<String> ids,
+  bool blockedByRestore = false,
+  bool blockedByBackup = false,
+}) {
+  return _run(
+    dao: dao,
+    blockedByRestore: blockedByRestore,
+    blockedByBackup: blockedByBackup,
+    dbPhase: () => dao.permanentlyDeleteMany(ids),
+  );
+}
+
+/// Shared coordinator body for both the single and batch forms.
+///
+/// The database commit is the atomic safety boundary: if the process dies (or
+/// cleanup fails) after it, the leftover files are already unreferenced orphans
+/// — reclaimable later — never a still-referenced file and never corruption. A
+/// filesystem-cleanup failure never turns a committed deletion into a failure.
+Future<PermanentDeleteResult> _run({
+  required PossessionsDao dao,
+  required bool blockedByRestore,
+  required bool blockedByBackup,
+  required Future<PermanentDeleteDbResult> Function() dbPhase,
 }) async {
   // 1) Guards — refuse and change nothing while a restore or backup is in
   // flight (or a restore is pending across a restart). Restore takes priority.
@@ -53,7 +100,7 @@ Future<PermanentDeleteResult> runPermanentDelete({
   // 2) Database phase — a single transaction that either commits or throws.
   final PermanentDeleteDbResult db;
   try {
-    db = await dao.permanentlyDelete(id);
+    db = await dbPhase();
   } catch (_) {
     return const PermanentDeleteResult(
       PermanentDeleteStatus.failedBeforeCommit,
@@ -67,6 +114,8 @@ Future<PermanentDeleteResult> runPermanentDelete({
       return const PermanentDeleteResult(
         PermanentDeleteStatus.rejectedNotRemoved,
       );
+    case PermanentDeleteDbOutcome.staleSelection:
+      return const PermanentDeleteResult(PermanentDeleteStatus.staleSelection);
     case PermanentDeleteDbOutcome.deleted:
       break;
   }

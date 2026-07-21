@@ -23,6 +23,11 @@ enum PermanentDeleteStatus {
   /// deletion is offered only from "Rimossi". Nothing was changed.
   rejectedNotRemoved,
 
+  /// (Batch) at least one selected item was missing, restored, or otherwise
+  /// ineligible when re-checked in the transaction, so the whole batch was
+  /// aborted. Nothing was changed.
+  staleSelection,
+
   /// No such possession — including the idempotent second call for an id that
   /// was already permanently deleted. Never reported as a *new* success.
   notFound,

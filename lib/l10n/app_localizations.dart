@@ -2401,6 +2401,72 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Un ripristino è in corso. Completalo prima di eliminare definitivamente.'**
   String get permanentDeleteBlockedRestore;
+
+  /// No description provided for @selectAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona'**
+  String get selectAction;
+
+  /// Contextual app bar title while selecting removed items.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, one{1 selezionato} other{{count} selezionati}}'**
+  String selectionCount(int count);
+
+  /// No description provided for @selectionClose.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiudi selezione'**
+  String get selectionClose;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona tutto'**
+  String get selectAll;
+
+  /// No description provided for @selectAllResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona tutti i risultati'**
+  String get selectAllResults;
+
+  /// Confirmation dialog title for permanently deleting several removed possessions.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, one{Eliminare definitivamente 1 oggetto?} other{Eliminare definitivamente {count} oggetti?}}'**
+  String permanentDeleteManyTitle(int count);
+
+  /// No description provided for @permanentDeleteManyBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Questa azione non può essere annullata. Gli oggetti selezionati, la loro cronologia e le foto usate soltanto da loro verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare questi oggetti.'**
+  String get permanentDeleteManyBody;
+
+  /// Success snackbar after batch permanent deletion.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, one{1 oggetto eliminato da questo dispositivo.} other{{count} oggetti eliminati da questo dispositivo.}}'**
+  String permanentDeleteManyDoneSnack(int count);
+
+  /// Batch deletion succeeded but some orphan files could not be removed now.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, one{1 oggetto eliminato. Alcuni file verranno recuperati più tardi con «Libera spazio».} other{{count} oggetti eliminati. Alcuni file verranno recuperati più tardi con «Libera spazio».}}'**
+  String permanentDeleteManyPartialSnack(int count);
+
+  /// No description provided for @permanentDeleteManyFailedSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile eliminare gli oggetti selezionati. Nulla è stato modificato.'**
+  String get permanentDeleteManyFailedSnack;
+
+  /// No description provided for @permanentDeleteStaleSnack.
+  ///
+  /// In it, this message translates to:
+  /// **'La selezione è cambiata. Nulla è stato eliminato.'**
+  String get permanentDeleteStaleSnack;
 }
 
 class _AppLocalizationsDelegate
