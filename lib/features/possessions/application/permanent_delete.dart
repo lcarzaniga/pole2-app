@@ -4,6 +4,7 @@ import '../../../core/database/daos/possessions_dao.dart';
 import '../../backup/domain/safe_path.dart';
 import '../../backup/restore/restore_activity.dart';
 import '../../backup/restore/restore_pending.dart';
+import 'permanent_delete_activity.dart';
 import 'permanent_delete_cleanup.dart';
 import 'permanent_delete_result.dart';
 import 'possession_providers.dart';
@@ -20,12 +21,17 @@ Future<PermanentDeleteResult> permanentlyDeletePossession(
   String id,
 ) async {
   final restoreBlocked = await isRestorePendingOnDisk() || isRestoreBusy(ref);
-  return runPermanentDelete(
-    dao: ref.read(possessionsDaoProvider),
-    id: id,
-    blockedByRestore: restoreBlocked,
-    blockedByBackup: isBackupBusy(ref),
-  );
+  ref.read(permanentDeleteBusyProvider.notifier).begin();
+  try {
+    return await runPermanentDelete(
+      dao: ref.read(possessionsDaoProvider),
+      id: id,
+      blockedByRestore: restoreBlocked,
+      blockedByBackup: isBackupBusy(ref),
+    );
+  } finally {
+    ref.read(permanentDeleteBusyProvider.notifier).end();
+  }
 }
 
 /// UI-facing entry point for batch permanent deletion (M8.2B): same guards, then
@@ -35,12 +41,17 @@ Future<PermanentDeleteResult> permanentlyDeletePossessions(
   List<String> ids,
 ) async {
   final restoreBlocked = await isRestorePendingOnDisk() || isRestoreBusy(ref);
-  return runPermanentDeleteMany(
-    dao: ref.read(possessionsDaoProvider),
-    ids: ids,
-    blockedByRestore: restoreBlocked,
-    blockedByBackup: isBackupBusy(ref),
-  );
+  ref.read(permanentDeleteBusyProvider.notifier).begin();
+  try {
+    return await runPermanentDeleteMany(
+      dao: ref.read(possessionsDaoProvider),
+      ids: ids,
+      blockedByRestore: restoreBlocked,
+      blockedByBackup: isBackupBusy(ref),
+    );
+  } finally {
+    ref.read(permanentDeleteBusyProvider.notifier).end();
+  }
 }
 
 /// The pure single-item coordinator core: guards → the transactional database

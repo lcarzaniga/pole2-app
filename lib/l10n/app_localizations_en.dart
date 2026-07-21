@@ -1447,4 +1447,61 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get permanentDeleteStaleSnack =>
       'La selezione è cambiata. Nulla è stato eliminato.';
+
+  @override
+  String get storageSectionTitle => 'Spazio sul dispositivo';
+
+  @override
+  String get storageBody =>
+      'Pole² può cercare fotografie che non appartengono più ad alcun oggetto.';
+
+  @override
+  String get storageScanAction => 'Controlla lo spazio';
+
+  @override
+  String get storageScanning => 'Sto controllando lo spazio…';
+
+  @override
+  String get storageNoCandidates =>
+      'Non ci sono file inutilizzati da rimuovere.';
+
+  @override
+  String storageCandidates(String size) {
+    return 'Puoi liberare circa $size. Verranno rimosse soltanto fotografie che Pole² non utilizza più. Backup e dati recuperabili non verranno toccati.';
+  }
+
+  @override
+  String get storageCleanCancel => 'Annulla';
+
+  @override
+  String get storageCleanAction => 'Libera spazio';
+
+  @override
+  String get storageCleaning => 'Sto liberando spazio…';
+
+  @override
+  String storageDone(String size) {
+    return 'Spazio liberato: $size.';
+  }
+
+  @override
+  String storagePartial(String size) {
+    return 'Spazio liberato: $size. Alcuni file non sono stati rimossi.';
+  }
+
+  @override
+  String get storageScanFailed =>
+      'Non è stato possibile controllare lo spazio. Nulla è stato modificato.';
+
+  @override
+  String get storageBlockedBackup =>
+      'Un backup è in corso. Attendi che finisca prima di liberare spazio.';
+
+  @override
+  String get storageBlockedRestore =>
+      'Un ripristino è in corso. Completalo prima di liberare spazio.';
+
+  @override
+  String get storageBlockedPermanentDelete =>
+      'Un\'eliminazione è in corso. Attendi che finisca prima di liberare spazio.';
 }

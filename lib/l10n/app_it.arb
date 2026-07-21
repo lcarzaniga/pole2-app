@@ -603,5 +603,32 @@
     "placeholders": { "count": { "type": "int" } }
   },
   "permanentDeleteManyFailedSnack": "Non è stato possibile eliminare gli oggetti selezionati. Nulla è stato modificato.",
-  "permanentDeleteStaleSnack": "La selezione è cambiata. Nulla è stato eliminato."
+  "permanentDeleteStaleSnack": "La selezione è cambiata. Nulla è stato eliminato.",
+  "storageSectionTitle": "Spazio sul dispositivo",
+  "storageBody": "Pole² può cercare fotografie che non appartengono più ad alcun oggetto.",
+  "storageScanAction": "Controlla lo spazio",
+  "storageScanning": "Sto controllando lo spazio…",
+  "storageNoCandidates": "Non ci sono file inutilizzati da rimuovere.",
+  "storageCandidates": "Puoi liberare circa {size}. Verranno rimosse soltanto fotografie che Pole² non utilizza più. Backup e dati recuperabili non verranno toccati.",
+  "@storageCandidates": {
+    "description": "Shown after a scan finds reclaimable orphan photos; {size} is a human byte size.",
+    "placeholders": { "size": { "type": "String" } }
+  },
+  "storageCleanCancel": "Annulla",
+  "storageCleanAction": "Libera spazio",
+  "storageCleaning": "Sto liberando spazio…",
+  "storageDone": "Spazio liberato: {size}.",
+  "@storageDone": {
+    "description": "Completion message after freeing space; {size} is a human byte size.",
+    "placeholders": { "size": { "type": "String" } }
+  },
+  "storagePartial": "Spazio liberato: {size}. Alcuni file non sono stati rimossi.",
+  "@storagePartial": {
+    "description": "Completion message when some files could not be removed; {size} is a human byte size.",
+    "placeholders": { "size": { "type": "String" } }
+  },
+  "storageScanFailed": "Non è stato possibile controllare lo spazio. Nulla è stato modificato.",
+  "storageBlockedBackup": "Un backup è in corso. Attendi che finisca prima di liberare spazio.",
+  "storageBlockedRestore": "Un ripristino è in corso. Completalo prima di liberare spazio.",
+  "storageBlockedPermanentDelete": "Un'eliminazione è in corso. Attendi che finisca prima di liberare spazio."
 }

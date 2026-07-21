@@ -6,6 +6,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../shared/layout/safe_insets.dart';
 import '../../../shared/brand/hex_background.dart';
 import '../../../shared/format.dart';
+import '../../storage/presentation/storage_cleanup_section.dart';
 import '../application/backup_controller.dart';
 import '../domain/backup_limits.dart';
 import '../restore/restore_controller.dart';
@@ -479,6 +480,12 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   minimumSize: const Size.fromHeight(52),
                 ),
               ),
+
+              // ---- Spazio sul dispositivo (M8.2C) ----
+              const SizedBox(height: AppSpacing.xxl),
+              const Divider(),
+              const SizedBox(height: AppSpacing.md),
+              const StorageCleanupSection(),
             ],
           ],
         ),

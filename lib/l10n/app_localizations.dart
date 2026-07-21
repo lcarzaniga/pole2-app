@@ -2467,6 +2467,96 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'La selezione è cambiata. Nulla è stato eliminato.'**
   String get permanentDeleteStaleSnack;
+
+  /// No description provided for @storageSectionTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Spazio sul dispositivo'**
+  String get storageSectionTitle;
+
+  /// No description provided for @storageBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Pole² può cercare fotografie che non appartengono più ad alcun oggetto.'**
+  String get storageBody;
+
+  /// No description provided for @storageScanAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Controlla lo spazio'**
+  String get storageScanAction;
+
+  /// No description provided for @storageScanning.
+  ///
+  /// In it, this message translates to:
+  /// **'Sto controllando lo spazio…'**
+  String get storageScanning;
+
+  /// No description provided for @storageNoCandidates.
+  ///
+  /// In it, this message translates to:
+  /// **'Non ci sono file inutilizzati da rimuovere.'**
+  String get storageNoCandidates;
+
+  /// Shown after a scan finds reclaimable orphan photos; {size} is a human byte size.
+  ///
+  /// In it, this message translates to:
+  /// **'Puoi liberare circa {size}. Verranno rimosse soltanto fotografie che Pole² non utilizza più. Backup e dati recuperabili non verranno toccati.'**
+  String storageCandidates(String size);
+
+  /// No description provided for @storageCleanCancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get storageCleanCancel;
+
+  /// No description provided for @storageCleanAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Libera spazio'**
+  String get storageCleanAction;
+
+  /// No description provided for @storageCleaning.
+  ///
+  /// In it, this message translates to:
+  /// **'Sto liberando spazio…'**
+  String get storageCleaning;
+
+  /// Completion message after freeing space; {size} is a human byte size.
+  ///
+  /// In it, this message translates to:
+  /// **'Spazio liberato: {size}.'**
+  String storageDone(String size);
+
+  /// Completion message when some files could not be removed; {size} is a human byte size.
+  ///
+  /// In it, this message translates to:
+  /// **'Spazio liberato: {size}. Alcuni file non sono stati rimossi.'**
+  String storagePartial(String size);
+
+  /// No description provided for @storageScanFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile controllare lo spazio. Nulla è stato modificato.'**
+  String get storageScanFailed;
+
+  /// No description provided for @storageBlockedBackup.
+  ///
+  /// In it, this message translates to:
+  /// **'Un backup è in corso. Attendi che finisca prima di liberare spazio.'**
+  String get storageBlockedBackup;
+
+  /// No description provided for @storageBlockedRestore.
+  ///
+  /// In it, this message translates to:
+  /// **'Un ripristino è in corso. Completalo prima di liberare spazio.'**
+  String get storageBlockedRestore;
+
+  /// No description provided for @storageBlockedPermanentDelete.
+  ///
+  /// In it, this message translates to:
+  /// **'Un\'eliminazione è in corso. Attendi che finisca prima di liberare spazio.'**
+  String get storageBlockedPermanentDelete;
 }
 
 class _AppLocalizationsDelegate
