@@ -541,5 +541,14 @@
   },
   "infoLinkFootnote": "I link si aprono nel tuo browser. Il supporto riceve solo la versione installata.",
   "infoOpenFailed": "Non è stato possibile aprire il link. Puoi visitare pole2.app dal tuo browser.",
-  "infoOpenNoBrowser": "Non c'è un browser su questo dispositivo. Puoi visitare pole2.app da un altro dispositivo."
+  "infoOpenNoBrowser": "Non c'è un browser su questo dispositivo. Puoi visitare pole2.app da un altro dispositivo.",
+  "infoLegalTitle": "Sull'app",
+  "infoLicenses": "Licenze open source",
+  "infoLicensesSub": "Le librerie che rendono possibile Pole²",
+  "infoLicensesSemantics": "{label}. Rimane nell'app.",
+  "@infoLicensesSemantics": {
+    "description": "Spoken label for the licenses row: the purpose plus the fact that it stays inside the app (no browser).",
+    "placeholders": { "label": { "type": "String" } }
+  },
+  "infoLicensesLegalese": "Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui mantengono ciascuna la propria licenza."
 }

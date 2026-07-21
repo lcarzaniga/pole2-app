@@ -20,6 +20,7 @@ Widget _infoApp({
   InstalledBuild build = _installed,
   bool failVersion = false,
   double bottomPadding = 0,
+  double textScale = 1.0,
 }) {
   return ProviderScope(
     overrides: [
@@ -36,6 +37,7 @@ Widget _infoApp({
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(
           disableAnimations: true,
+          textScaler: TextScaler.linear(textScale),
           padding: EdgeInsets.only(bottom: bottomPadding),
           viewPadding: EdgeInsets.only(bottom: bottomPadding),
         ),
@@ -44,6 +46,19 @@ Widget _infoApp({
       home: const InformationScreen(),
     ),
   );
+}
+
+/// Scrolls the "Licenze open source" row into view (it is the last item, below
+/// the fold on a phone) and returns its label finder.
+Future<Finder> _revealLicenses(WidgetTester tester) async {
+  final finder = find.text('Licenze open source');
+  await tester.scrollUntilVisible(
+    finder,
+    80,
+    scrollable: find.byType(Scrollable).first,
+  );
+  await tester.pumpAndSettle();
+  return finder;
 }
 
 Future<void> _teardown(WidgetTester tester) async {
@@ -448,6 +463,135 @@ void main() {
         'Backup e ripristino',
         'Informazioni e supporto',
       ]);
+
+      await _teardown(tester);
+    });
+  });
+
+  group('open-source licenses (M8.1)', () {
+    const kLicenseSemantics = 'Licenze open source. Rimane nell\'app.';
+
+    testWidgets('offers the entry — icon+text, chevron (not open-in-new), '
+        'stays-in-app semantics and a ≥48 dp target', (tester) async {
+      _phone(tester);
+      await tester.pumpWidget(_infoApp());
+      await tester.pumpAndSettle();
+
+      final label = await _revealLicenses(tester);
+      expect(label, findsOneWidget);
+      expect(
+        find.text('Le librerie che rendono possibile Pole²'),
+        findsOneWidget,
+      );
+
+      // Icon present; a chevron (in-app), never the browser "open in new".
+      final row = find.ancestor(of: label, matching: find.byType(InkWell));
+      expect(
+        find.descendant(of: row, matching: find.byIcon(Icons.chevron_right)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: row, matching: find.byIcon(Icons.open_in_new)),
+        findsNothing,
+      );
+      // The whole row is a comfortable touch target.
+      expect(tester.getSize(row).height, greaterThanOrEqualTo(48.0));
+
+      await _teardown(tester);
+    });
+
+    testWidgets('has the accessible stays-in-app button label', (tester) async {
+      final handle = tester.ensureSemantics();
+      _phone(tester);
+      await tester.pumpWidget(_infoApp());
+      await tester.pumpAndSettle();
+      await _revealLicenses(tester);
+
+      expect(find.bySemanticsLabel(kLicenseSemantics), findsOneWidget);
+      handle.dispose();
+      await _teardown(tester);
+    });
+
+    testWidgets('opens Flutter\'s native license page in-app (no browser), '
+        'branded as Pole²', (tester) async {
+      _phone(tester);
+      await tester.pumpWidget(_infoApp());
+      await tester.pumpAndSettle();
+      await _revealLicenses(tester);
+
+      await tester.tap(find.bySemanticsLabel(kLicenseSemantics));
+      await tester.pump(); // start the push
+      await tester.pump(const Duration(milliseconds: 500)); // finish transition
+
+      // The framework-native surface, not a browser handoff.
+      expect(find.byType(LicensePage), findsOneWidget);
+      // Pole² branding: the legalese line appears only on the license page.
+      expect(
+        find.textContaining('mantengono ciascuna la propria licenza'),
+        findsOneWidget,
+      );
+
+      await _teardown(tester);
+    });
+
+    testWidgets('Back from the license page returns to Informazioni', (
+      tester,
+    ) async {
+      _phone(tester);
+      await tester.pumpWidget(_infoApp());
+      await tester.pumpAndSettle();
+      await _revealLicenses(tester);
+
+      await tester.tap(find.bySemanticsLabel(kLicenseSemantics));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byType(LicensePage), findsOneWidget);
+
+      // The device Back (system pop) returns to Informazioni.
+      await tester.binding.handlePopRoute();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.byType(LicensePage), findsNothing);
+      expect(find.text('Informazioni e supporto'), findsOneWidget);
+
+      await _teardown(tester);
+    });
+
+    testWidgets('reachable and non-overflowing at 320 dp with large text', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(320, 720);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(_infoApp(textScale: 1.6));
+      await tester.pumpAndSettle();
+
+      await _revealLicenses(tester);
+      expect(tester.takeException(), isNull);
+      expect(find.text('Licenze open source'), findsOneWidget);
+
+      await _teardown(tester);
+    });
+
+    testWidgets('the last row clears the bottom navigation inset', (
+      tester,
+    ) async {
+      _phone(tester);
+      await tester.pumpWidget(_infoApp(bottomPadding: 56));
+      await tester.pumpAndSettle();
+
+      // The licenses row is the final child; the list's own bottom padding
+      // absorbs the inset so it scrolls fully above the system bar.
+      final listView = tester.widget<ListView>(find.byType(ListView));
+      expect(
+        (listView.padding as EdgeInsets).bottom,
+        greaterThanOrEqualTo(56.0),
+      );
+      await _revealLicenses(tester);
+      expect(find.text('Licenze open source'), findsOneWidget);
 
       await _teardown(tester);
     });

@@ -1318,4 +1318,22 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get infoOpenNoBrowser =>
       'Non c\'è un browser su questo dispositivo. Puoi visitare pole2.app da un altro dispositivo.';
+
+  @override
+  String get infoLegalTitle => 'Sull\'app';
+
+  @override
+  String get infoLicenses => 'Licenze open source';
+
+  @override
+  String get infoLicensesSub => 'Le librerie che rendono possibile Pole²';
+
+  @override
+  String infoLicensesSemantics(String label) {
+    return '$label. Rimane nell\'app.';
+  }
+
+  @override
+  String get infoLicensesLegalese =>
+      'Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui mantengono ciascuna la propria licenza.';
 }

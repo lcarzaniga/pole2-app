@@ -74,9 +74,40 @@ class InformationScreen extends ConsumerWidget {
               l10n.infoLinkFootnote,
               style: Theme.of(context).textTheme.bodySmall,
             ),
+            const SizedBox(height: AppSpacing.xxl),
+            _SectionLabel(l10n.infoLegalTitle),
+            const SizedBox(height: AppSpacing.sm),
+            // Stays inside the app: Flutter's own license surface, opened with
+            // Pole² identity but its complete framework-generated content intact.
+            _ActionRow(
+              icon: Icons.workspace_premium_outlined,
+              label: l10n.infoLicenses,
+              subtitle: l10n.infoLicensesSub,
+              semanticsLabel: l10n.infoLicensesSemantics(l10n.infoLicenses),
+              onTap: () => _openLicenses(context, known),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  /// Opens Flutter's native [showLicensePage] — an in-app page, never a browser
+  /// — branded as Pole² while keeping every framework-generated license entry.
+  /// The version shown is the one read at runtime (or omitted if unknown).
+  void _openLicenses(BuildContext context, InstalledBuild? known) {
+    final l10n = AppLocalizations.of(context);
+    showLicensePage(
+      context: context,
+      applicationName: l10n.appName,
+      applicationVersion: (known != null && known.isKnown)
+          ? l10n.infoVersion(known.version, known.buildNumber)
+          : null,
+      applicationIcon: const Padding(
+        padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        child: ExcludeSemantics(child: PoleWordmark(size: 28)),
+      ),
+      applicationLegalese: l10n.infoLicensesLegalese,
     );
   }
 
@@ -188,6 +219,74 @@ class _SectionLabel extends StatelessWidget {
         text,
         style: theme.textTheme.titleSmall?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+}
+
+/// One in-app action: icon + text (never colour alone), a ≥48 dp target, and a
+/// spoken label. Unlike [_LinkRow] it shows a chevron (not "open in new") and
+/// its semantics say it stays in the app — nothing here opens a browser.
+class _ActionRow extends StatelessWidget {
+  const _ActionRow({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.semanticsLabel,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final String subtitle;
+  final String semanticsLabel;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Semantics(
+      button: true,
+      container: true,
+      label: semanticsLabel,
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(icon, color: theme.colorScheme.primary),
+                const SizedBox(width: AppSpacing.lg),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(label, style: theme.textTheme.titleMedium),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                // A "stays in the app" affordance: a chevron, not "open in new".
+                Icon(
+                  Icons.chevron_right,
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

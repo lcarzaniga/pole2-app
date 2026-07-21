@@ -2311,6 +2311,36 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Non c\'è un browser su questo dispositivo. Puoi visitare pole2.app da un altro dispositivo.'**
   String get infoOpenNoBrowser;
+
+  /// No description provided for @infoLegalTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Sull\'app'**
+  String get infoLegalTitle;
+
+  /// No description provided for @infoLicenses.
+  ///
+  /// In it, this message translates to:
+  /// **'Licenze open source'**
+  String get infoLicenses;
+
+  /// No description provided for @infoLicensesSub.
+  ///
+  /// In it, this message translates to:
+  /// **'Le librerie che rendono possibile Pole²'**
+  String get infoLicensesSub;
+
+  /// Spoken label for the licenses row: the purpose plus the fact that it stays inside the app (no browser).
+  ///
+  /// In it, this message translates to:
+  /// **'{label}. Rimane nell\'app.'**
+  String infoLicensesSemantics(String label);
+
+  /// No description provided for @infoLicensesLegalese.
+  ///
+  /// In it, this message translates to:
+  /// **'Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui mantengono ciascuna la propria licenza.'**
+  String get infoLicensesLegalese;
 }
 
 class _AppLocalizationsDelegate
