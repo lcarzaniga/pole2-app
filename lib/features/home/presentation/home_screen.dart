@@ -9,7 +9,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../shared/brand/hex_background.dart';
 import '../../../shared/brand/turtle_shell_menu.dart';
 import '../../../core/providers/database_provider.dart';
-import '../../../shared/photo_capture.dart';
+import '../../possessions/media/photo_import_flow.dart';
 import '../../backup/restore/restore_confirm.dart';
 import '../../backup/restore/restore_receipt.dart';
 import '../../possessions/application/possession_providers.dart';
@@ -81,11 +81,12 @@ class HomeScreen extends ConsumerWidget {
             // "Dal nome": the normal title-first creation flow, no photo.
             await context.pushNamed(Routes.newPossessionName);
           case QuickAction.photo:
-            // "Dalla foto": capture (camera/gallery) first, then create with the
-            // photo already attached. A cancelled capture creates nothing.
-            final photo = await chooseAndCapturePhoto(context);
-            if (photo == null || !context.mounted) return;
-            await context.pushNamed(Routes.newPossessionName, extra: photo);
+            // "Dalla foto": stage the capture (camera/gallery) into the private
+            // import area first, then create with it. A cancelled capture stages
+            // nothing; Back from the form promotes nothing (no orphan).
+            final staged = await chooseAndStagePhoto(context);
+            if (staged == null || !context.mounted) return;
+            await context.pushNamed(Routes.newPossessionName, extra: staged);
         }
       } finally {
         launching = false;

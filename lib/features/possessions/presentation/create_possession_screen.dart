@@ -10,19 +10,22 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/platform/photo_store.dart';
 import '../application/possession_providers.dart';
+import '../media/photo_import.dart';
+import '../media/photo_import_flow.dart';
 
 /// Create a possession. Deliberately minimal: a title is all that's required,
 /// so keeping something takes seconds. Photos, receipts, identifiers and
 /// details are all added later — the screen says so, to relieve any pressure
 /// to "complete" anything now.
 ///
-/// When reached via the "Una foto" flow, [initialPhoto] holds a photo already
-/// captured and stored on disk; it is shown as a cover preview and attached to
-/// the new record on save.
+/// When reached via the "Una foto" flow, [staged] holds a photo captured into
+/// the temporary import area; it is shown as a preview and promoted into
+/// `photos/` — bound to the new record — only on Save. Back/cancel discards it,
+/// so a cancelled creation now leaves no orphan (M8.2D).
 class CreatePossessionScreen extends ConsumerStatefulWidget {
-  const CreatePossessionScreen({super.key, this.initialPhoto});
+  const CreatePossessionScreen({super.key, this.staged});
 
-  final StoredPhoto? initialPhoto;
+  final StagedImport? staged;
 
   @override
   ConsumerState<CreatePossessionScreen> createState() =>
@@ -33,9 +36,16 @@ class _CreatePossessionScreenState
     extends ConsumerState<CreatePossessionScreen> {
   final _controller = TextEditingController();
   bool _saving = false;
+  bool _committed = false; // true once the staged import has been promoted
 
   @override
   void dispose() {
+    // Leaving without a successful save discards the staged import — never based
+    // on disposal alone: only when it was never committed.
+    final staged = widget.staged;
+    if (staged != null && !_committed) {
+      discardImport(staged.operationId);
+    }
     _controller.dispose();
     super.dispose();
   }
@@ -45,27 +55,38 @@ class _CreatePossessionScreenState
   Future<void> _save() async {
     if (!_canSave) return;
     setState(() => _saving = true);
-    final dao = ref.read(possessionsDaoProvider);
-    final created = await dao.createPossession(title: _controller.text.trim());
-    // Attach the already-captured photo, if the user came via "Una foto".
-    final photo = widget.initialPhoto;
-    if (photo != null) {
-      await dao.setCover(
-        created.id,
-        relativePath: photo.relativePath,
-        mimeType: photo.mimeType,
-        byteSize: photo.byteSize,
-      );
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final result = await createPossessionWithStagedCover(
+      ref,
+      title: _controller.text.trim(),
+      import: widget.staged,
+    );
+
+    if (result.status != PhotoSaveStatus.saved) {
+      // Blocked or failed: keep the staged photo and the typed title, tell the
+      // user calmly, and let them retry. Nothing was created.
+      final msg = photoSaveMessage(l10n, result.status);
+      if (msg != null) {
+        messenger
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(behavior: SnackBarBehavior.floating, content: Text(msg)),
+          );
+      }
+      if (mounted) setState(() => _saving = false);
+      return;
     }
-    // A single gentle confirmation — definitive, never celebratory.
+
+    _committed =
+        true; // the import (if any) is now committed — don't discard it
     HapticFeedback.lightImpact();
-    // Open the new thing straight away, so adding a photo (or anything else) is
-    // one tap, not a hunt back through the list. Replacing this screen keeps the
-    // stack clean: Back from the detail returns to Home, not to this form.
+    // Open the new thing straight away. Replacing this screen keeps the stack
+    // clean: Back from the detail returns to Home, not to this form.
     if (mounted) {
       context.pushReplacementNamed(
         Routes.possessionName,
-        pathParameters: {'id': created.id},
+        pathParameters: {'id': result.possessionId!},
       );
     }
   }
@@ -84,8 +105,11 @@ class _CreatePossessionScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (widget.initialPhoto != null) ...[
-                _PhotoPreview(photo: widget.initialPhoto!),
+              if (widget.staged != null &&
+                  widget.staged!.photos.isNotEmpty) ...[
+                _PhotoPreview(
+                  relativePath: widget.staged!.photos.first.tempRelativePath,
+                ),
                 const SizedBox(height: AppSpacing.lg),
               ],
               TextField(
@@ -112,8 +136,9 @@ class _CreatePossessionScreenState
                   Expanded(
                     child: Text(
                       l10n.createReassure,
-                      style: theme.textTheme.bodyMedium
-                          ?.copyWith(color: scheme.onSurfaceVariant),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ],
@@ -131,12 +156,13 @@ class _CreatePossessionScreenState
   }
 }
 
-/// A rounded preview of the just-captured cover photo. Resolves the app docs
-/// path lazily; renders nothing on web (no on-disk photo).
+/// A rounded preview of the staged (temporary) cover photo — the file lives
+/// under `photo_imports/` until Save promotes it. Resolves the app docs path
+/// lazily; renders nothing on web (no on-disk photo).
 class _PhotoPreview extends ConsumerWidget {
-  const _PhotoPreview({required this.photo});
+  const _PhotoPreview({required this.relativePath});
 
-  final StoredPhoto photo;
+  final String relativePath;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -146,7 +172,7 @@ class _PhotoPreview extends ConsumerWidget {
       borderRadius: AppRadii.borderMd,
       child: coverImage(
         docsPath: docs,
-        relativePath: photo.relativePath,
+        relativePath: relativePath,
         height: 180,
       ),
     );

@@ -19,7 +19,7 @@ import '../../features/possessions/presentation/note_editor_screen.dart';
 import '../../features/possessions/presentation/photo_viewer_screen.dart';
 import '../../features/possessions/presentation/possession_detail_screen.dart';
 import '../../features/possessions/presentation/reminder_editor_screen.dart';
-import '../../shared/platform/photo_store.dart';
+import '../../features/possessions/media/photo_import.dart';
 import 'routes.dart';
 
 part 'app_router.g.dart';
@@ -81,9 +81,9 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: Routes.newPossessionPath,
         name: Routes.newPossessionName,
-        // `extra` carries an already-captured photo when arriving via "Una foto".
+        // `extra` carries a staged photo import when arriving via "Una foto".
         builder: (context, state) =>
-            CreatePossessionScreen(initialPhoto: state.extra as StoredPhoto?),
+            CreatePossessionScreen(staged: state.extra as StagedImport?),
       ),
       GoRoute(
         path: Routes.possessionPath,

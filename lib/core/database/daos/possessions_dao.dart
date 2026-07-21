@@ -559,6 +559,114 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
     });
   }
 
+  // ---- Staged photo commit (M8.2D) ----
+
+  /// Inserts one already-**promoted** photo using its **pre-generated** [fileId]
+  /// and final [relativePath] (bytes already renamed into `photos/` by the
+  /// import store). Cover logic mirrors [_insertPhoto]. Assumes a [transaction].
+  Future<void> _insertStagedPhoto(
+    String possessionId, {
+    required String fileId,
+    required String relativePath,
+    required String mimeType,
+    required int byteSize,
+    required bool asCover,
+  }) async {
+    final now = DateTime.now();
+    await into(files).insert(
+      FilesCompanion.insert(
+        id: fileId,
+        relativePath: relativePath,
+        mimeType: mimeType,
+        byteSize: byteSize,
+        createdAt: now,
+      ),
+    );
+    await into(possessionPhotos).insert(
+      PossessionPhotosCompanion.insert(
+        id: _uuid.v4(),
+        possessionId: possessionId,
+        fileId: fileId,
+        sortOrder: Value(await _nextSortOrder(possessionId)),
+        createdAt: now,
+        updatedAt: now,
+      ),
+    );
+    final current = await (select(
+      possessions,
+    )..where((t) => t.id.equals(possessionId))).getSingleOrNull();
+    if (asCover || current?.coverFileId == null) {
+      await (update(
+        possessions,
+      )..where((t) => t.id.equals(possessionId))).write(
+        PossessionsCompanion(coverFileId: Value(fileId), updatedAt: Value(now)),
+      );
+    }
+  }
+
+  /// Commits one or more promoted staged photos to an existing possession in a
+  /// single transaction (M8.2D). Either all rows are created or none.
+  Future<void> commitStagedPhotos(
+    String possessionId,
+    List<
+      ({
+        String fileId,
+        String relativePath,
+        String mimeType,
+        int byteSize,
+        bool asCover,
+      })
+    >
+    photos,
+  ) {
+    return transaction(() async {
+      for (final ph in photos) {
+        await _insertStagedPhoto(
+          possessionId,
+          fileId: ph.fileId,
+          relativePath: ph.relativePath,
+          mimeType: ph.mimeType,
+          byteSize: ph.byteSize,
+          asCover: ph.asCover,
+        );
+      }
+    });
+  }
+
+  /// Creates a possession and, atomically, its promoted cover photo (M8.2D
+  /// photo-first creation). A failure leaves neither the possession nor the
+  /// Files/photo rows — so a promoted file can never bind to a half-created row.
+  Future<Possession> createPossessionWithCover({
+    required String title,
+    String? category,
+    ({String fileId, String relativePath, String mimeType, int byteSize})?
+    cover,
+  }) {
+    return transaction(() async {
+      final now = DateTime.now();
+      final created = await into(possessions).insertReturning(
+        PossessionsCompanion.insert(
+          id: _uuid.v4(),
+          title: title,
+          category: Value(category),
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+      if (cover != null) {
+        await _insertStagedPhoto(
+          created.id,
+          fileId: cover.fileId,
+          relativePath: cover.relativePath,
+          mimeType: cover.mimeType,
+          byteSize: cover.byteSize,
+          asCover: true,
+        );
+      }
+      return created;
+    });
+  }
+
   // ---- Permanent deletion (M8.2A) ----
 
   /// Permanently deletes one **removed** possession and every row it exclusively

@@ -13,7 +13,7 @@ import '../../../core/database/tables/enums.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/brand/hex_background.dart';
 import '../../../shared/format.dart';
-import '../../../shared/photo_capture.dart';
+import '../media/photo_import_flow.dart';
 import '../../../shared/phrasing.dart';
 import '../../../shared/platform/photo_store.dart';
 import '../../places/application/place_providers.dart';
@@ -1314,47 +1314,48 @@ Future<void> _removeEvent(
 /// invitation. On an object with no photos the first becomes the cover;
 /// otherwise the cover is left untouched (adding never silently replaces).
 Future<void> _addPhotos(BuildContext context, WidgetRef ref, String id) async {
-  final photos = await chooseAndCapturePhotos(context);
-  if (photos.isEmpty) return;
-  final dao = ref.read(possessionsDaoProvider);
-  if (photos.length == 1) {
-    final ph = photos.first;
-    await dao.addPhoto(
-      id,
-      relativePath: ph.relativePath,
-      mimeType: ph.mimeType,
-      byteSize: ph.byteSize,
-    );
-  } else {
-    await dao.addPhotos(id, [
-      for (final ph in photos)
-        (
-          relativePath: ph.relativePath,
-          mimeType: ph.mimeType,
-          byteSize: ph.byteSize,
-        ),
-    ]);
-  }
+  final staged = await chooseAndStagePhotos(context);
+  if (staged == null || staged.isEmpty) return;
+  if (!context.mounted) return;
+  final status = await saveStagedToPossession(
+    ref,
+    import: staged,
+    possessionId: id,
+  );
+  if (context.mounted) _reportSave(context, status);
 }
 
-/// Replace the cover via the pencil: capture one image, add it and promote it to
-/// cover. The previous cover stays in the gallery (demoted, never orphaned).
+/// Replace the cover via the pencil: stage one image, promote it and make it the
+/// cover on Save. The previous cover stays in the gallery (demoted, never
+/// orphaned); a cancelled or blocked save leaves the existing cover untouched.
 Future<void> _replaceCover(
   BuildContext context,
   WidgetRef ref,
   String id,
 ) async {
-  final photo = await chooseAndCapturePhoto(context);
-  if (photo == null) return;
-  await ref
-      .read(possessionsDaoProvider)
-      .addPhoto(
-        id,
-        relativePath: photo.relativePath,
-        mimeType: photo.mimeType,
-        byteSize: photo.byteSize,
-        asCover: true,
-      );
+  final staged = await chooseAndStagePhoto(context);
+  if (staged == null || staged.isEmpty) return;
+  if (!context.mounted) return;
+  final status = await saveStagedToPossession(
+    ref,
+    import: staged,
+    possessionId: id,
+    coverFirst: true,
+  );
+  if (context.mounted) _reportSave(context, status);
+}
+
+/// A calm snackbar only when a staged-photo save was blocked or failed; silent
+/// on success (the new photo simply appears).
+void _reportSave(BuildContext context, PhotoSaveStatus status) {
+  final l10n = AppLocalizations.of(context);
+  final msg = photoSaveMessage(l10n, status);
+  if (msg == null) return;
+  ScaffoldMessenger.of(context)
+    ..clearSnackBars()
+    ..showSnackBar(
+      SnackBar(behavior: SnackBarBehavior.floating, content: Text(msg)),
+    );
 }
 
 /// "Affida a qualcuno": choose between lending (temporary) and giving

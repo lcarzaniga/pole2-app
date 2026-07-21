@@ -2557,6 +2557,30 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Un\'eliminazione è in corso. Attendi che finisca prima di liberare spazio.'**
   String get storageBlockedPermanentDelete;
+
+  /// No description provided for @mediaSaveBlockedBackup.
+  ///
+  /// In it, this message translates to:
+  /// **'Un backup è in corso. Riprova a salvare la foto tra poco.'**
+  String get mediaSaveBlockedBackup;
+
+  /// No description provided for @mediaSaveBlockedRestore.
+  ///
+  /// In it, this message translates to:
+  /// **'Un ripristino è in corso. Completalo prima di salvare la foto.'**
+  String get mediaSaveBlockedRestore;
+
+  /// No description provided for @mediaSaveBlockedBusy.
+  ///
+  /// In it, this message translates to:
+  /// **'Un\'operazione è in corso. Riprova a salvare la foto tra poco.'**
+  String get mediaSaveBlockedBusy;
+
+  /// No description provided for @mediaSaveFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile salvare la foto. Nulla è stato modificato.'**
+  String get mediaSaveFailed;
 }
 
 class _AppLocalizationsDelegate

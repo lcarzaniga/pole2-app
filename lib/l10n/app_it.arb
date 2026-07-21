@@ -630,5 +630,9 @@
   "storageScanFailed": "Non è stato possibile controllare lo spazio. Nulla è stato modificato.",
   "storageBlockedBackup": "Un backup è in corso. Attendi che finisca prima di liberare spazio.",
   "storageBlockedRestore": "Un ripristino è in corso. Completalo prima di liberare spazio.",
-  "storageBlockedPermanentDelete": "Un'eliminazione è in corso. Attendi che finisca prima di liberare spazio."
+  "storageBlockedPermanentDelete": "Un'eliminazione è in corso. Attendi che finisca prima di liberare spazio.",
+  "mediaSaveBlockedBackup": "Un backup è in corso. Riprova a salvare la foto tra poco.",
+  "mediaSaveBlockedRestore": "Un ripristino è in corso. Completalo prima di salvare la foto.",
+  "mediaSaveBlockedBusy": "Un'operazione è in corso. Riprova a salvare la foto tra poco.",
+  "mediaSaveFailed": "Non è stato possibile salvare la foto. Nulla è stato modificato."
 }

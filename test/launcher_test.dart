@@ -213,8 +213,8 @@ void main() {
 
     final screens = find.byType(CreatePossessionScreen);
     expect(screens, findsOneWidget);
-    // Name-first: the creation screen carries no pre-attached photo.
-    expect(tester.widget<CreatePossessionScreen>(screens).initialPhoto, isNull);
+    // Name-first: the creation screen carries no staged photo import.
+    expect(tester.widget<CreatePossessionScreen>(screens).staged, isNull);
 
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();

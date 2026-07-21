@@ -1504,4 +1504,20 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get storageBlockedPermanentDelete =>
       'Un\'eliminazione è in corso. Attendi che finisca prima di liberare spazio.';
+
+  @override
+  String get mediaSaveBlockedBackup =>
+      'Un backup è in corso. Riprova a salvare la foto tra poco.';
+
+  @override
+  String get mediaSaveBlockedRestore =>
+      'Un ripristino è in corso. Completalo prima di salvare la foto.';
+
+  @override
+  String get mediaSaveBlockedBusy =>
+      'Un\'operazione è in corso. Riprova a salvare la foto tra poco.';
+
+  @override
+  String get mediaSaveFailed =>
+      'Non è stato possibile salvare la foto. Nulla è stato modificato.';
 }
