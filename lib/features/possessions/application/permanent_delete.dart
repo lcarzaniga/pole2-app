@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/daos/possessions_dao.dart';
+import '../../../core/managed_roots.dart';
 import '../../backup/domain/safe_path.dart';
 import '../../backup/restore/restore_activity.dart';
 import '../../backup/restore/restore_pending.dart';
@@ -141,7 +142,7 @@ Future<PermanentDeleteResult> _run({
   final candidates = <String>[];
   for (final raw in db.removedFilePaths) {
     final n = normalizeRelativePath(raw);
-    if (n == null || !n.startsWith('photos/')) continue;
+    if (n == null || !isUnderManagedRoot(n)) continue;
     if (surviving.contains(n)) continue; // a surviving row maps it → preserve
     candidates.add(n);
   }

@@ -2,4 +2,6 @@
 <paths>
     <!-- The downloaded APK lives in the app's private cache under updates/. -->
     <cache-path name="updates" path="updates/" />
+    <!-- M9: a document is copied here transiently to hand to the OS viewer. -->
+    <cache-path name="doc_open" path="doc_open/" />
 </paths>

@@ -81,6 +81,23 @@ void main() {
     );
     expect(wrongFinalRoot.pathsSafe(), isFalse);
 
+    // M9: the documents/ managed root is accepted as a safe final root.
+    final documentsFinal = PhotoImportMarker(
+      operationId: 'op1',
+      state: PhotoImportState.prepared,
+      createdAtUtc: 't',
+      entries: const [
+        PhotoImportEntry(
+          fileId: 'f',
+          tempRelativePath: 'photo_imports/op1/f.pdf',
+          finalRelativePath: 'documents/f.pdf',
+          byteSize: 1,
+          mimeType: 'application/pdf',
+        ),
+      ],
+    );
+    expect(documentsFinal.pathsSafe(), isTrue);
+
     // Temp path not under this operation's directory.
     final wrongOp = PhotoImportMarker(
       operationId: 'op1',

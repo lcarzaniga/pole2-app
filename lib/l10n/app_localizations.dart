@@ -296,6 +296,150 @@ abstract class AppLocalizations {
   /// **'Qui vivono ricevute, manuali e garanzie.'**
   String get documentsSubtitle;
 
+  /// No description provided for @recordEditorTitleNew.
+  ///
+  /// In it, this message translates to:
+  /// **'Nota'**
+  String get recordEditorTitleNew;
+
+  /// No description provided for @recordEditorTitleEdit.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica'**
+  String get recordEditorTitleEdit;
+
+  /// No description provided for @recordDescriptionLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione'**
+  String get recordDescriptionLabel;
+
+  /// No description provided for @recordDescriptionHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi una nota…'**
+  String get recordDescriptionHint;
+
+  /// No description provided for @recordDetailsToggle.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi dettagli'**
+  String get recordDetailsToggle;
+
+  /// No description provided for @recordCategoryLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Categoria'**
+  String get recordCategoryLabel;
+
+  /// No description provided for @recordReferenceDateLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Data'**
+  String get recordReferenceDateLabel;
+
+  /// No description provided for @recordValidityLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Validità'**
+  String get recordValidityLabel;
+
+  /// No description provided for @recordValidityAdd.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi una scadenza'**
+  String get recordValidityAdd;
+
+  /// No description provided for @recordValidityEndPrefix.
+  ///
+  /// In it, this message translates to:
+  /// **'Scade il'**
+  String get recordValidityEndPrefix;
+
+  /// No description provided for @recordRemindMe.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricordamelo'**
+  String get recordRemindMe;
+
+  /// No description provided for @recordAttachmentsLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Documenti'**
+  String get recordAttachmentsLabel;
+
+  /// No description provided for @recordAttachmentAdd.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi un documento'**
+  String get recordAttachmentAdd;
+
+  /// No description provided for @recordSwitchToNoteTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Passare a Nota?'**
+  String get recordSwitchToNoteTitle;
+
+  /// No description provided for @recordSwitchToNoteBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Una nota semplice non conserva data, scadenza, promemoria o documenti. Vuoi rimuoverli?'**
+  String get recordSwitchToNoteBody;
+
+  /// No description provided for @recordSwitchToNoteConfirm.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi e continua'**
+  String get recordSwitchToNoteConfirm;
+
+  /// No description provided for @recordValidUntil.
+  ///
+  /// In it, this message translates to:
+  /// **'Valido fino al {date}'**
+  String recordValidUntil(Object date);
+
+  /// No description provided for @catNote.
+  ///
+  /// In it, this message translates to:
+  /// **'Nota'**
+  String get catNote;
+
+  /// No description provided for @catPurchase.
+  ///
+  /// In it, this message translates to:
+  /// **'Acquisto / ricevuta'**
+  String get catPurchase;
+
+  /// No description provided for @catWarranty.
+  ///
+  /// In it, this message translates to:
+  /// **'Garanzia'**
+  String get catWarranty;
+
+  /// No description provided for @catManual.
+  ///
+  /// In it, this message translates to:
+  /// **'Manuale / documentazione'**
+  String get catManual;
+
+  /// No description provided for @catMaintenance.
+  ///
+  /// In it, this message translates to:
+  /// **'Manutenzione'**
+  String get catMaintenance;
+
+  /// No description provided for @catInsurance.
+  ///
+  /// In it, this message translates to:
+  /// **'Assicurazione / certificato'**
+  String get catInsurance;
+
+  /// No description provided for @catOther.
+  ///
+  /// In it, this message translates to:
+  /// **'Altro'**
+  String get catOther;
+
   /// No description provided for @historyTitle.
   ///
   /// In it, this message translates to:
@@ -931,6 +1075,36 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Nulla è andato perso. Riprova quando vuoi.'**
   String get documentAddFailed;
+
+  /// No description provided for @documentOpen.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri'**
+  String get documentOpen;
+
+  /// No description provided for @documentOpenFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile aprire il documento. Riprova quando vuoi.'**
+  String get documentOpenFailed;
+
+  /// No description provided for @documentOpenNoApp.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna app disponibile per aprire questo tipo di documento.'**
+  String get documentOpenNoApp;
+
+  /// No description provided for @documentMissing.
+  ///
+  /// In it, this message translates to:
+  /// **'Questo documento non è più disponibile.'**
+  String get documentMissing;
+
+  /// No description provided for @documentRemoveTooltip.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi documento'**
+  String get documentRemoveTooltip;
 
   /// No description provided for @hubPhoto.
   ///

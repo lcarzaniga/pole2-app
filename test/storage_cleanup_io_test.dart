@@ -157,6 +157,32 @@ void main() {
     skip: _runningAsRoot ? 'symlink perms differ under root' : false,
   );
 
+  test('M9: a documents/ orphan is scanned and reclaimed; a referenced '
+      'document is protected', () async {
+    Directory(p.join(docs.path, 'documents')).createSync(recursive: true);
+    write('documents/ricevuta.pdf', bytes: 8); // orphan
+    write('documents/kept.pdf', bytes: 6); // referenced below
+    final scan = await scanOrphanPhotos(
+      storedRelativePaths: () => stored(['documents/kept.pdf']),
+      sessionCutoff: future,
+    );
+    expect(scan.candidates.map((c) => c.relativePath), [
+      'documents/ricevuta.pdf',
+    ]);
+    final report = await deleteOrphans(
+      candidates: scan.candidates,
+      storedRelativePaths: () => stored(['documents/kept.pdf']),
+      sessionCutoff: future,
+    );
+    expect(report.deleted, 1);
+    expect(report.reclaimedBytes, 8);
+    expect(
+      File(p.join(docs.path, 'documents/ricevuta.pdf')).existsSync(),
+      isFalse,
+    );
+    expect(File(p.join(docs.path, 'documents/kept.pdf')).existsSync(), isTrue);
+  });
+
   test('deletes the true orphan and reports exact reclaimed bytes', () async {
     write('photos/orphan.jpg', bytes: 11);
     final scan = await scanOrphanPhotos(

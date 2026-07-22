@@ -36,6 +36,13 @@ enum EventKind {
   // M5.5 permanent giving. `transfer` (with PossessionStatus.transferred) records
   // giving an object away; `reacquired` records it coming back to the user.
   reacquired,
+  // M9 (contextual records): the record/note editor's category set. `manual`
+  // (manuale/documentazione) and `insurance` (assicurazione/certificato) are the
+  // two categories with no prior clean kind; stored by name, so additive/safe.
+  // The user-facing category always lives on the record (this kind), never on
+  // the attachment — attachments keep only their technical [EvidenceKind].
+  manual,
+  insurance,
   custom,
 }
 

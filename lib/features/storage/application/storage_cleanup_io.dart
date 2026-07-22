@@ -3,25 +3,25 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../../../core/managed_roots.dart';
 import '../../backup/domain/safe_path.dart';
 import 'storage_cleanup_result.dart';
 
-/// M8.2C — scans the app-private `photos/` root for **proven orphan** photographs
-/// and (on confirmation) deletes them. Read-only scan; delete is one-by-one
-/// `File.delete` with the full safety re-check repeated immediately before each
-/// removal. Native (`dart:io`) only.
+/// M8.2C (+ M9) — scans the app-private managed media roots (`photos/` and
+/// `documents/`) for **proven orphan** files and (on confirmation) deletes them.
+/// Read-only scan; delete is one-by-one `File.delete` with the full safety
+/// re-check repeated immediately before each removal. Native (`dart:io`) only.
 ///
-/// A physical regular file under `photos/` is reclaimable only when:
+/// A physical regular file under a managed root is reclaimable only when:
 /// - no `Files` row maps its normalized `relativePath`;
 /// - it existed before [sessionCutoff] (strictly older last-modified time);
 /// - it is a normal file — not a directory or symbolic link;
-/// - its canonical path stays inside the canonical `photos/` root;
+/// - its canonical path stays inside that managed root's canonical directory;
 /// - its relative path passes [normalizeRelativePath].
 ///
 /// If any stored path is unsafe/unnormalizable the scan aborts calmly
-/// ([StorageScanResult.aborted]) rather than risk misclassification. Database
-/// `Files` rows are never touched: a file mapped by *any* row is protected even
-/// if that row currently looks unreferenced.
+/// ([StorageScanResult.aborted]). Database `Files` rows are never touched: a file
+/// mapped by *any* row is protected even if that row currently looks unreferenced.
 
 Future<StorageScanResult> scanOrphanPhotos({
   required Future<List<String>> Function() storedRelativePaths,
@@ -33,8 +33,6 @@ Future<StorageScanResult> scanOrphanPhotos({
   } catch (_) {
     return const StorageScanResult(aborted: true);
   }
-  final photosRoot = Directory(p.join(docs.path, 'photos'));
-  if (!photosRoot.existsSync()) return const StorageScanResult();
 
   // Protected set from the live DB — abort on any unsafe stored path.
   final protected = <String>{};
@@ -44,30 +42,33 @@ Future<StorageScanResult> scanOrphanPhotos({
     protected.add(n);
   }
 
-  final String canonicalRoot;
-  try {
-    canonicalRoot = photosRoot.resolveSymbolicLinksSync();
-  } catch (_) {
-    return const StorageScanResult(aborted: true);
-  }
-
-  final List<FileSystemEntity> entries;
-  try {
-    entries = photosRoot.listSync(followLinks: false);
-  } catch (_) {
-    return const StorageScanResult(aborted: true);
-  }
-
   final byPath = <String, OrphanCandidate>{};
-  for (final e in entries) {
-    final c = _classify(
-      absPath: e.path,
-      docsPath: docs.path,
-      canonicalRoot: canonicalRoot,
-      protected: protected,
-      sessionCutoff: sessionCutoff,
-    );
-    if (c != null) byPath[c.relativePath] = c; // de-dupe by normalized path
+  for (final root in kManagedMediaRoots) {
+    final dir = Directory(p.join(docs.path, root));
+    if (!dir.existsSync()) continue;
+    final String canonicalRoot;
+    try {
+      canonicalRoot = dir.resolveSymbolicLinksSync();
+    } catch (_) {
+      return const StorageScanResult(aborted: true);
+    }
+    final List<FileSystemEntity> entries;
+    try {
+      entries = dir.listSync(followLinks: false);
+    } catch (_) {
+      return const StorageScanResult(aborted: true);
+    }
+    for (final e in entries) {
+      final c = _classify(
+        absPath: e.path,
+        docsPath: docs.path,
+        root: root,
+        canonicalRoot: canonicalRoot,
+        protected: protected,
+        sessionCutoff: sessionCutoff,
+      );
+      if (c != null) byPath[c.relativePath] = c; // de-dupe by normalized path
+    }
   }
 
   final candidates = byPath.values.toList()
@@ -89,12 +90,15 @@ Future<StorageCleanupReport> deleteOrphans({
   } catch (_) {
     return StorageCleanupReport(preserved: candidates.length);
   }
-  final photosRoot = Directory(p.join(docs.path, 'photos'));
-  final String canonicalRoot;
-  try {
-    canonicalRoot = photosRoot.resolveSymbolicLinksSync();
-  } catch (_) {
-    return StorageCleanupReport(preserved: candidates.length);
+
+  // Canonical dir per managed root (skip roots that can't resolve).
+  final canonicalRoots = <String, String>{};
+  for (final root in kManagedMediaRoots) {
+    final dir = Directory(p.join(docs.path, root));
+    if (!dir.existsSync()) continue;
+    try {
+      canonicalRoots[root] = dir.resolveSymbolicLinksSync();
+    } catch (_) {}
   }
 
   // Fresh protected set — a reference that appeared since the scan wins.
@@ -111,12 +115,18 @@ Future<StorageCleanupReport> deleteOrphans({
 
   for (final c in candidates) {
     final norm = normalizeRelativePath(c.relativePath);
-    // Safe path, under photos/, and never processed twice.
-    if (norm == null || !norm.startsWith('photos/') || !seen.add(norm)) {
+    // Safe path, under a managed root, and never processed twice.
+    if (norm == null || !isUnderManagedRoot(norm) || !seen.add(norm)) {
       preserved++;
       continue;
     }
     if (protected.contains(norm)) {
+      preserved++;
+      continue;
+    }
+    final root = norm.split('/').first;
+    final canonicalRoot = canonicalRoots[root];
+    if (canonicalRoot == null) {
       preserved++;
       continue;
     }
@@ -177,11 +187,13 @@ Future<StorageCleanupReport> deleteOrphans({
   );
 }
 
-/// Decides whether a single listed entry is a reclaimable orphan. Returns null
-/// (skip) for anything that is not a proven, safe, pre-session regular file.
+/// Decides whether a single listed entry (under [root]) is a reclaimable orphan.
+/// Returns null (skip) for anything that is not a proven, safe, pre-session
+/// regular file.
 OrphanCandidate? _classify({
   required String absPath,
   required String docsPath,
+  required String root,
   required String canonicalRoot,
   required Set<String> protected,
   required DateTime sessionCutoff,
@@ -193,7 +205,7 @@ OrphanCandidate? _classify({
   }
   final rel = p.relative(absPath, from: docsPath).replaceAll(r'\', '/');
   final norm = normalizeRelativePath(rel);
-  if (norm == null || !norm.startsWith('photos/')) return null;
+  if (norm == null || !norm.startsWith('$root/')) return null;
   if (protected.contains(norm)) return null;
 
   final String canonical;

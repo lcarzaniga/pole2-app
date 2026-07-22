@@ -5,15 +5,16 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart';
 
+import '../../../core/managed_roots.dart';
 import '../domain/safe_path.dart';
 import 'restore_marker.dart';
 
-/// Managed media roots under the documents dir. **Invariant (M6.x): `photos/` is
-/// the only real managed-file root** — every `Files.relativePath` the app writes
-/// lives under it (see `photo_store_io.dart`). If a future milestone adds another
-/// managed root, it MUST be added here so recovery/rollback preserves it; the
-/// enumerator/rollback tests assert this stays in sync.
-const List<String> kManagedRoots = ['photos'];
+/// Managed media roots under the documents dir. As of M9 these are `photos/`
+/// and `documents/` — every `Files.relativePath` the app writes lives under one
+/// of them (see `photo_store_io.dart`, `document_store_io.dart`). Sourced from
+/// the shared [kManagedMediaRoots] so recovery/rollback, orphan cleanup and the
+/// staged-import promotion all agree; the enumerator/rollback tests assert this.
+const List<String> kManagedRoots = kManagedMediaRoots;
 const String kLiveDbName = 'project_kobe.sqlite';
 const int kMaxRestoreAttempts = 2;
 

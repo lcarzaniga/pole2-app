@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.StatFs
+import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
 import androidx.core.content.FileProvider
@@ -23,16 +24,23 @@ import java.io.File
  *    channel arguments; the copy runs off the main thread.
  *  - `pole2/links`: opens a canonical Pole² https page in the user's own
  *    browser (M7.3B). Exact-host allowlist, no permission, no WebView.
+ *  - `pole2/documents`: Storage Access Framework document attachment for M9 —
+ *    `ACTION_OPEN_DOCUMENT` picker that returns the chosen file's metadata
+ *    (display name, mime, size), plus a copy of its bytes into app-private
+ *    storage. No storage permission, no persisted content-URI grant.
  */
 class MainActivity : FlutterActivity() {
     private val installerChannel = "pole2/installer"
     private val backupChannel = "pole2/backup"
     private val linksChannel = "pole2/links"
+    private val documentsChannel = "pole2/documents"
     private val createDocRequest = 4011
     private val openDocRequest = 4012
+    private val pickDocRequest = 4013
 
     private var pendingCreateResult: MethodChannel.Result? = null
     private var pendingOpenResult: MethodChannel.Result? = null
+    private var pendingPickResult: MethodChannel.Result? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -90,6 +98,36 @@ class MainActivity : FlutterActivity() {
                         }
                     }
                     "closeForRestore" -> closeForRestore(call.argument<String>("token"), result)
+                    else -> result.notImplemented()
+                }
+            }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, documentsChannel)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "pickDocument" -> pickDocument(result)
+                    "copyToFile" -> {
+                        val uri = call.argument<String>("uri")
+                        val dest = call.argument<String>("destPath")
+                        if (uri == null || dest == null) {
+                            result.error("bad_args", "uri and destPath required", null)
+                        } else {
+                            copyUriToFile(uri, dest, result)
+                        }
+                    }
+                    "openFile" -> {
+                        val path = call.argument<String>("path")
+                        if (path == null) {
+                            result.error("bad_args", "path is required", null)
+                        } else {
+                            openFile(
+                                path,
+                                call.argument<String>("mime"),
+                                call.argument<String>("displayName"),
+                                result,
+                            )
+                        }
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -227,8 +265,166 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    // ---- Documents (SAF, M9) ----
+
+    /**
+     * Opens the system document picker (`ACTION_OPEN_DOCUMENT`, openable only)
+     * filtered to common document/image types, and returns the chosen file's
+     * metadata. The bytes are copied separately via `copyToFile`; we never take
+     * a persistable URI permission — a transient read grant is enough because
+     * the copy happens immediately.
+     */
+    private fun pickDocument(result: MethodChannel.Result) {
+        if (pendingPickResult != null) {
+            result.error("busy", "a document pick is already in progress", null)
+            return
+        }
+        pendingPickResult = result
+        try {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                type = "*/*"
+                putExtra(
+                    Intent.EXTRA_MIME_TYPES,
+                    arrayOf(
+                        "application/pdf",
+                        "image/*",
+                        "text/*",
+                        "application/msword",
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        "application/vnd.ms-excel",
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        "application/vnd.ms-powerpoint",
+                        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                        "application/vnd.oasis.opendocument.text",
+                        "application/vnd.oasis.opendocument.spreadsheet",
+                    ),
+                )
+            }
+            startActivityForResult(intent, pickDocRequest)
+        } catch (e: Exception) {
+            pendingPickResult = null
+            result.error("pick_failed", e.message, null)
+        }
+    }
+
+    /**
+     * Reads a chosen document's display name, mime and size from the content
+     * resolver. Best-effort: any field may be null if the provider withholds it;
+     * the Dart side supplies safe fallbacks. Never reads the bytes here.
+     */
+    private fun describeDocument(uri: Uri): HashMap<String, Any?> {
+        var name: String? = null
+        var size: Long? = null
+        try {
+            contentResolver.query(
+                uri,
+                arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE),
+                null,
+                null,
+                null,
+            )?.use { c ->
+                if (c.moveToFirst()) {
+                    val ni = c.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (ni >= 0 && !c.isNull(ni)) name = c.getString(ni)
+                    val si = c.getColumnIndex(OpenableColumns.SIZE)
+                    if (si >= 0 && !c.isNull(si)) size = c.getLong(si)
+                }
+            }
+        } catch (_: Exception) {}
+        val mime = try { contentResolver.getType(uri) } catch (_: Exception) { null }
+        return hashMapOf(
+            "uri" to uri.toString(),
+            "name" to name,
+            "mime" to mime,
+            "size" to size,
+        )
+    }
+
+    /**
+     * Opens an app-private document in the OS's own viewer. The file lives under
+     * the app's private storage (`documents/`), which the FileProvider can't
+     * expose directly, so we copy it into a private `cache/doc_open/` scratch dir
+     * and share *that* with a one-shot read grant — no broad filesystem exposure,
+     * and consistent with how the app already moves bytes through private cache.
+     * The copy and the app lookup run off the main thread.
+     */
+    private fun openFile(
+        srcPath: String,
+        mime: String?,
+        displayName: String?,
+        result: MethodChannel.Result,
+    ) {
+        val source = File(srcPath)
+        val canonical = try {
+            source.canonicalPath
+        } catch (e: Exception) {
+            result.error("bad_source", "invalid source", null)
+            return
+        }
+        if (!isInsideApprovedRoot(canonical) || !source.exists()) {
+            result.error("missing", "the document is no longer available", null)
+            return
+        }
+        Thread {
+            val shared: File
+            try {
+                val dir = File(cacheDir, "doc_open")
+                // Only one document is viewed at a time — clear prior scratch.
+                try { dir.listFiles()?.forEach { it.delete() } } catch (_: Exception) {}
+                dir.mkdirs()
+                val safeName = sharedName(displayName) ?: source.name
+                shared = File(dir, safeName)
+                source.copyTo(shared, overwrite = true)
+            } catch (e: Exception) {
+                runOnUiThread { result.error("open_failed", e.javaClass.simpleName, null) }
+                return@Thread
+            }
+            val uri = try {
+                FileProvider.getUriForFile(this, "$packageName.fileprovider", shared)
+            } catch (e: Exception) {
+                runOnUiThread { result.error("open_failed", e.javaClass.simpleName, null) }
+                return@Thread
+            }
+            val type = if (mime.isNullOrBlank()) "*/*" else mime
+            val intent = Intent(Intent.ACTION_VIEW)
+                .setDataAndType(uri, type)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+            runOnUiThread {
+                try {
+                    startActivity(intent)
+                    result.success(true)
+                } catch (_: android.content.ActivityNotFoundException) {
+                    result.error("no_handler", "no app can open this document", null)
+                } catch (e: Exception) {
+                    result.error("open_failed", e.javaClass.simpleName, null)
+                }
+            }
+        }.start()
+    }
+
+    /**
+     * A defensive single path segment for the shared scratch file: no separators
+     * or `..`, bounded length. Returns null to fall back to the stored name.
+     */
+    private fun sharedName(raw: String?): String? {
+        if (raw.isNullOrBlank()) return null
+        if (raw.contains('/') || raw.contains('\\') || raw.contains("..")) return null
+        val trimmed = raw.trim()
+        if (trimmed.isEmpty() || trimmed == "." ) return null
+        return if (trimmed.length > 120) trimmed.substring(trimmed.length - 120) else trimmed
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
+            pickDocRequest -> {
+                val pending = pendingPickResult
+                pendingPickResult = null
+                val uri = if (resultCode == Activity.RESULT_OK) data?.data else null
+                pending?.success(if (uri != null) describeDocument(uri) else null)
+                return
+            }
             createDocRequest -> {
                 val pending = pendingCreateResult
                 pendingCreateResult = null

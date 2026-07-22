@@ -233,7 +233,9 @@ void main() {
     // Shared/other-owned data survives.
     expect(await count(db.select(db.parties)), 1);
     expect(await count(db.select(db.places)), 1);
-    expect(await count(db.select(db.evidenceItems)), 1);
+    // M9: the document/evidence linked ONLY to this possession (no other link,
+    // no surviving event) is cleaned up with it.
+    expect(await count(db.select(db.evidenceItems)), 0);
 
     // No dangling foreign keys.
     expect(await fkCheck(), isEmpty);

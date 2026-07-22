@@ -271,6 +271,69 @@ void main() {
     expect(receipt().readAsStringSync().contains('rolledBack'), isTrue);
   });
 
+  test('M9: install then rollback snapshots and restores documents/ alongside '
+      'photos/', () {
+    const op = 'op1';
+    final oldDb = makeDb(p.join(docs.path, 'project_kobe.sqlite'), tag: 'OLD');
+    final oldSha = sha(oldDb);
+    file('photos/old.jpg', 'OLD-PHOTO');
+    file('documents/old.pdf', 'OLD-DOC');
+
+    final staging = Directory(p.join(docs.path, 'restore_staging', op))
+      ..createSync(recursive: true);
+    final preparedDir = Directory(p.join(staging.path, 'prepared'))
+      ..createSync(recursive: true);
+    makeDb(p.join(preparedDir.path, 'project_kobe.sqlite'), tag: 'NEW');
+    final newSha = sha(File(p.join(preparedDir.path, 'project_kobe.sqlite')));
+    File(p.join(preparedDir.path, 'managed_files', 'documents', 'new.pdf'))
+      ..createSync(recursive: true)
+      ..writeAsStringSync('NEW-DOC');
+
+    RestoreMarker.writeAtomic(
+      File(p.join(docs.path, 'restore_pending.json')),
+      RestoreMarker(
+        operationId: op,
+        stagingRelPath: p.join('restore_staging', op),
+        recoveryRelPath: p.join('recovery', 'current', op),
+        createdAtUtc: '2026-07-22T00:00:00.000Z',
+        phase: RestorePhase.prepared,
+        attemptCount: 0,
+        preparedDbSha256: newSha,
+        managedFiles: [
+          RestoreManagedFile(
+            relativePath: 'documents/new.pdf',
+            sha256: crypto.sha256.convert('NEW-DOC'.codeUnits).toString(),
+            byteSize: 7,
+          ),
+        ],
+      ),
+    );
+
+    // Install → the new document is live, the old one snapshotted away.
+    RestoreSwapper(docs).run();
+    expect(
+      File(p.join(docs.path, 'documents', 'new.pdf')).existsSync(),
+      isTrue,
+    );
+    expect(
+      File(p.join(docs.path, 'documents', 'old.pdf')).existsSync(),
+      isFalse,
+    );
+
+    // Next startup with the unconfirmed install rolls the documents/ root back.
+    final out = RestoreSwapper(docs).run();
+    expect(out.kind, RestoreOutcomeKind.rolledBack);
+    expect(sha(live()), oldSha);
+    expect(
+      File(p.join(docs.path, 'documents', 'old.pdf')).readAsStringSync(),
+      'OLD-DOC',
+    );
+    expect(
+      File(p.join(docs.path, 'documents', 'new.pdf')).existsSync(),
+      isFalse,
+    );
+  });
+
   test('a failed Drift probe leaves recovery + unconfirmed intact; the next '
       'startup rolls back', () async {
     final s = scenario(phase: RestorePhase.prepared);

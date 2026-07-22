@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/app_database.dart';
+import '../../../core/database/daos/evidence_dao.dart';
 import '../../../core/database/daos/possessions_dao.dart';
 import '../../../core/providers/database_provider.dart';
 import '../../../shared/platform/photo_store.dart';
@@ -15,6 +16,19 @@ import '../../../shared/platform/photo_store.dart';
 final possessionsDaoProvider = Provider<PossessionsDao>(
   (ref) => ref.watch(databaseProvider).possessionsDao,
 );
+
+/// The attachment (evidence) data access, resolved from the app database (M9).
+final evidenceDaoProvider = Provider<EvidenceDao>(
+  (ref) => ref.watch(databaseProvider).evidenceDao,
+);
+
+/// Reactive document attachments (with their files) belonging to a record
+/// (timeline event), keyed by event id (M9).
+final recordAttachmentsProvider =
+    StreamProvider.family<List<AttachmentWithFile>, String>(
+      (ref, eventId) =>
+          ref.watch(evidenceDaoProvider).watchAttachments(eventId),
+    );
 
 /// Reactive list of all active possessions, newest first. The Home screen
 /// watches this to choose between the empty state and the list.

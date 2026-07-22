@@ -716,10 +716,10 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
   /// batch aborts with [PermanentDeleteDbOutcome.staleSelection] and nothing is
   /// changed. Otherwise the same candidate/exclusivity rules as the single form
   /// apply, over the **union** of the selected possessions:
-  /// candidates are only the selected `coverFileId`s and every
-  /// `possession_photos.file_id` of the selected (incl. soft-deleted); evidence
-  /// files are never candidates; no global Files garbage collection; Parties and
-  /// Places always survive.
+  /// candidates are the selected `coverFileId`s, every `possession_photos.file_id`
+  /// of the selected (incl. soft-deleted), and document files whose EvidenceItem
+  /// becomes unlinked+unreferenced (M9); shared documents are preserved; no
+  /// global Files garbage collection; Parties and Places always survive.
   Future<PermanentDeleteDbResult> permanentlyDeleteMany(List<String> ids) {
     return transaction(() async {
       // Re-check eligibility of *every* selected id before touching anything.
@@ -765,6 +765,35 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
     for (final r in photoRows) {
       candidateIds.add(r.fileId);
     }
+    // M9 — attachment files linked to the selected possessions become
+    // candidates too, via BOTH the (dormant) possession→evidence link and the
+    // record→evidence link (`EventEvidence`) on the possessions' events. The
+    // EvidenceItem/File is only actually removed below when nothing surviving
+    // still references it (shared attachments are preserved).
+    final eventRows = await (select(
+      adb.events,
+    )..where((t) => t.possessionId.isIn(ids))).get();
+    final eventIds = {for (final e in eventRows) e.id};
+    final eventLinkRows = eventIds.isEmpty
+        ? <EventEvidenceLink>[]
+        : await (select(
+            adb.eventEvidence,
+          )..where((t) => t.eventId.isIn(eventIds))).get();
+    final possLinkRows = await (select(
+      adb.possessionEvidence,
+    )..where((t) => t.possessionId.isIn(ids))).get();
+    final linkedEvidenceIds = {
+      for (final r in possLinkRows) r.evidenceId,
+      for (final r in eventLinkRows) r.evidenceId,
+    };
+    if (linkedEvidenceIds.isNotEmpty) {
+      final evRows = await (select(
+        adb.evidenceItems,
+      )..where((t) => t.id.isIn(linkedEvidenceIds))).get();
+      for (final e in evRows) {
+        if (e.fileId != null) candidateIds.add(e.fileId!);
+      }
+    }
 
     // Capture each candidate's raw relative path before its Files row goes.
     final pathById = <String, String>{};
@@ -778,6 +807,13 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
     }
 
     // 2) Delete owned rows in FK-safe order (children first, then the anchors).
+    // EventEvidence links must go before their events (FK), and both before the
+    // EvidenceItems they reference (handled in 2b).
+    if (eventIds.isNotEmpty) {
+      await (delete(
+        adb.eventEvidence,
+      )..where((t) => t.eventId.isIn(eventIds))).go();
+    }
     await (delete(adb.events)..where((t) => t.possessionId.isIn(ids))).go();
     await (delete(
       adb.possessionEvidence,
@@ -790,6 +826,32 @@ class PossessionsDao extends DatabaseAccessor<AppDatabase>
       possessionPhotos,
     )..where((t) => t.possessionId.isIn(ids))).go();
     await (delete(possessions)..where((t) => t.id.isIn(ids))).go();
+
+    // 2b) Delete an EvidenceItem (attachment) only when nothing surviving still
+    // references it — no surviving record link (`EventEvidence`), no dormant
+    // possession link, and no `Events.evidenceId` — so an attachment shared with
+    // another record or possession is preserved (M9).
+    for (final evId in linkedEvidenceIds) {
+      final stillOnRecord =
+          await (select(adb.eventEvidence)
+                ..where((t) => t.evidenceId.equals(evId))
+                ..limit(1))
+              .getSingleOrNull();
+      if (stillOnRecord != null) continue;
+      final stillLinked =
+          await (select(adb.possessionEvidence)
+                ..where((t) => t.evidenceId.equals(evId))
+                ..limit(1))
+              .getSingleOrNull();
+      if (stillLinked != null) continue;
+      final eventRef =
+          await (select(adb.events)
+                ..where((t) => t.evidenceId.equals(evId))
+                ..limit(1))
+              .getSingleOrNull();
+      if (eventRef != null) continue;
+      await (delete(adb.evidenceItems)..where((t) => t.id.equals(evId))).go();
+    }
 
     // 3) Delete a candidate Files row only when nothing surviving references its
     // id — no cover, no photo (active/soft-deleted), no evidence.

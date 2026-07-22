@@ -81,7 +81,7 @@ void main() {
       backup.copySync(source.path);
 
       final prep = await RestorePreparer(
-        appSchemaVersion: 7,
+        appSchemaVersion: 8,
       ).prepare(source: source, stagingDir: staging, operationId: 'op1');
       expect(prep.summary.possessions, 1);
       expect(prep.summary.photos, 1);
@@ -110,7 +110,7 @@ void main() {
     final source = File('${staging.path}/source.pole2backup');
     backup.copySync(source.path);
 
-    final prep = await RestorePreparer(appSchemaVersion: 7).prepare(
+    final prep = await RestorePreparer(appSchemaVersion: 8).prepare(
       source: source,
       stagingDir: staging,
       operationId: 'op2',
@@ -130,7 +130,7 @@ void main() {
     backup.copySync(source.path);
 
     expect(
-      () => RestorePreparer(appSchemaVersion: 7).prepare(
+      () => RestorePreparer(appSchemaVersion: 8).prepare(
         source: source,
         stagingDir: staging,
         operationId: 'op3',
@@ -146,7 +146,7 @@ void main() {
     );
   });
 
-  test('an older (v6) backup is migrated to v7 in staging', () async {
+  test('an older (v6) backup is migrated to v8 in staging', () async {
     // Craft a real v6 DB, wrap it in a plaintext container with a valid manifest.
     final v6 = File('${work.path}/v6.sqlite');
     final raw = sqlite3.open(v6.path);
@@ -200,13 +200,13 @@ void main() {
     );
 
     final prep = await RestorePreparer(
-      appSchemaVersion: 7,
+      appSchemaVersion: 8,
     ).prepare(source: source, stagingDir: staging, operationId: 'op4');
     expect(prep.summary.migratedInStaging, isTrue);
     final preparedDb = File('${staging.path}/prepared/project_kobe.sqlite');
     final d = sqlite3.open(preparedDb.path, mode: OpenMode.readOnly);
     final uv = d.select('PRAGMA user_version').first.values.first as int;
     d.close();
-    expect(uv, 7); // migrated
+    expect(uv, 8); // migrated
   });
 }

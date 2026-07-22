@@ -4981,6 +4981,284 @@ class EventsCompanion extends UpdateCompanion<PossessionEvent> {
   }
 }
 
+class $EventEvidenceTable extends EventEvidence
+    with TableInfo<$EventEvidenceTable, EventEvidenceLink> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EventEvidenceTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _eventIdMeta = const VerificationMeta(
+    'eventId',
+  );
+  @override
+  late final GeneratedColumn<String> eventId = GeneratedColumn<String>(
+    'event_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES events (id)',
+    ),
+  );
+  static const VerificationMeta _evidenceIdMeta = const VerificationMeta(
+    'evidenceId',
+  );
+  @override
+  late final GeneratedColumn<String> evidenceId = GeneratedColumn<String>(
+    'evidence_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES evidence_items (id)',
+    ),
+  );
+  static const VerificationMeta _addedAtMeta = const VerificationMeta(
+    'addedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> addedAt = GeneratedColumn<DateTime>(
+    'added_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [eventId, evidenceId, addedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'event_evidence';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<EventEvidenceLink> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('event_id')) {
+      context.handle(
+        _eventIdMeta,
+        eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_eventIdMeta);
+    }
+    if (data.containsKey('evidence_id')) {
+      context.handle(
+        _evidenceIdMeta,
+        evidenceId.isAcceptableOrUnknown(data['evidence_id']!, _evidenceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_evidenceIdMeta);
+    }
+    if (data.containsKey('added_at')) {
+      context.handle(
+        _addedAtMeta,
+        addedAt.isAcceptableOrUnknown(data['added_at']!, _addedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_addedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {eventId, evidenceId};
+  @override
+  EventEvidenceLink map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EventEvidenceLink(
+      eventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}event_id'],
+      )!,
+      evidenceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}evidence_id'],
+      )!,
+      addedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}added_at'],
+      )!,
+    );
+  }
+
+  @override
+  $EventEvidenceTable createAlias(String alias) {
+    return $EventEvidenceTable(attachedDatabase, alias);
+  }
+}
+
+class EventEvidenceLink extends DataClass
+    implements Insertable<EventEvidenceLink> {
+  final String eventId;
+  final String evidenceId;
+  final DateTime addedAt;
+  const EventEvidenceLink({
+    required this.eventId,
+    required this.evidenceId,
+    required this.addedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['event_id'] = Variable<String>(eventId);
+    map['evidence_id'] = Variable<String>(evidenceId);
+    map['added_at'] = Variable<DateTime>(addedAt);
+    return map;
+  }
+
+  EventEvidenceCompanion toCompanion(bool nullToAbsent) {
+    return EventEvidenceCompanion(
+      eventId: Value(eventId),
+      evidenceId: Value(evidenceId),
+      addedAt: Value(addedAt),
+    );
+  }
+
+  factory EventEvidenceLink.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EventEvidenceLink(
+      eventId: serializer.fromJson<String>(json['eventId']),
+      evidenceId: serializer.fromJson<String>(json['evidenceId']),
+      addedAt: serializer.fromJson<DateTime>(json['addedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'eventId': serializer.toJson<String>(eventId),
+      'evidenceId': serializer.toJson<String>(evidenceId),
+      'addedAt': serializer.toJson<DateTime>(addedAt),
+    };
+  }
+
+  EventEvidenceLink copyWith({
+    String? eventId,
+    String? evidenceId,
+    DateTime? addedAt,
+  }) => EventEvidenceLink(
+    eventId: eventId ?? this.eventId,
+    evidenceId: evidenceId ?? this.evidenceId,
+    addedAt: addedAt ?? this.addedAt,
+  );
+  EventEvidenceLink copyWithCompanion(EventEvidenceCompanion data) {
+    return EventEvidenceLink(
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      evidenceId: data.evidenceId.present
+          ? data.evidenceId.value
+          : this.evidenceId,
+      addedAt: data.addedAt.present ? data.addedAt.value : this.addedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventEvidenceLink(')
+          ..write('eventId: $eventId, ')
+          ..write('evidenceId: $evidenceId, ')
+          ..write('addedAt: $addedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(eventId, evidenceId, addedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EventEvidenceLink &&
+          other.eventId == this.eventId &&
+          other.evidenceId == this.evidenceId &&
+          other.addedAt == this.addedAt);
+}
+
+class EventEvidenceCompanion extends UpdateCompanion<EventEvidenceLink> {
+  final Value<String> eventId;
+  final Value<String> evidenceId;
+  final Value<DateTime> addedAt;
+  final Value<int> rowid;
+  const EventEvidenceCompanion({
+    this.eventId = const Value.absent(),
+    this.evidenceId = const Value.absent(),
+    this.addedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  EventEvidenceCompanion.insert({
+    required String eventId,
+    required String evidenceId,
+    required DateTime addedAt,
+    this.rowid = const Value.absent(),
+  }) : eventId = Value(eventId),
+       evidenceId = Value(evidenceId),
+       addedAt = Value(addedAt);
+  static Insertable<EventEvidenceLink> custom({
+    Expression<String>? eventId,
+    Expression<String>? evidenceId,
+    Expression<DateTime>? addedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (eventId != null) 'event_id': eventId,
+      if (evidenceId != null) 'evidence_id': evidenceId,
+      if (addedAt != null) 'added_at': addedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  EventEvidenceCompanion copyWith({
+    Value<String>? eventId,
+    Value<String>? evidenceId,
+    Value<DateTime>? addedAt,
+    Value<int>? rowid,
+  }) {
+    return EventEvidenceCompanion(
+      eventId: eventId ?? this.eventId,
+      evidenceId: evidenceId ?? this.evidenceId,
+      addedAt: addedAt ?? this.addedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (eventId.present) {
+      map['event_id'] = Variable<String>(eventId.value);
+    }
+    if (evidenceId.present) {
+      map['evidence_id'] = Variable<String>(evidenceId.value);
+    }
+    if (addedAt.present) {
+      map['added_at'] = Variable<DateTime>(addedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventEvidenceCompanion(')
+          ..write('eventId: $eventId, ')
+          ..write('evidenceId: $evidenceId, ')
+          ..write('addedAt: $addedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $PossessionPhotosTable extends PossessionPhotos
     with TableInfo<$PossessionPhotosTable, PossessionPhoto> {
   @override
@@ -5466,6 +5744,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $PossessionEvidenceTable(this);
   late final $PartiesTable parties = $PartiesTable(this);
   late final $EventsTable events = $EventsTable(this);
+  late final $EventEvidenceTable eventEvidence = $EventEvidenceTable(this);
   late final $PossessionPhotosTable possessionPhotos = $PossessionPhotosTable(
     this,
   );
@@ -5480,6 +5759,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Index idxAttributePossession = Index(
     'idx_attribute_possession',
     'CREATE INDEX idx_attribute_possession ON attributes (possession_id)',
+  );
+  late final Index idxEventEvidenceEvidence = Index(
+    'idx_event_evidence_evidence',
+    'CREATE INDEX idx_event_evidence_evidence ON event_evidence (evidence_id)',
   );
   late final Index idxEventPossession = Index(
     'idx_event_possession',
@@ -5506,6 +5789,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final EventsDao eventsDao = EventsDao(this as AppDatabase);
   late final PlacesDao placesDao = PlacesDao(this as AppDatabase);
+  late final EvidenceDao evidenceDao = EvidenceDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5520,10 +5804,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     possessionEvidence,
     parties,
     events,
+    eventEvidence,
     possessionPhotos,
     idxPossessionPlace,
     idxIdentifierPossession,
     idxAttributePossession,
+    idxEventEvidenceEvidence,
     idxEventPossession,
     idxEventAt,
     idxPlaceParent,
@@ -8429,6 +8715,24 @@ final class $$EvidenceItemsTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$EventEvidenceTable, List<EventEvidenceLink>>
+  _eventEvidenceRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.eventEvidence,
+    aliasName: 'evidence_items__id__event_evidence__evidence_id',
+  );
+
+  $$EventEvidenceTableProcessedTableManager get eventEvidenceRefs {
+    final manager = $$EventEvidenceTableTableManager(
+      $_db,
+      $_db.eventEvidence,
+    ).filter((f) => f.evidenceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_eventEvidenceRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$EvidenceItemsTableFilterComposer
@@ -8535,6 +8839,31 @@ class $$EvidenceItemsTableFilterComposer
           }) => $$EventsTableFilterComposer(
             $db: $db,
             $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> eventEvidenceRefs(
+    Expression<bool> Function($$EventEvidenceTableFilterComposer f) f,
+  ) {
+    final $$EventEvidenceTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.eventEvidence,
+      getReferencedColumn: (t) => t.evidenceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventEvidenceTableFilterComposer(
+            $db: $db,
+            $table: $db.eventEvidence,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -8708,6 +9037,31 @@ class $$EvidenceItemsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> eventEvidenceRefs<T extends Object>(
+    Expression<T> Function($$EventEvidenceTableAnnotationComposer a) f,
+  ) {
+    final $$EventEvidenceTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.eventEvidence,
+      getReferencedColumn: (t) => t.evidenceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventEvidenceTableAnnotationComposer(
+            $db: $db,
+            $table: $db.eventEvidence,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$EvidenceItemsTableTableManager
@@ -8727,6 +9081,7 @@ class $$EvidenceItemsTableTableManager
             bool fileId,
             bool possessionEvidenceRefs,
             bool eventsRefs,
+            bool eventEvidenceRefs,
           })
         > {
   $$EvidenceItemsTableTableManager(_$AppDatabase db, $EvidenceItemsTable table)
@@ -8793,12 +9148,14 @@ class $$EvidenceItemsTableTableManager
                 fileId = false,
                 possessionEvidenceRefs = false,
                 eventsRefs = false,
+                eventEvidenceRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (possessionEvidenceRefs) db.possessionEvidence,
                     if (eventsRefs) db.events,
+                    if (eventEvidenceRefs) db.eventEvidence,
                   ],
                   addJoins:
                       <
@@ -8878,6 +9235,27 @@ class $$EvidenceItemsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (eventEvidenceRefs)
+                        await $_getPrefetchedData<
+                          EvidenceItem,
+                          $EvidenceItemsTable,
+                          EventEvidenceLink
+                        >(
+                          currentTable: table,
+                          referencedTable: $$EvidenceItemsTableReferences
+                              ._eventEvidenceRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$EvidenceItemsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).eventEvidenceRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.evidenceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -8902,6 +9280,7 @@ typedef $$EvidenceItemsTableProcessedTableManager =
         bool fileId,
         bool possessionEvidenceRefs,
         bool eventsRefs,
+        bool eventEvidenceRefs,
       })
     >;
 typedef $$PossessionEvidenceTableCreateCompanionBuilder =
@@ -9781,6 +10160,24 @@ final class $$EventsTableReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
+
+  static MultiTypedResultKey<$EventEvidenceTable, List<EventEvidenceLink>>
+  _eventEvidenceRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.eventEvidence,
+    aliasName: 'events__id__event_evidence__event_id',
+  );
+
+  $$EventEvidenceTableProcessedTableManager get eventEvidenceRefs {
+    final manager = $$EventEvidenceTableTableManager(
+      $_db,
+      $_db.eventEvidence,
+    ).filter((f) => f.eventId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_eventEvidenceRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$EventsTableFilterComposer
@@ -9961,6 +10358,31 @@ class $$EventsTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> eventEvidenceRefs(
+    Expression<bool> Function($$EventEvidenceTableFilterComposer f) f,
+  ) {
+    final $$EventEvidenceTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.eventEvidence,
+      getReferencedColumn: (t) => t.eventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventEvidenceTableFilterComposer(
+            $db: $db,
+            $table: $db.eventEvidence,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 }
 
@@ -10296,6 +10718,31 @@ class $$EventsTableAnnotationComposer
     );
     return composer;
   }
+
+  Expression<T> eventEvidenceRefs<T extends Object>(
+    Expression<T> Function($$EventEvidenceTableAnnotationComposer a) f,
+  ) {
+    final $$EventEvidenceTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.eventEvidence,
+      getReferencedColumn: (t) => t.eventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventEvidenceTableAnnotationComposer(
+            $db: $db,
+            $table: $db.eventEvidence,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$EventsTableTableManager
@@ -10316,6 +10763,7 @@ class $$EventsTableTableManager
             bool partyId,
             bool evidenceId,
             bool originPlaceId,
+            bool eventEvidenceRefs,
           })
         > {
   $$EventsTableTableManager(_$AppDatabase db, $EventsTable table)
@@ -10429,10 +10877,13 @@ class $$EventsTableTableManager
                 partyId = false,
                 evidenceId = false,
                 originPlaceId = false,
+                eventEvidenceRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
-                  explicitlyWatchedTables: [],
+                  explicitlyWatchedTables: [
+                    if (eventEvidenceRefs) db.eventEvidence,
+                  ],
                   addJoins:
                       <
                         T extends TableManagerState<
@@ -10505,7 +10956,29 @@ class $$EventsTableTableManager
                         return state;
                       },
                   getPrefetchedDataCallback: (items) async {
-                    return [];
+                    return [
+                      if (eventEvidenceRefs)
+                        await $_getPrefetchedData<
+                          PossessionEvent,
+                          $EventsTable,
+                          EventEvidenceLink
+                        >(
+                          currentTable: table,
+                          referencedTable: $$EventsTableReferences
+                              ._eventEvidenceRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$EventsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).eventEvidenceRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.eventId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
                 );
               },
@@ -10530,7 +11003,379 @@ typedef $$EventsTableProcessedTableManager =
         bool partyId,
         bool evidenceId,
         bool originPlaceId,
+        bool eventEvidenceRefs,
       })
+    >;
+typedef $$EventEvidenceTableCreateCompanionBuilder =
+    EventEvidenceCompanion Function({
+      required String eventId,
+      required String evidenceId,
+      required DateTime addedAt,
+      Value<int> rowid,
+    });
+typedef $$EventEvidenceTableUpdateCompanionBuilder =
+    EventEvidenceCompanion Function({
+      Value<String> eventId,
+      Value<String> evidenceId,
+      Value<DateTime> addedAt,
+      Value<int> rowid,
+    });
+
+final class $$EventEvidenceTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $EventEvidenceTable, EventEvidenceLink> {
+  $$EventEvidenceTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $EventsTable _eventIdTable(_$AppDatabase db) =>
+      db.events.createAlias('event_evidence__event_id__events__id');
+
+  $$EventsTableProcessedTableManager get eventId {
+    final $_column = $_itemColumn<String>('event_id')!;
+
+    final manager = $$EventsTableTableManager(
+      $_db,
+      $_db.events,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_eventIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $EvidenceItemsTable _evidenceIdTable(_$AppDatabase db) => db
+      .evidenceItems
+      .createAlias('event_evidence__evidence_id__evidence_items__id');
+
+  $$EvidenceItemsTableProcessedTableManager get evidenceId {
+    final $_column = $_itemColumn<String>('evidence_id')!;
+
+    final manager = $$EvidenceItemsTableTableManager(
+      $_db,
+      $_db.evidenceItems,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_evidenceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$EventEvidenceTableFilterComposer
+    extends Composer<_$AppDatabase, $EventEvidenceTable> {
+  $$EventEvidenceTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get addedAt => $composableBuilder(
+    column: $table.addedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$EventsTableFilterComposer get eventId {
+    final $$EventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableFilterComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EvidenceItemsTableFilterComposer get evidenceId {
+    final $$EvidenceItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.evidenceId,
+      referencedTable: $db.evidenceItems,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EvidenceItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.evidenceItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventEvidenceTableOrderingComposer
+    extends Composer<_$AppDatabase, $EventEvidenceTable> {
+  $$EventEvidenceTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get addedAt => $composableBuilder(
+    column: $table.addedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$EventsTableOrderingComposer get eventId {
+    final $$EventsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableOrderingComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EvidenceItemsTableOrderingComposer get evidenceId {
+    final $$EvidenceItemsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.evidenceId,
+      referencedTable: $db.evidenceItems,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EvidenceItemsTableOrderingComposer(
+            $db: $db,
+            $table: $db.evidenceItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventEvidenceTableAnnotationComposer
+    extends Composer<_$AppDatabase, $EventEvidenceTable> {
+  $$EventEvidenceTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get addedAt =>
+      $composableBuilder(column: $table.addedAt, builder: (column) => column);
+
+  $$EventsTableAnnotationComposer get eventId {
+    final $$EventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EvidenceItemsTableAnnotationComposer get evidenceId {
+    final $$EvidenceItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.evidenceId,
+      referencedTable: $db.evidenceItems,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EvidenceItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.evidenceItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventEvidenceTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $EventEvidenceTable,
+          EventEvidenceLink,
+          $$EventEvidenceTableFilterComposer,
+          $$EventEvidenceTableOrderingComposer,
+          $$EventEvidenceTableAnnotationComposer,
+          $$EventEvidenceTableCreateCompanionBuilder,
+          $$EventEvidenceTableUpdateCompanionBuilder,
+          (EventEvidenceLink, $$EventEvidenceTableReferences),
+          EventEvidenceLink,
+          PrefetchHooks Function({bool eventId, bool evidenceId})
+        > {
+  $$EventEvidenceTableTableManager(_$AppDatabase db, $EventEvidenceTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EventEvidenceTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EventEvidenceTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EventEvidenceTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> eventId = const Value.absent(),
+                Value<String> evidenceId = const Value.absent(),
+                Value<DateTime> addedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EventEvidenceCompanion(
+                eventId: eventId,
+                evidenceId: evidenceId,
+                addedAt: addedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String eventId,
+                required String evidenceId,
+                required DateTime addedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => EventEvidenceCompanion.insert(
+                eventId: eventId,
+                evidenceId: evidenceId,
+                addedAt: addedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$EventEvidenceTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({eventId = false, evidenceId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (eventId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.eventId,
+                                referencedTable: $$EventEvidenceTableReferences
+                                    ._eventIdTable(db),
+                                referencedColumn: $$EventEvidenceTableReferences
+                                    ._eventIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+                    if (evidenceId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.evidenceId,
+                                referencedTable: $$EventEvidenceTableReferences
+                                    ._evidenceIdTable(db),
+                                referencedColumn: $$EventEvidenceTableReferences
+                                    ._evidenceIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$EventEvidenceTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $EventEvidenceTable,
+      EventEvidenceLink,
+      $$EventEvidenceTableFilterComposer,
+      $$EventEvidenceTableOrderingComposer,
+      $$EventEvidenceTableAnnotationComposer,
+      $$EventEvidenceTableCreateCompanionBuilder,
+      $$EventEvidenceTableUpdateCompanionBuilder,
+      (EventEvidenceLink, $$EventEvidenceTableReferences),
+      EventEvidenceLink,
+      PrefetchHooks Function({bool eventId, bool evidenceId})
     >;
 typedef $$PossessionPhotosTableCreateCompanionBuilder =
     PossessionPhotosCompanion Function({
@@ -11007,6 +11852,8 @@ class $AppDatabaseManager {
       $$PartiesTableTableManager(_db, _db.parties);
   $$EventsTableTableManager get events =>
       $$EventsTableTableManager(_db, _db.events);
+  $$EventEvidenceTableTableManager get eventEvidence =>
+      $$EventEvidenceTableTableManager(_db, _db.eventEvidence);
   $$PossessionPhotosTableTableManager get possessionPhotos =>
       $$PossessionPhotosTableTableManager(_db, _db.possessionPhotos);
 }

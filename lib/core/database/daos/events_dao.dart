@@ -51,7 +51,10 @@ class EventsDao extends DatabaseAccessor<AppDatabase> with _$EventsDaoMixin {
         .watch();
   }
 
-  /// The single acquisition event for a thing, if any.
+  /// The acquisition summary for a thing, if any. Deterministic (earliest by
+  /// date, then creation) so that if more than one `acquired` record exists —
+  /// e.g. a purchase record added through the M9 record editor — the acquisition
+  /// card always shows the same, first one; any others live on the timeline.
   Stream<PossessionEvent?> watchAcquisition(String possessionId) {
     return (select(events)
           ..where(
@@ -60,8 +63,54 @@ class EventsDao extends DatabaseAccessor<AppDatabase> with _$EventsDaoMixin {
                 t.kind.equalsValue(EventKind.acquired) &
                 t.deletedAt.isNull(),
           )
+          ..orderBy([
+            (t) => OrderingTerm.asc(t.at),
+            (t) => OrderingTerm.asc(t.createdAt),
+          ])
           ..limit(1))
         .watchSingleOrNull();
+  }
+
+  /// A single event (record) by id — for the M9 record editor. Emits null once
+  /// the record is soft-deleted, so an open editor reacts calmly.
+  Stream<PossessionEvent?> watchEvent(String id) {
+    return (select(events)
+          ..where((t) => t.id.equals(id) & t.deletedAt.isNull())
+          ..limit(1))
+        .watchSingleOrNull();
+  }
+
+  /// A one-shot read of a single non-deleted event — used to prefill the record
+  /// editor without leaving a live stream subscription open.
+  Future<PossessionEvent?> getEvent(String id) {
+    return (select(events)
+          ..where((t) => t.id.equals(id) & t.deletedAt.isNull())
+          ..limit(1))
+        .getSingleOrNull();
+  }
+
+  /// Updates a record's own fields (M9 record editor). Attachments are handled
+  /// separately by the evidence layer. Every field is overwritten as given.
+  Future<void> updateRecord(
+    String id, {
+    required EventKind kind,
+    required DateTime at,
+    DateTime? endsAt,
+    String? title,
+    String? notes,
+    ReminderLead? remindLead,
+  }) {
+    return (update(events)..where((t) => t.id.equals(id))).write(
+      EventsCompanion(
+        kind: Value(kind),
+        at: Value(at),
+        endsAt: Value(endsAt),
+        title: Value(title),
+        notes: Value(notes),
+        remindLead: Value(remindLead),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
   }
 
   /// A party (supplier) by id — to resolve a supplier name for display.
@@ -220,11 +269,14 @@ class EventsDao extends DatabaseAccessor<AppDatabase> with _$EventsDaoMixin {
 
   /// Pending reminders across all active things, soonest first — for Home.
   ///
-  /// Two sources, one reactive query: ordinary `reminder` events (dated by their
-  /// own `at`), and active loans that asked for a return reminder (a pending
+  /// Three sources, one reactive query: ordinary `reminder` events (dated by
+  /// their own `at`); active loans that asked for a return reminder (a pending
   /// `lent` event with an expected-return `endsAt` and a `remindLead`, dated by
-  /// `endsAt`). A loan carries its own reminder, so returning it — which sets the
-  /// loan `done` — drops it here automatically, with no orphaned reminder row.
+  /// `endsAt`); and M9 contextual records whose owner **explicitly opted in** to
+  /// an end-of-validity reminder (any other kind with both `endsAt` and
+  /// `remindLead` set, dated by `endsAt`). A record with an end date but no
+  /// `remindLead` is only stored and displayed — never surfaced here — so no
+  /// reminder is ever created silently.
   Stream<List<UpcomingReminder>> watchUpcomingReminders() {
     final query =
         select(events).join([
@@ -238,16 +290,23 @@ class EventsDao extends DatabaseAccessor<AppDatabase> with _$EventsDaoMixin {
                   (events.kind.equalsValue(EventKind.lent) &
                       events.status.equalsValue(EventStatus.pending) &
                       events.endsAt.isNotNull() &
+                      events.remindLead.isNotNull()) |
+                  (events.kind.equalsValue(EventKind.reminder).not() &
+                      events.kind.equalsValue(EventKind.lent).not() &
+                      events.endsAt.isNotNull() &
                       events.remindLead.isNotNull())),
         );
     return query.watch().map((rows) {
       final list = rows.map((r) {
         final event = r.readTable(events);
         final isLoan = event.kind == EventKind.lent;
+        // Reminders are dated by their own `at`; loans and validity records by
+        // their end date (guaranteed non-null by the query for those rows).
+        final at = event.kind == EventKind.reminder ? event.at : event.endsAt!;
         return UpcomingReminder(
           event: event,
           possessionTitle: r.readTable(possessions).title,
-          at: isLoan ? event.endsAt! : event.at,
+          at: at,
           borrowerName: isLoan ? r.readTableOrNull(parties)?.name : null,
         );
       }).toList()..sort((a, b) => a.at.compareTo(b.at));

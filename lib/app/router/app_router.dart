@@ -15,7 +15,7 @@ import '../../features/possessions/presentation/acquisition_editor_screen.dart';
 import '../../features/possessions/presentation/create_possession_screen.dart';
 import '../../features/possessions/presentation/give_editor_screen.dart';
 import '../../features/possessions/presentation/lend_editor_screen.dart';
-import '../../features/possessions/presentation/note_editor_screen.dart';
+import '../../features/possessions/presentation/record_editor_screen.dart';
 import '../../features/possessions/presentation/photo_viewer_screen.dart';
 import '../../features/possessions/presentation/possession_detail_screen.dart';
 import '../../features/possessions/presentation/reminder_editor_screen.dart';
@@ -107,7 +107,15 @@ GoRouter appRouter(Ref ref) {
         path: Routes.notePath,
         name: Routes.noteName,
         builder: (context, state) =>
-            NoteEditorScreen(possessionId: state.pathParameters['id']!),
+            RecordEditorScreen(possessionId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: Routes.recordEditPath,
+        name: Routes.recordEditName,
+        builder: (context, state) => RecordEditorScreen(
+          possessionId: state.pathParameters['id']!,
+          recordId: state.pathParameters['recordId']!,
+        ),
       ),
       GoRoute(
         path: Routes.photoPath,

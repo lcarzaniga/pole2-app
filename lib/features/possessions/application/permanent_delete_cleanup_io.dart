@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../../../core/managed_roots.dart';
 import '../../backup/domain/safe_path.dart';
 import 'permanent_delete_result.dart';
 
@@ -41,7 +42,7 @@ Future<FileCleanupReport> cleanupOrphanFiles({
   for (final path in normalizedPaths) {
     // Defensive: only ever touch a safe path inside the managed photos/ root.
     final norm = normalizeRelativePath(path);
-    if (norm == null || !_underPhotos(norm)) {
+    if (norm == null || !isUnderManagedRoot(norm)) {
       preserved++;
       continue;
     }
@@ -81,4 +82,3 @@ Future<FileCleanupReport> cleanupOrphanFiles({
 }
 
 /// True for a real file under `photos/` (never the bare `photos` directory).
-bool _underPhotos(String norm) => norm.startsWith('photos/');

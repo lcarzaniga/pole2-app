@@ -54,9 +54,13 @@ abstract final class Routes {
   static const String reminderName = 'reminder';
   static const String reminderPath = '/possession/:id/reminder';
 
-  /// New free-text note editor. Path param: `id`.
+  /// New contextual record / note editor. Path param: `id`.
   static const String noteName = 'note';
   static const String notePath = '/possession/:id/note';
+
+  /// Edit an existing record / note. Path params: `id`, `recordId`.
+  static const String recordEditName = 'recordEdit';
+  static const String recordEditPath = '/possession/:id/record/:recordId';
 
   /// Full-screen viewer for a possession's cover photo. Path param: `id`.
   static const String photoName = 'photo';

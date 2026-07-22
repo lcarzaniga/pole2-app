@@ -8,12 +8,17 @@ import '../../../app/theme/app_radii.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/brand_colors.dart';
 import '../../../core/database/app_database.dart';
+import '../../../core/database/daos/evidence_dao.dart';
 import '../../../core/database/daos/possessions_dao.dart';
 import '../../../core/database/tables/enums.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/brand/hex_background.dart';
 import '../../../shared/format.dart';
+import '../media/document_store.dart';
+import '../media/document_pick.dart';
+import '../media/record_flow.dart';
 import '../media/photo_import_flow.dart';
+import 'record_category_ui.dart';
 import '../../../shared/phrasing.dart';
 import '../../../shared/platform/photo_store.dart';
 import '../../places/application/place_providers.dart';
@@ -833,16 +838,14 @@ class _EventRow extends ConsumerWidget {
           color: scheme.onSurfaceVariant,
         ),
       );
-    } else if (event.kind == EventKind.note) {
-      icon = Icons.sticky_note_2_outlined;
-      // The note's body is the headline; its title (if any) is rarely used.
-      title = event.notes ?? event.title ?? l10n.addNote;
-      whenLine = Text(
-        l10n.onDate(formatDate(event.at, l10n.localeName)),
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: scheme.onSurfaceVariant,
-        ),
-      );
+    } else if (event.kind == EventKind.note ||
+        (isRecordKind(event.kind) && event.kind != EventKind.acquired)) {
+      // M9 contextual records: the collapsed card shows the category label and
+      // dates only — never the user's note/description text (that stays inside
+      // the record, revealed when the card is tapped open).
+      icon = recordCategoryIcon(event.kind);
+      title = recordCategoryLabel(l10n, event.kind);
+      whenLine = _recordWhen(l10n, theme, scheme, event);
       trailing = IconButton(
         tooltip: l10n.menuRemove,
         icon: Icon(
@@ -878,30 +881,132 @@ class _EventRow extends ConsumerWidget {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: AppIconSize.md, color: scheme.primary),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: theme.textTheme.bodyLarge),
-                if (whenLine != null) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  whenLine,
-                ],
+    // Records are editable (tap opens the record editor) and show their
+    // attachments beneath. Other timeline entries render exactly as before.
+    final isRecord = isRecordKind(event.kind);
+    final attachments = isRecord
+        ? (ref.watch(recordAttachmentsProvider(event.id)).value ?? const [])
+        : const <AttachmentWithFile>[];
+
+    final row = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: AppIconSize.md, color: scheme.primary),
+        const SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: theme.textTheme.bodyLarge),
+              if (whenLine != null) ...[
+                const SizedBox(height: AppSpacing.xs),
+                whenLine,
               ],
-            ),
+            ],
           ),
-          ?trailing,
-        ],
+        ),
+        ?trailing,
+      ],
+    );
+
+    if (!isRecord && attachments.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        child: row,
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+      child: InkWell(
+        borderRadius: AppRadii.borderMd,
+        onTap: isRecord
+            ? () => context.pushNamed(
+                Routes.recordEditName,
+                pathParameters: {
+                  'id': event.possessionId,
+                  'recordId': event.id,
+                },
+              )
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              row,
+              if (attachments.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: AppIconSize.md + AppSpacing.md,
+                    top: AppSpacing.xs,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (final att in attachments)
+                        AttachmentTile(
+                          name: att.displayName,
+                          onOpen: () => _openAttachment(context, att),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
+}
+
+/// A record's date line, plus a calm validity line when it has an end date.
+Widget _recordWhen(
+  AppLocalizations l10n,
+  ThemeData theme,
+  ColorScheme scheme,
+  PossessionEvent event,
+) {
+  final style = theme.textTheme.bodySmall?.copyWith(
+    color: scheme.onSurfaceVariant,
+  );
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(l10n.onDate(formatDate(event.at, l10n.localeName)), style: style),
+      if (event.endsAt != null)
+        Text(
+          l10n.recordValidUntil(formatDate(event.endsAt!, l10n.localeName)),
+          style: style,
+        ),
+    ],
+  );
+}
+
+/// Opens a record attachment in the OS viewer; calm snackbar on any problem.
+Future<void> _openAttachment(
+  BuildContext context,
+  AttachmentWithFile att,
+) async {
+  final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  final result = await openDocument(
+    relativePath: att.file.relativePath,
+    mimeType: att.file.mimeType,
+    displayName: att.displayName,
+  );
+  final msg = switch (result) {
+    DocumentOpenStatus.opened => null,
+    DocumentOpenStatus.missing => l10n.documentMissing,
+    DocumentOpenStatus.noHandler => l10n.documentOpenNoApp,
+    _ => l10n.documentOpenFailed,
+  };
+  if (msg == null) return;
+  messenger
+    ..clearSnackBars()
+    ..showSnackBar(
+      SnackBar(behavior: SnackBarBehavior.floating, content: Text(msg)),
+    );
 }
 
 class _AttentionPill extends StatelessWidget {
@@ -1287,27 +1392,40 @@ Future<void> _remove(BuildContext context, WidgetRef ref, String id) async {
     );
 }
 
+/// Remove a record (timeline event): soft-delete with an Undo snackbar. The
+/// record's attachment bytes are left untouched while Undo is possible; only
+/// after the window closes (and if nothing else references them) are its
+/// attachments unlinked and their orphan bytes reclaimed. A shared attachment is
+/// never physically deleted.
 Future<void> _removeEvent(
   BuildContext context,
   WidgetRef ref,
   String id,
 ) async {
   final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
   final dao = ref.read(eventsDaoProvider);
   await dao.deleteEvent(id);
   if (!context.mounted) return;
-  ScaffoldMessenger.of(context)
-    ..clearSnackBars()
-    ..showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        content: Text(l10n.eventRemovedSnack),
-        action: SnackBarAction(
-          label: l10n.undo,
-          onPressed: () => dao.restoreEvent(id),
-        ),
+
+  var undone = false;
+  final controller = messenger.showSnackBar(
+    SnackBar(
+      behavior: SnackBarBehavior.floating,
+      content: Text(l10n.eventRemovedSnack),
+      action: SnackBarAction(
+        label: l10n.undo,
+        onPressed: () {
+          undone = true;
+          dao.restoreEvent(id);
+        },
       ),
-    );
+    ),
+  );
+  await controller.closed;
+  if (!undone) {
+    await reclaimRecordAttachments(ref, id);
+  }
 }
 
 /// Add one or more photos — the hub "Foto" action and the empty-cover

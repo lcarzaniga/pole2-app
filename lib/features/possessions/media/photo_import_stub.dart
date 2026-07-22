@@ -10,6 +10,23 @@ Future<PhotoStageResult> stagePhoto(PhotoSource source) async =>
 Future<PhotoStageResult> stagePhotosFromGallery() async =>
     const PhotoStageResult.cancelled();
 
+class LocalFileToStage {
+  const LocalFileToStage({required this.srcPath, required this.mimeType});
+  final String srcPath;
+  final String mimeType;
+}
+
+Future<StagedImport> stageLocalFile(
+  String srcPath, {
+  required String finalRoot,
+  required String mimeType,
+}) async => const StagedImport(operationId: '', photos: []);
+
+Future<StagedImport> stageLocalFiles(
+  List<LocalFileToStage> sources, {
+  required String finalRoot,
+}) async => const StagedImport(operationId: '', photos: []);
+
 Future<PhotoPromoteOutcome> promoteAndCommit(
   StagedImport import,
   Future<void> Function() commit,

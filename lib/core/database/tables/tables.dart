@@ -165,6 +165,23 @@ class PossessionEvidence extends Table {
   Set<Column> get primaryKey => {possessionId, evidenceId};
 }
 
+/// M9 (contextual records): the many-to-many link between a timeline record
+/// ([Events]) and its document attachments ([EvidenceItems]). One record can
+/// carry several attachments, and one attachment can be shared by several
+/// records — so removing a record never blindly deletes a shared file. Added in
+/// schema v8; the older single [Events.evidenceId] and [PossessionEvidence] are
+/// left dormant and untouched.
+@DataClassName('EventEvidenceLink')
+@TableIndex(name: 'idx_event_evidence_evidence', columns: {#evidenceId})
+class EventEvidence extends Table {
+  TextColumn get eventId => text().references(Events, #id)();
+  TextColumn get evidenceId => text().references(EvidenceItems, #id)();
+  DateTimeColumn get addedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {eventId, evidenceId};
+}
+
 /// The timeline atom: past events, reminders, and intervals (warranty).
 @DataClassName('PossessionEvent')
 @TableIndex(name: 'idx_event_possession', columns: {#possessionId})

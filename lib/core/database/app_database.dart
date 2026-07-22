@@ -3,6 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import 'daos/events_dao.dart';
+import 'daos/evidence_dao.dart';
 import 'daos/places_dao.dart';
 import 'daos/possessions_dao.dart';
 // Imported so the generated part (which references the enum types directly)
@@ -29,12 +30,13 @@ part 'app_database.g.dart';
     Attributes,
     EvidenceItems,
     PossessionEvidence,
+    EventEvidence,
     Events,
     Parties,
     Places,
     PossessionPhotos,
   ],
-  daos: [PossessionsDao, EventsDao, PlacesDao],
+  daos: [PossessionsDao, EventsDao, PlacesDao, EvidenceDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
@@ -47,7 +49,7 @@ class AppDatabase extends _$AppDatabase {
   static const Uuid _uuid = Uuid();
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -131,6 +133,17 @@ class AppDatabase extends _$AppDatabase {
           await customStatement(
             'CREATE INDEX IF NOT EXISTS idx_place_parent '
             'ON places (parent_id)',
+          );
+        }
+        // v7 → v8 (M9 contextual records): a new EventEvidence link table so a
+        // timeline record can carry several document attachments. Purely
+        // additive — a new table + index, no data transformation, existing rows
+        // untouched. The dormant Events.evidenceId / PossessionEvidence remain.
+        if (from < 8) {
+          await m.createTable(eventEvidence);
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_event_evidence_evidence '
+            'ON event_evidence (evidence_id)',
           );
         }
       }

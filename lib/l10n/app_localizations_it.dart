@@ -124,6 +124,81 @@ class AppLocalizationsIt extends AppLocalizations {
   String get documentsSubtitle => 'Qui vivono ricevute, manuali e garanzie.';
 
   @override
+  String get recordEditorTitleNew => 'Nota';
+
+  @override
+  String get recordEditorTitleEdit => 'Modifica';
+
+  @override
+  String get recordDescriptionLabel => 'Descrizione';
+
+  @override
+  String get recordDescriptionHint => 'Scrivi una nota…';
+
+  @override
+  String get recordDetailsToggle => 'Aggiungi dettagli';
+
+  @override
+  String get recordCategoryLabel => 'Categoria';
+
+  @override
+  String get recordReferenceDateLabel => 'Data';
+
+  @override
+  String get recordValidityLabel => 'Validità';
+
+  @override
+  String get recordValidityAdd => 'Aggiungi una scadenza';
+
+  @override
+  String get recordValidityEndPrefix => 'Scade il';
+
+  @override
+  String get recordRemindMe => 'Ricordamelo';
+
+  @override
+  String get recordAttachmentsLabel => 'Documenti';
+
+  @override
+  String get recordAttachmentAdd => 'Aggiungi un documento';
+
+  @override
+  String get recordSwitchToNoteTitle => 'Passare a Nota?';
+
+  @override
+  String get recordSwitchToNoteBody =>
+      'Una nota semplice non conserva data, scadenza, promemoria o documenti. Vuoi rimuoverli?';
+
+  @override
+  String get recordSwitchToNoteConfirm => 'Rimuovi e continua';
+
+  @override
+  String recordValidUntil(Object date) {
+    return 'Valido fino al $date';
+  }
+
+  @override
+  String get catNote => 'Nota';
+
+  @override
+  String get catPurchase => 'Acquisto / ricevuta';
+
+  @override
+  String get catWarranty => 'Garanzia';
+
+  @override
+  String get catManual => 'Manuale / documentazione';
+
+  @override
+  String get catMaintenance => 'Manutenzione';
+
+  @override
+  String get catInsurance => 'Assicurazione / certificato';
+
+  @override
+  String get catOther => 'Altro';
+
+  @override
   String get historyTitle => 'Storia';
 
   @override
@@ -492,6 +567,23 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get documentAddFailed => 'Nulla è andato perso. Riprova quando vuoi.';
+
+  @override
+  String get documentOpen => 'Apri';
+
+  @override
+  String get documentOpenFailed =>
+      'Non è stato possibile aprire il documento. Riprova quando vuoi.';
+
+  @override
+  String get documentOpenNoApp =>
+      'Nessuna app disponibile per aprire questo tipo di documento.';
+
+  @override
+  String get documentMissing => 'Questo documento non è più disponibile.';
+
+  @override
+  String get documentRemoveTooltip => 'Rimuovi documento';
 
   @override
   String get hubPhoto => 'Foto';

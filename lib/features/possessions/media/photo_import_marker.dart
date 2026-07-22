@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import '../../../core/managed_roots.dart';
 import '../../backup/domain/safe_path.dart';
 
 /// The durable operation marker for M8.2D staged photo imports. Pure (no
@@ -125,7 +126,7 @@ class PhotoImportMarker {
       final t = normalizeRelativePath(e.tempRelativePath);
       final f = normalizeRelativePath(e.finalRelativePath);
       if (t == null || !t.startsWith(prefix)) return false;
-      if (f == null || !f.startsWith('photos/')) return false;
+      if (f == null || !isUnderManagedRoot(f)) return false;
     }
     return true;
   }
