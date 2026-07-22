@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Pole² adaptive launcher icon (M8.3B, Android 8+). The approved C-max
+     foreground already carries its own scale and optical centre, so NO inset is
+     applied here (an inset would shrink it). The launcher applies the device
+     mask; no mask is baked into the foreground. The <monochrome> layer (Android
+     13+) is ignored by API 26-32 and is never read by Android 7/7.1, which use
+     the legacy mipmap PNGs. -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
   <background android:drawable="@color/ic_launcher_background"/>
-  <foreground>
-      <inset
-          android:drawable="@drawable/ic_launcher_foreground"
-          android:inset="16%" />
-  </foreground>
-  <monochrome>
-      <inset
-          android:drawable="@drawable/ic_launcher_monochrome"
-          android:inset="16%" />
-  </monochrome>
+  <foreground android:drawable="@drawable/ic_launcher_foreground"/>
+  <monochrome android:drawable="@drawable/ic_launcher_monochrome"/>
 </adaptive-icon>

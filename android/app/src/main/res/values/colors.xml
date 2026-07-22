@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#2E6B5E</color>
+    <!-- Approved clean, uniform warm lemon-yellow launcher background (M8.3B). -->
+    <color name="ic_launcher_background">#EBB94C</color>
 </resources>
