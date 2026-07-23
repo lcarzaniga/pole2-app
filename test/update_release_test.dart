@@ -197,4 +197,58 @@ void main() {
       );
     });
   });
+
+  group('localized notes (G) — notes_it / notes_en / legacy notes', () {
+    UpdateRelease parse(String it, String en) => UpdateRelease.tryParse(
+      '{"versionName":"1.0.26","versionCode":2031,'
+      '"apkUrl":"https://x/y.apk",'
+      '"sha256":"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",'
+      '"notes":["Legacy"]$it$en}',
+    )!;
+
+    test('Italian preference selects notes_it', () {
+      final r = parse(',"notes_it":["IT note"]', ',"notes_en":["EN note"]');
+      final forIt = r.notesFor('it');
+      final forItIt = r.notesFor('it-IT');
+      expect(forIt, ['IT note']);
+      expect(forItIt, ['IT note']);
+    });
+
+    test('English preference selects notes_en', () {
+      final r = parse(',"notes_it":["IT note"]', ',"notes_en":["EN note"]');
+      final forEn = r.notesFor('en');
+      expect(forEn, ['EN note']);
+    });
+
+    test('a missing localized array falls back to the other, then legacy', () {
+      final onlyIt = parse(',"notes_it":["IT note"]', '');
+      expect(onlyIt.notesFor('en'), ['IT note']);
+      expect(onlyIt.notesFor('it'), ['IT note']);
+
+      final legacyOnly = parse('', '');
+      expect(legacyOnly.notesFor('en'), ['Legacy']);
+      expect(legacyOnly.notesFor('it'), ['Legacy']);
+    });
+
+    test('a malformed localized field never breaks the check', () {
+      final r = UpdateRelease.tryParse(
+        '{"versionName":"1.0.26","versionCode":2031,'
+        '"apkUrl":"https://x/y.apk",'
+        '"sha256":"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",'
+        '"notes":["Legacy"],"notes_it":"not a list","notes_en":[1,2,3]}',
+      );
+      expect(r, isNotNull);
+      expect(r!.notesIt, isEmpty);
+      expect(r.notesEn, isEmpty);
+      expect(r.notesFor('it'), ['Legacy']);
+    });
+
+    test('an old-style feed with only notes is unchanged', () {
+      final r = UpdateRelease.tryParse(_validJson)!;
+      expect(r.notesIt, isEmpty);
+      expect(r.notesEn, isEmpty);
+      expect(r.notesFor('it'), ['Gestione dei luoghi', 'Launcher migliorato']);
+      expect(r.notesFor('en'), ['Gestione dei luoghi', 'Launcher migliorato']);
+    });
+  });
 }

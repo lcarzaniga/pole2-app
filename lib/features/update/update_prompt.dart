@@ -33,6 +33,10 @@ Future<void> showUpdateDialog(
   UpdateRelease release,
 ) async {
   final l10n = AppLocalizations.of(context);
+  // Notes follow the app's EFFECTIVE language (l10n.localeName reflects the
+  // current preference, including a manual override), with graceful fallback to
+  // the other localized array and then the legacy `notes` (see notesFor).
+  final notes = release.notesFor(l10n.localeName);
   final accept = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
@@ -43,9 +47,9 @@ Future<void> showUpdateDialog(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.updateAvailableBody(release.versionName)),
-            if (release.notes.isNotEmpty) ...[
+            if (notes.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.md),
-              for (final n in release.notes)
+              for (final n in notes)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: Text('•  $n'),
