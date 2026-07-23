@@ -79,23 +79,18 @@ void main() {
     }
   });
 
-  test(
-    'every active Italian key has an English translation',
-    () {
-      final missing = active.where((k) => !english.contains(k)).toList()
-        ..sort();
-      expect(
-        missing,
-        isEmpty,
-        reason:
-            '${missing.length} of ${active.length} active keys have no English '
-            'value, so they would silently fall back to Italian. English is not '
-            'releasable until this list is empty. Missing: '
-            '${missing.take(15).join(", ")}${missing.length > 15 ? " …" : ""}',
-      );
-    },
-    skip: 'English lands in checkpoint E; this gate must pass before release.',
-  );
+  test('every active Italian key has an English translation', () {
+    final missing = active.where((k) => !english.contains(k)).toList()..sort();
+    expect(
+      missing,
+      isEmpty,
+      reason:
+          '${missing.length} of ${active.length} active keys have no English '
+          'value, so they would silently fall back to Italian. English is not '
+          'releasable until this list is empty. Missing: '
+          '${missing.take(15).join(", ")}${missing.length > 15 ? " …" : ""}',
+    );
+  });
 
   test('translated keys keep identical placeholders and ICU structure', () {
     final problems = <String>[];
@@ -122,17 +117,32 @@ void main() {
     expect(problems, isEmpty, reason: problems.join('\n'));
   });
 
-  test('retire candidates are classified, not silently deleted', () {
-    final retired = itRaw.keys.where(isMessage).where(isRetired).toList();
-    // They still exist in the template (nothing was deleted)…
-    for (final k in retired) {
-      expect(itRaw.containsKey(k), isTrue);
-    }
-    // …and the classification is discoverable for the workbook.
+  test('no dead keys remain after the checkpoint-E cleanup', () {
+    // Checkpoint E removed every key with no runtime, test or metadata use, so
+    // nothing should still be flagged as retired or orphaned.
+    final flagged = itRaw.keys.where(isMessage).where((k) {
+      final meta = itRaw['@$k'];
+      final d = meta is Map ? '${meta['description'] ?? ''}' : '';
+      return d.contains('RETIRE CANDIDATE') || d.contains('SUSPECTED ORPHAN');
+    }).toList();
     expect(
-      retired,
-      contains('recordAttachmentAdd'),
-      reason: 'superseded by attachmentAdd in M9.1',
+      flagged,
+      isEmpty,
+      reason: 'Still flagged but meant to be removed: $flagged',
+    );
+  });
+
+  test('Italian and English have exactly the same key set', () {
+    final itKeys = itRaw.keys.where(isMessage).toSet();
+    expect(
+      english.difference(itKeys),
+      isEmpty,
+      reason: 'English has extra keys',
+    );
+    expect(
+      itKeys.difference(english),
+      isEmpty,
+      reason: 'English is missing keys',
     );
   });
 }

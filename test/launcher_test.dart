@@ -187,6 +187,12 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     final db = AppDatabase.forTesting(NativeDatabase.memory());
+    // KobeApp now honours the device language, so pin an Italian device:
+    // "Automatico" must resolve to Italian for these Italian labels.
+    tester.platformDispatcher.localeTestValue = const Locale('it');
+    tester.platformDispatcher.localesTestValue = const [Locale('it')];
+    addTearDown(tester.platformDispatcher.clearLocaleTestValue);
+    addTearDown(tester.platformDispatcher.clearLocalesTestValue);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -229,6 +235,12 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     final db = AppDatabase.forTesting(NativeDatabase.memory());
+    // KobeApp now honours the device language, so pin an Italian device:
+    // "Automatico" must resolve to Italian for these Italian labels.
+    tester.platformDispatcher.localeTestValue = const Locale('it');
+    tester.platformDispatcher.localesTestValue = const [Locale('it')];
+    addTearDown(tester.platformDispatcher.clearLocaleTestValue);
+    addTearDown(tester.platformDispatcher.clearLocalesTestValue);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [

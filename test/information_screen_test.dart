@@ -522,8 +522,11 @@ void main() {
       // The framework-native surface, not a browser handoff.
       expect(find.byType(LicensePage), findsOneWidget);
       // Pole² branding: the legalese line appears only on the license page.
+      // Wording approved in the 1.0.26 translation review.
       expect(
-        find.textContaining('mantengono ciascuna la propria licenza'),
+        find.textContaining(
+          'sono distribuite ciascuna secondo la propria licenza',
+        ),
         findsOneWidget,
       );
 

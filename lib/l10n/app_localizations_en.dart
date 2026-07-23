@@ -16,7 +16,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeEmptyBody =>
-      'Tutto ciò a cui tieni può vivere qui — al sicuro, e solo su questo dispositivo.';
+      'Everything you care about can live here — safe, and only on this device.';
 
   @override
   String get homeEmptyCta => 'Tap to begin';
@@ -25,51 +25,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyLine => 'Everything stays on this device';
 
   @override
-  String get a11yKeepSomething => 'Conserva qualcosa';
+  String get a11yKeepSomething => 'Keep something';
 
   @override
-  String get a11yClose => 'Chiudi';
+  String get a11yClose => 'Close';
 
   @override
-  String get actionPhoto => 'Dalla foto';
+  String get actionPhoto => 'From a photo';
 
   @override
-  String get actionObject => 'Dal nome';
+  String get actionObject => 'From a name';
 
   @override
-  String get a11yActionPhoto => 'Crea un oggetto partendo da una foto';
+  String get a11yActionPhoto => 'Create an item starting from a photo';
 
   @override
-  String get a11yActionObject => 'Crea un oggetto partendo dal nome';
+  String get a11yActionObject => 'Create an item starting from a name';
 
   @override
-  String get photoSourceTitle => 'Aggiungi una foto';
+  String get photoSourceTitle => 'Add a photo';
 
   @override
-  String get photoTakePhoto => 'Scatta una foto';
+  String get photoTakePhoto => 'Take a photo';
 
   @override
-  String get photoChooseGallery => 'Scegli dalla galleria';
+  String get photoChooseGallery => 'Choose from gallery';
 
   @override
   String get cameraDeniedSnack =>
-      'Pole² non può ancora usare la fotocamera. Puoi autorizzarla dalle impostazioni.';
+      'Pole² can’t use the camera yet. You can allow it in Settings.';
 
   @override
-  String get captureFailedSnack => 'Nulla è andato perso. Riprova quando vuoi.';
+  String get captureFailedSnack =>
+      'Nothing was lost. Try again whenever you like.';
 
   @override
-  String get createTitle => 'Conserva qualcosa';
+  String get createTitle => 'Keep something';
 
   @override
-  String get whatIsItLabel => 'Che cos\'è?';
+  String get whatIsItLabel => 'What is it?';
 
   @override
-  String get createHint => 'es. Lavastoviglie, l\'orologio del nonno, l\'auto';
+  String get createHint => 'e.g. Dishwasher, grandpa’s watch, the car';
 
   @override
   String get createReassure =>
-      'Puoi aggiungere foto, ricevute e dettagli quando vuoi. Per ora non serve altro.';
+      'You can add photos, receipts and details whenever you like. For now, nothing else is needed.';
 
   @override
   String get keepItButton => 'Keep';
@@ -79,309 +80,296 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count date in arrivo',
-      one: '1 data in arrivo',
+      other: '$count dates coming up',
+      one: '1 date coming up',
     );
     return '$_temp0';
   }
 
   @override
-  String get addPhoto => 'Aggiungi una foto';
+  String get addPhoto => 'Add a photo';
 
   @override
-  String get renameTooltip => 'Rinomina';
+  String get renameTooltip => 'Rename';
 
   @override
-  String get nameLabel => 'Nome';
+  String get nameLabel => 'Name';
 
   @override
   String get saveButton => 'Save';
 
   @override
   String keptOn(String date) {
-    return 'Conservato il $date';
+    return 'Kept on $date';
   }
 
   @override
   String nextUp(String what) {
-    return 'Prossimo: $what';
+    return 'Next: $what';
   }
 
   @override
-  String get detailsTitle => 'Dettagli';
+  String get detailsTitle => 'Details';
 
   @override
   String get detailsEmptySubtitle =>
-      'Da dove viene, quanto è costato, quando l\'hai preso.';
+      'Where it came from, what it cost, when you got it.';
 
   @override
-  String get tapToAddMore => 'Tocca per aggiungere altro';
+  String get tapToAddMore => 'Tap to add more';
 
   @override
-  String get documentsTitle => 'Documenti';
+  String get recordEditorTitleNew => 'New record';
 
   @override
-  String get documentsSubtitle => 'Qui vivono ricevute, manuali e garanzie.';
+  String get recordEditorTitleEdit => 'Edit';
 
   @override
-  String get recordEditorTitleNew => 'Nota';
+  String get recordDescriptionLabel => 'Description';
 
   @override
-  String get recordEditorTitleEdit => 'Modifica';
+  String get recordDescriptionHint => 'Write a note…';
 
   @override
-  String get recordDescriptionLabel => 'Descrizione';
+  String get recordCategoryLabel => 'Category';
 
   @override
-  String get recordDescriptionHint => 'Scrivi una nota…';
+  String get recordReferenceDateLabel => 'Date';
 
   @override
-  String get recordDetailsToggle => 'Aggiungi dettagli';
+  String get recordValidityLabel => 'Validity';
 
   @override
-  String get recordCategoryLabel => 'Categoria';
+  String get recordValidityAdd => 'Add an expiry date';
 
   @override
-  String get recordReferenceDateLabel => 'Data';
+  String get recordValidityEndPrefix => 'Expires on';
 
   @override
-  String get recordValidityLabel => 'Validità';
+  String get recordRemindMe => 'Remind me';
 
   @override
-  String get recordValidityAdd => 'Aggiungi una scadenza';
+  String get recordAttachmentsLabel => 'Attachments';
 
   @override
-  String get recordValidityEndPrefix => 'Scade il';
+  String get attachmentAdd => 'Add attachment';
 
   @override
-  String get recordRemindMe => 'Ricordamelo';
+  String get attachSheetTitle => 'Add an attachment';
 
   @override
-  String get recordAttachmentsLabel => 'Allegati';
+  String get attachChoosePhoto => 'Choose a photo';
 
   @override
-  String get recordAttachmentAdd => 'Aggiungi un documento';
+  String get attachChooseDocument => 'Choose a document';
 
   @override
-  String get attachmentAdd => 'Aggiungi allegato';
+  String get attachmentPhotoDefaultLabel => 'Photo';
 
   @override
-  String get attachSheetTitle => 'Aggiungi un allegato';
-
-  @override
-  String get attachChoosePhoto => 'Scegli una foto';
-
-  @override
-  String get attachChooseDocument => 'Scegli un documento';
-
-  @override
-  String get attachmentPhotoDefaultLabel => 'Foto';
-
-  @override
-  String get recordSwitchToNoteTitle => 'Passare a Nota?';
+  String get recordSwitchToNoteTitle => 'Switch to Note?';
 
   @override
   String get recordSwitchToNoteBody =>
-      'Una nota semplice non conserva data, scadenza, promemoria o allegati. Vuoi rimuoverli?';
+      'A simple note doesn’t keep a date, expiry, reminder or attachments. Do you want to remove them?';
 
   @override
-  String get recordSwitchToNoteConfirm => 'Rimuovi e continua';
+  String get recordSwitchToNoteConfirm => 'Remove and continue';
 
   @override
   String recordValidUntil(Object date) {
-    return 'Valido fino al $date';
+    return 'Valid until $date';
   }
 
   @override
-  String get catNote => 'Nota';
+  String get catNote => 'Note';
 
   @override
-  String get catPurchase => 'Acquisto / ricevuta';
+  String get catPurchase => 'Purchase / receipt';
 
   @override
-  String get catWarranty => 'Garanzia';
+  String get catWarranty => 'Warranty';
 
   @override
-  String get catManual => 'Manuale / documentazione';
+  String get catManual => 'Manual / documentation';
 
   @override
-  String get catMaintenance => 'Manutenzione';
+  String get catMaintenance => 'Maintenance';
 
   @override
-  String get catInsurance => 'Assicurazione / certificato';
+  String get catInsurance => 'Insurance / certificate';
 
   @override
-  String get catOther => 'Altro';
+  String get catOther => 'Other';
 
   @override
-  String get historyTitle => 'Storia';
+  String get historyTitle => 'History';
 
   @override
-  String get addDate => 'Aggiungi una data';
+  String get addDate => 'Add a date';
 
   @override
   String get historyEmpty =>
-      'Ancora niente — aggiungi come l\'hai preso, o una data da ricordare.';
+      'Nothing yet — add how you got it, or a date to remember.';
 
   @override
   String onDate(String date) {
-    return 'il $date';
+    return 'on $date';
   }
 
   @override
-  String get menuRename => 'Rinomina';
+  String get menuRename => 'Rename';
 
   @override
-  String get menuPutAway => 'Metti via';
+  String get menuPutAway => 'Put away';
 
   @override
-  String get menuRemove => 'Rimuovi';
+  String get menuRemove => 'Remove';
 
   @override
-  String get archivedSnack => 'Messo via. È al sicuro.';
+  String get archivedSnack => 'Put away. It’s safe.';
 
   @override
-  String get removedSnack => 'Rimosso. Non è ancora perso nulla.';
+  String get removedSnack => 'Removed. Nothing is lost yet.';
 
   @override
-  String get eventRemovedSnack => 'Rimosso.';
+  String get eventRemovedSnack => 'Removed.';
 
   @override
   String get undo => 'Undo';
 
   @override
-  String get errorNothingLost =>
-      'Qualcosa è andato storto — ma non è andato perso nulla.';
+  String get errorNothingLost => 'Something went wrong — but nothing was lost.';
 
   @override
-  String get goneMessage => 'Non è più qui.';
+  String get goneMessage => 'It’s no longer here.';
 
   @override
   String boughtAt(String supplier) {
-    return 'Comprato da $supplier';
+    return 'Bought from $supplier';
   }
 
   @override
-  String get bought => 'Comprato';
+  String get bought => 'Bought';
 
   @override
-  String get receivedAsGift => 'Ricevuto in regalo';
+  String get receivedAsGift => 'Received as a gift';
 
   @override
-  String get inheritedHeadline => 'Ereditato';
+  String get inheritedHeadline => 'Inherited';
 
   @override
-  String get alreadyHadHeadline => 'Ce l\'avevo già';
+  String get alreadyHadHeadline => 'Already had it';
 
   @override
-  String get keptHeadline => 'Conservato';
+  String get keptHeadline => 'Kept';
 
   @override
   String fromSupplier(String supplier) {
-    return 'Da $supplier';
+    return 'From $supplier';
   }
 
   @override
-  String get purchaseDetailsHeadline => 'Dettagli d\'acquisto';
+  String get purchaseDetailsHeadline => 'Purchase details';
 
   @override
-  String get acquisitionTitle => 'Dettagli d\'acquisto';
+  String get acquisitionTitle => 'Purchase details';
 
   @override
-  String get howDidYouGetIt => 'Come l\'hai avuto?';
+  String get howDidYouGetIt => 'How did you get it?';
 
   @override
-  String get acqTypeBought => 'Comprato';
+  String get acqTypeBought => 'Bought';
 
   @override
-  String get acqTypeGift => 'Regalo';
+  String get acqTypeGift => 'Gift';
 
   @override
-  String get acqTypeInherited => 'Ereditato';
+  String get acqTypeInherited => 'Inherited';
 
   @override
-  String get acqTypeAlreadyHad => 'Già mio';
+  String get acqTypeAlreadyHad => 'Already mine';
 
   @override
-  String get acqTypeOther => 'Altro';
+  String get acqTypeOther => 'Other';
 
   @override
-  String get whenLabel => 'Quando';
+  String get whenLabel => 'When';
 
   @override
-  String get notSet => 'Non impostata';
+  String get notSet => 'Not set';
 
   @override
-  String get whereFromLabel => 'Da dove';
+  String get whereFromLabel => 'Where from';
 
   @override
-  String get whereFromHint => 'Negozio o persona';
+  String get whereFromHint => 'Shop or person';
 
   @override
-  String get priceLabel => 'Prezzo';
+  String get priceLabel => 'Price';
 
   @override
-  String get noteLabel => 'Nota';
+  String get noteLabel => 'Note';
 
   @override
   String get acquisitionReassure =>
-      'Aggiungi quanto vuoi — puoi sempre tornarci.';
+      'Add as much as you like — you can always come back to it.';
 
   @override
-  String get reminderTitle => 'Aggiungi una data';
+  String get reminderTitle => 'Add a date';
 
   @override
-  String get reminderHint => 'es. Scadenza garanzia';
+  String get reminderHint => 'e.g. Warranty expiry';
 
   @override
-  String get suggWarranty => 'Scadenza garanzia';
+  String get suggWarranty => 'Warranty expiry';
 
   @override
-  String get suggReturn => 'Fine reso';
+  String get suggReturn => 'Return due';
 
   @override
-  String get suggService => 'Manutenzione';
+  String get suggService => 'Maintenance';
 
   @override
-  String get suggInsurance => 'Rinnovo assicurazione';
+  String get suggInsurance => 'Insurance renewal';
 
   @override
-  String get suggFilter => 'Cambio filtro';
+  String get suggFilter => 'Filter change';
 
   @override
-  String get chooseDate => 'Scegli una data';
+  String get chooseDate => 'Choose a date';
 
   @override
-  String get remindMe => 'Ricordamelo';
+  String get remindMe => 'Remind me';
 
   @override
-  String get leadSameDay => 'Il giorno stesso';
+  String get leadSameDay => 'On the day';
 
   @override
-  String get leadDayBefore => '1 giorno prima';
+  String get leadDayBefore => '1 day before';
 
   @override
-  String get leadWeekBefore => '1 settimana prima';
+  String get leadWeekBefore => '1 week before';
 
   @override
-  String get leadMonthBefore => '1 mese prima';
+  String get leadMonthBefore => '1 month before';
 
   @override
-  String get today => 'Oggi';
+  String get today => 'Today';
 
   @override
-  String get tomorrow => 'Domani';
+  String get tomorrow => 'Tomorrow';
 
   @override
-  String get yesterday => 'Ieri';
+  String get yesterday => 'Yesterday';
 
   @override
   String inDays(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'tra $count giorni',
-      one: 'tra 1 giorno',
+      other: 'in $count days',
+      one: 'in 1 day',
     );
     return '$_temp0';
   }
@@ -391,45 +379,42 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count giorni fa',
-      one: '1 giorno fa',
+      other: '$count days ago',
+      one: '1 day ago',
     );
     return '$_temp0';
   }
 
   @override
-  String get noPlace => 'Nessun luogo';
+  String get noPlace => 'No place';
 
   @override
-  String get placeLabel => 'Luogo';
+  String get placeLabel => 'Place';
 
   @override
-  String get placeAssignHint => 'Tocca per assegnare un luogo';
+  String get placeAssignHint => 'Tap to assign a place';
 
   @override
-  String get placePickerTitle => 'Dove si trova?';
+  String get placePickerTitle => 'Where is it?';
 
   @override
-  String get newPlaceHint => 'Nuovo luogo — es. Garage, Ufficio';
+  String get addPlaceButton => 'Add';
 
   @override
-  String get addPlaceButton => 'Aggiungi';
+  String get placeManageTooltip => 'Manage';
 
   @override
-  String get placeManageTooltip => 'Gestisci';
+  String get placeDelete => 'Delete';
 
   @override
-  String get placeDelete => 'Elimina';
+  String get placeRenameTitle => 'Rename place';
 
   @override
-  String get placeRenameTitle => 'Rinomina luogo';
-
-  @override
-  String get cancelButton => 'Annulla';
+  String get cancelButton => 'Cancel';
 
   @override
   String placeDeleteTitle(String name) {
-    return 'Eliminare «$name»?';
+    return 'Delete “$name”?';
   }
 
   @override
@@ -437,210 +422,173 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'È assegnato a $count oggetti, che torneranno a «Nessun luogo».',
-      one: 'È assegnato a 1 oggetto, che tornerà a «Nessun luogo».',
+      other: 'It’s assigned to $count items, which will return to “No place”.',
+      one: 'It’s assigned to 1 item, which will return to “No place”.',
     );
     return '$_temp0';
   }
 
   @override
-  String get placeDeleteNone => 'Nessun oggetto usa questo luogo.';
+  String get placeDeleteNone => 'No item uses this place.';
 
   @override
-  String get updateAvailableTitle => 'Aggiornamento disponibile';
+  String get updateAvailableTitle => 'Update available';
 
   @override
   String updateAvailableBody(String version) {
-    return 'È disponibile la versione $version.';
+    return 'Version $version is available.';
   }
 
   @override
-  String get updateNow => 'Aggiorna';
+  String get updateNow => 'Update';
 
   @override
-  String get updateLater => 'Più tardi';
+  String get updateLater => 'Later';
 
   @override
-  String get updateDownloading => 'Scaricamento…';
+  String get updateDownloading => 'Downloading…';
 
   @override
-  String get updateVerifying => 'Verifica…';
+  String get updateVerifying => 'Verifying…';
 
   @override
-  String get updateInstalling => 'Avvio installazione…';
+  String get updateInstalling => 'Starting installation…';
 
   @override
   String get updatePermissionNeeded =>
-      'Per installare l\'aggiornamento, consenti l\'installazione di app da questa sorgente.';
+      'To install the update, allow installing apps from this source.';
 
   @override
-  String get updateAllow => 'Consenti';
+  String get updateAllow => 'Allow';
 
   @override
-  String get updateRetry => 'Riprova';
+  String get updateRetry => 'Try again';
 
   @override
-  String get updateErrorDownload => 'Scaricamento non riuscito.';
+  String get updateErrorDownload => 'Download failed.';
 
   @override
-  String get updateErrorSha => 'File di aggiornamento non valido.';
+  String get updateErrorSha => 'Invalid update file.';
 
   @override
-  String get updateErrorInstall => 'Installazione non riuscita.';
+  String get updateErrorInstall => 'Installation failed.';
 
   @override
   String get updateRestoreBusy =>
-      'Un ripristino è in corso. Riapri Pole² e completa il ripristino prima di aggiornare.';
+      'A restore is in progress. Reopen Pole² and finish the restore before updating.';
 
   @override
-  String get updateBackupTitle => 'Prima di aggiornare, vuoi creare un backup?';
+  String get updateBackupTitle =>
+      'Before updating, would you like to create a backup?';
 
   @override
   String get updateBackupBody =>
-      'È consigliato per questo aggiornamento. Il backup resta a te e puoi salvarlo dove preferisci.';
+      'It’s recommended for this update. The backup stays with you, and you can save it wherever you prefer.';
 
   @override
-  String get updateBackupCreate => 'Crea backup';
+  String get updateBackupCreate => 'Create backup';
 
   @override
-  String get updateBackupContinueWithout => 'Continua senza backup';
+  String get updateBackupContinueWithout => 'Continue without a backup';
 
   @override
   String get updateBackupScreenIntro =>
-      'Crea un backup prima di installare l\'aggiornamento. Al termine, l\'aggiornamento riprende da solo.';
+      'Create a backup before installing the update. When it’s done, the update resumes on its own.';
 
   @override
-  String get updateWithoutTitle => 'Vuoi continuare senza creare un backup?';
+  String get updateWithoutTitle => 'Continue without creating a backup?';
 
   @override
   String get updateWithoutBody =>
-      'Di solito l\'aggiornamento mantiene i tuoi dati, ma per questa versione è consigliato un backup.';
+      'Updates usually keep your data, but a backup is recommended for this version.';
 
   @override
-  String get updateWithoutContinue => 'Continua';
+  String get updateWithoutContinue => 'Continue';
 
   @override
-  String get updateWithoutBack => 'Indietro';
+  String get updateWithoutBack => 'Back';
 
   @override
-  String get closeButton => 'Chiudi';
-
-  @override
-  String get placeContentsEmpty => 'Qui non c\'è ancora niente.';
+  String get closeButton => 'Close';
 
   @override
   String get placeEmptyHint =>
-      'Puoi assegnare un oggetto a questo luogo dalla sua scheda.';
+      'You can assign an item to this place from the item’s page.';
 
   @override
-  String placeItemCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count oggetti',
-      one: '1 oggetto',
-      zero: 'Nessun oggetto',
-    );
-    return '$_temp0';
-  }
+  String get placeMoveAction => 'Move to another place';
 
   @override
-  String get placeMoveAction => 'Sposta in un altro luogo';
+  String get placeRemoveAction => 'Remove from place';
 
   @override
-  String get placeRemoveAction => 'Rimuovi dal luogo';
+  String get placeMovedSnack => 'Item moved.';
 
   @override
-  String get placeMovedSnack => 'Oggetto spostato.';
+  String get placeRemovedFromSnack => 'Removed from the place.';
 
   @override
-  String get placeRemovedFromSnack => 'Rimosso dal luogo.';
+  String get itemActionsTooltip => 'Options';
 
   @override
-  String get itemActionsTooltip => 'Opzioni';
+  String get placeEditTooltip => 'Change place';
 
   @override
-  String get placeEditTooltip => 'Cambia luogo';
-
-  @override
-  String get noteEditorTitle => 'Aggiungi una nota';
-
-  @override
-  String get noteHint => 'Scrivi una nota…';
-
-  @override
-  String get addNote => 'Aggiungi una nota';
-
-  @override
-  String get addDocument => 'Aggiungi un documento';
-
-  @override
-  String get documentAdd => 'Aggiungi';
-
-  @override
-  String get documentRemovedSnack => 'Documento rimosso.';
-
-  @override
-  String get documentAddFailed => 'Nulla è andato perso. Riprova quando vuoi.';
-
-  @override
-  String get documentOpen => 'Apri';
+  String get documentAddFailed =>
+      'Nothing was lost. Try again whenever you like.';
 
   @override
   String get documentOpenFailed =>
-      'Non è stato possibile aprire l\'allegato. Riprova quando vuoi.';
+      'Couldn’t open the attachment. Try again whenever you like.';
 
   @override
   String get documentOpenNoApp =>
-      'Nessuna app disponibile per aprire questo tipo di file.';
+      'No app is available to open this type of file.';
 
   @override
-  String get documentMissing => 'Questo allegato non è più disponibile.';
+  String get documentMissing => 'This attachment is no longer available.';
 
   @override
-  String get documentRemoveTooltip => 'Rimuovi allegato';
+  String get documentRemoveTooltip => 'Remove attachment';
 
   @override
-  String get hubPhoto => 'Foto';
+  String get hubPhoto => 'Photo';
 
   @override
-  String get hubNote => 'Nota';
+  String get hubNote => 'Note';
 
   @override
-  String get hubDocument => 'Documento';
+  String get hubDate => 'Date';
 
   @override
-  String get hubDate => 'Data';
+  String get hubPlace => 'Place';
 
   @override
-  String get hubPlace => 'Luogo';
+  String get searchHint => 'Search';
 
   @override
-  String get searchHint => 'Cerca';
+  String get searchClear => 'Clear';
 
   @override
-  String get searchClear => 'Cancella';
+  String get searchNoResults => 'No results';
 
   @override
-  String get searchNoResults => 'Nessun risultato';
+  String get sortTooltip => 'Sort';
 
   @override
-  String get sortTooltip => 'Ordina';
+  String get sortNewest => 'Newest';
 
   @override
-  String get sortNewest => 'Più recenti';
+  String get sortName => 'Name';
 
   @override
-  String get sortName => 'Nome';
+  String get filterTooltip => 'Where it is';
 
   @override
-  String get filterTooltip => 'Dove si trova';
+  String get filterNoPlace => 'No place';
 
   @override
-  String get filterNoPlace => 'Senza luogo';
-
-  @override
-  String get custodyAll => 'Tutti';
+  String get custodyAll => 'All';
 
   @override
   String custodyInPlace(String path) {
@@ -649,305 +597,267 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String custodyWithPerson(String name) {
-    return 'Con: $name';
+    return 'With: $name';
   }
 
   @override
-  String get photoEditTooltip => 'Cambia foto';
+  String get photoEditTooltip => 'Change photo';
 
   @override
-  String get photoView => 'Vedi la foto';
+  String get photoView => 'View the photo';
 
   @override
-  String get placeReviewStart => 'Riordina questo luogo';
+  String get placeReviewStart => 'Tidy up this place';
 
   @override
-  String get placeReviewKeep => 'Tieni qui';
+  String get placeReviewKeep => 'Keep here';
 
   @override
-  String get placeReviewMove => 'Sposta';
+  String get placeReviewMove => 'Move';
 
   @override
-  String get placeReviewUnassign => 'Togli dal luogo';
+  String get placeReviewUnassign => 'Remove from place';
 
   @override
-  String get placeReviewArchive => 'Metti da parte';
+  String get placeReviewArchive => 'Put aside';
 
   @override
-  String get placeReviewDone => 'Fine';
+  String get placeReviewDone => 'Done';
 
   @override
-  String get placeReviewAllSeen => 'Hai guardato tutto quello che c\'è qui.';
+  String get placeReviewAllSeen => 'You’ve looked at everything that’s here.';
 
   @override
   String placeReviewGentleCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count cose qui',
-      one: '1 cosa qui',
-      zero: 'Niente qui',
+      other: '$count things here',
+      one: '1 thing here',
+      zero: 'Nothing here',
     );
     return '$_temp0';
   }
 
   @override
-  String get photoAddAnother => 'Aggiungi un\'altra foto';
+  String get photoAddAnother => 'Add another photo';
 
   @override
-  String get photoSetCover => 'Imposta come copertina';
+  String get photoSetCover => 'Set as cover';
 
   @override
-  String get photoIsCover => 'Copertina';
+  String get photoIsCover => 'Cover';
 
   @override
-  String get photoRemove => 'Rimuovi foto';
+  String get photoRemove => 'Remove photo';
 
   @override
-  String get photoRemovedSnack => 'Foto rimossa.';
+  String get photoRemovedSnack => 'Photo removed.';
 
   @override
   String photoPosition(int current, int total) {
-    return '$current di $total';
+    return '$current of $total';
   }
 
   @override
-  String photoCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count foto',
-      one: '1 foto',
-    );
-    return '$_temp0';
-  }
+  String get lendToSomeone => 'Lend to someone';
 
   @override
-  String get lendToSomeone => 'Presta a qualcuno';
+  String get lendEditTitle => 'Edit loan';
 
   @override
-  String get lendEditTitle => 'Modifica prestito';
+  String get borrowerLabel => 'Who are you lending it to?';
 
   @override
-  String get borrowerLabel => 'A chi lo presti?';
+  String get borrowerChoose => 'Choose a person';
 
   @override
-  String get borrowerChoose => 'Scegli una persona';
+  String get selectPerson => 'Choose a person';
 
   @override
-  String get selectPerson => 'Scegli una persona';
+  String get createPerson => 'New person';
 
   @override
-  String get createPerson => 'Nuova persona';
+  String get personNameHint => 'Name';
 
   @override
-  String get personNameHint => 'Nome';
+  String get addPersonButton => 'Add';
 
   @override
-  String get addPersonButton => 'Aggiungi';
+  String get lentDateLabel => 'Loan date';
 
   @override
-  String get lentDateLabel => 'Data del prestito';
+  String get expectedReturnOptional => 'Expected return (optional)';
 
   @override
-  String get expectedReturnLabel => 'Rientro previsto';
+  String get noReturnDate => 'No return date';
 
   @override
-  String get expectedReturnOptional => 'Rientro previsto (facoltativo)';
+  String get returnDateClear => 'Remove the date';
 
   @override
-  String get noReturnDate => 'Nessuna data di rientro';
-
-  @override
-  String get returnDateClear => 'Togli la data';
-
-  @override
-  String get returnReminder => 'Ricordami il rientro';
+  String get returnReminder => 'Remind me about the return';
 
   @override
   String lentToPerson(String name) {
-    return 'Prestato a $name';
+    return 'Lent to $name';
   }
 
   @override
   String lentOn(String date) {
-    return 'Prestato il $date';
+    return 'Lent on $date';
   }
 
   @override
   String expectedReturnOn(String date) {
-    return 'Rientro previsto il $date';
+    return 'Expected back on $date';
   }
 
   @override
-  String get returnReminderSet => 'Ti ricorderò il rientro';
+  String get returnReminderSet => 'We’ll remind you about the return';
 
   @override
-  String get markReturned => 'Segna come restituito';
+  String get markReturned => 'Mark as returned';
 
   @override
-  String get returnTitle => 'Segna come restituito';
+  String get returnTitle => 'Mark as returned';
 
   @override
-  String get returnActualDate => 'Data di rientro';
+  String get returnActualDate => 'Return date';
 
   @override
-  String get returnPlaceLabel => 'Rimettilo in';
+  String get returnPlaceLabel => 'Put it back in';
 
   @override
   String returnedOn(String date) {
-    return 'Restituito il $date';
+    return 'Returned on $date';
   }
 
   @override
-  String returnReminderTitle(String object) {
-    return 'Rientro: $object';
-  }
+  String get loanStarted => 'Lent. It’s noted.';
 
   @override
-  String get loanStarted => 'Prestato. È annotato.';
+  String get loanUpdated => 'Loan updated.';
 
   @override
-  String get loanUpdated => 'Prestito aggiornato.';
+  String get loanReturned => 'Returned. Welcome back.';
 
   @override
-  String get loanReturned => 'Restituito. Bentornato.';
-
-  @override
-  String get loanDatesInvalid =>
-      'La data del prestito non può essere dopo il rientro.';
+  String get loanDatesInvalid => 'The loan date can’t be after the return.';
 
   @override
   String get cannotAssignPlaceWhileLent =>
-      'Puoi assegnare un luogo quando torna.';
+      'You can assign a place when it comes back.';
 
   @override
   String get resolveLoanBeforeArchive =>
-      'Segna come restituito prima di archiviare o rimuovere.';
+      'Mark it as returned before archiving or removing it.';
 
   @override
-  String get moreOptions => 'Altre opzioni';
+  String get moreOptions => 'More options';
 
   @override
-  String get personEmptyHint => 'Aggiungi la prima persona qui sopra.';
+  String get personEmptyHint => 'Add the first person above.';
 
   @override
-  String get archiveTitle => 'Archivio';
+  String get archiveTitle => 'Archive';
 
   @override
-  String get archiveMenu => 'Archivio';
+  String get archiveMenu => 'Archive';
 
   @override
-  String get archiveKeptTab => 'Conservati';
+  String get archiveKeptTab => 'Kept aside';
 
   @override
-  String get archiveRemovedTab => 'Rimossi';
+  String get archiveRemovedTab => 'Removed';
 
   @override
-  String get archiveOpen => 'Apri';
+  String get archiveRestore => 'Restore';
 
   @override
-  String get archiveRestore => 'Ripristina';
+  String get archiveRestoredSnack => 'Restored.';
 
   @override
-  String get archiveRestoredSnack => 'Ripristinato.';
+  String get removedRestoredSnack => 'Restored.';
 
   @override
-  String get removedRestoredSnack => 'Ripristinato.';
+  String get archivedStatusLabel => 'Kept aside';
 
   @override
-  String get archivedStatusLabel => 'Messo da parte';
+  String get transferredStatusLabel => 'Given';
 
   @override
-  String get transferredStatusLabel => 'Dato';
+  String get lostStatusLabel => 'Lost';
 
   @override
-  String get lostStatusLabel => 'Smarrito';
+  String get disposedStatusLabel => 'Disposed of';
 
   @override
-  String get disposedStatusLabel => 'Dismesso';
+  String get removedStatusLabel => 'Removed';
 
   @override
-  String get removedStatusLabel => 'Rimosso';
-
-  @override
-  String get archiveKeptEmpty => 'Non hai messo da parte nessun oggetto.';
+  String get archiveKeptEmpty => 'You haven’t put any item aside.';
 
   @override
   String get archiveKeptEmptyHint =>
-      'Le cose messe da parte restano al sicuro qui e puoi ripristinarle quando vuoi.';
+      'Things you put aside stay safe here, and you can restore them whenever you like.';
 
   @override
-  String get archiveRemovedEmpty => 'Non ci sono oggetti rimossi.';
+  String get archiveRemovedEmpty => 'There are no removed items.';
 
   @override
   String get archiveRemovedEmptyHint =>
-      'Quello che rimuovi resta qui, pronto da ripristinare.';
+      'Anything you remove stays here, ready to restore.';
 
   @override
-  String get archiveSearchHint => 'Cerca nell\'archivio';
+  String get archiveSearchHint => 'Search the archive';
 
   @override
-  String get archiveSearchNoResults => 'Nessun risultato';
+  String get archiveSearchNoResults => 'No results';
 
   @override
   String archiveUpdatedOn(String date) {
-    return 'Aggiornato il $date';
+    return 'Updated on $date';
   }
 
   @override
-  String get inactiveReadOnlyHint => 'Ripristina per modificarlo di nuovo.';
+  String get inactiveReadOnlyHint => 'Restore it to edit it again.';
 
   @override
-  String get removedBannerTitle => 'Rimosso';
+  String get removedBannerTitle => 'Removed';
 
   @override
-  String get placesTitle => 'Luoghi';
+  String get placesTitle => 'Places';
 
   @override
-  String get placesMenu => 'Luoghi';
+  String get placesMenu => 'Places';
 
   @override
-  String get placeAddRoot => 'Nuovo luogo';
+  String get placeAddRoot => 'New place';
 
   @override
-  String get placeAddChild => 'Aggiungi sottoluogo';
+  String get placeAddChild => 'Add a sub-place';
 
   @override
-  String get placeChildrenSection => 'Sottoluoghi';
+  String get placeChildrenSection => 'Sub-places';
 
   @override
-  String get placeDirectItemsSection => 'Qui direttamente';
+  String get placeDirectItemsSection => 'Directly here';
 
   @override
-  String get placeMove => 'Sposta luogo';
+  String get placeMove => 'Move place';
 
   @override
-  String get placeMoveToRoot => 'Nessun luogo superiore';
-
-  @override
-  String get placeParent => 'Luogo superiore';
+  String get placeMoveToRoot => 'No parent place';
 
   @override
   String placeTotalCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count oggetti in tutto',
-      one: '1 oggetto in tutto',
-      zero: 'Niente',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String placeDirectCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count qui',
-      one: '1 qui',
-      zero: 'niente qui',
+      other: '$count items in all',
+      one: '1 item in all',
+      zero: 'Nothing',
     );
     return '$_temp0';
   }
@@ -957,329 +867,303 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count oggetti',
-      one: '1 oggetto',
-      zero: 'vuoto',
+      other: '$count items',
+      one: '1 item',
+      zero: 'empty',
     );
     return '$_temp0';
   }
 
   @override
-  String get placesEmpty => 'Non hai ancora nessun luogo.';
+  String get placesEmpty => 'You don’t have any places yet.';
 
   @override
   String get placesEmptyHint =>
-      'Crea un luogo per iniziare a organizzare le tue cose.';
+      'Create a place to start organising your things.';
 
   @override
-  String get placeEmptyTree => 'Qui non c\'è ancora niente.';
+  String get placeEmptyTree => 'There’s nothing here yet.';
 
   @override
-  String get placeNoDirectItems => 'Nessun oggetto direttamente qui.';
+  String get placeNoDirectItems => 'No item directly here.';
 
   @override
-  String get placeNoChildren => 'Nessun sottoluogo.';
+  String get placeDeleteHasChildren => 'Move or remove the sub-places first.';
 
   @override
-  String get placeDeleteHasChildren => 'Prima sposta o rimuovi i sottoluoghi.';
+  String get placeMoveInvalid => 'You can’t move it there.';
 
   @override
-  String get placeMoveInvalid => 'Non puoi spostarlo lì.';
+  String get placeMovedToSnack => 'Place moved.';
 
   @override
-  String get placeMovedToSnack => 'Luogo spostato.';
+  String get newRootPlaceHint => 'New top-level place';
 
   @override
-  String placeCreateUnder(String parent) {
-    return 'Nuovo sottoluogo di «$parent»';
-  }
+  String get placeNewChildTitle => 'New sub-place';
 
   @override
-  String get placeRootLevel => 'Luogo principale';
+  String get placeParentGone => 'That place is no longer there.';
 
   @override
-  String get newRootPlaceHint => 'Nuovo luogo principale';
+  String get entrustToSomeone => 'Entrust to someone';
 
   @override
-  String get placeNewChildTitle => 'Nuovo sottoluogo';
+  String get giveToSomeone => 'Give to someone';
 
   @override
-  String get placeParentGone => 'Quel luogo non c\'è più.';
+  String get giveEditTitle => 'Give to someone';
 
   @override
-  String get entrustToSomeone => 'Affida a qualcuno';
+  String get giveRecipientLabel => 'Who are you giving it to?';
 
   @override
-  String get giveToSomeone => 'Dai a qualcuno';
+  String get giveRecipientChoose => 'Choose a person';
 
   @override
-  String get giveEditTitle => 'Dai a qualcuno';
+  String get giveDateLabel => 'When';
 
   @override
-  String get giveRecipientLabel => 'A chi lo dai?';
-
-  @override
-  String get giveRecipientChoose => 'Scegli una persona';
-
-  @override
-  String get giveDateLabel => 'Quando';
-
-  @override
-  String get giveNoteLabel => 'Nota (facoltativa)';
-
-  @override
-  String get markAsGiven => 'Segna come dato';
+  String get giveNoteLabel => 'Note (optional)';
 
   @override
   String get giveEffectHint =>
-      'Uscirà dalla Home e dal suo luogo, ma resterà al sicuro in Archivio.';
+      'It will leave the Home and its place, but stay safe in the Archive.';
 
   @override
   String givenToPerson(String name) {
-    return 'Dato a $name';
+    return 'Given to $name';
   }
 
   @override
   String givenOn(String date) {
-    return 'Dato il $date';
+    return 'Given on $date';
   }
 
   @override
-  String get givenSavedSnack => 'Dato. È annotato.';
+  String get givenSavedSnack => 'Given. It’s noted.';
 
   @override
-  String get transferDateFutureError => 'La data non può essere nel futuro.';
+  String get transferDateFutureError => 'The date can’t be in the future.';
 
   @override
-  String get resolveLoanBeforeGive => 'Segna prima l\'oggetto come restituito.';
+  String get reacquireAction => 'Bring back to my things';
 
   @override
-  String get reacquireAction => 'Torna tra i miei oggetti';
+  String get reacquireTitle => 'Bring back to my things';
 
   @override
-  String get reacquireTitle => 'Torna tra i miei oggetti';
+  String get reacquireDateLabel => 'When it came back';
 
   @override
-  String get reacquireDateLabel => 'Quando è tornato';
+  String get reacquiredTimeline => 'Back among your things';
 
   @override
-  String get reacquiredTimeline => 'Tornato tra i tuoi oggetti';
-
-  @override
-  String get reacquiredSnack => 'Bentornato tra le tue cose.';
+  String get reacquiredSnack => 'Welcome back among your things.';
 
   @override
   String get reacquireBeforeTransferError =>
-      'Non può essere prima di quando l\'hai dato.';
+      'It can’t be before you gave it away.';
 
   @override
-  String get backupMenu => 'Backup e ripristino';
-
-  @override
-  String get backupTitle => 'Backup e ripristino';
+  String get backupTitle => 'Backup and restore';
 
   @override
   String get backupIntro =>
-      'I tuoi dati restano sul dispositivo. Puoi creare un file che contiene il database e le foto di Pole².';
+      'Your data stays on the device. You can create a file that contains Pole²’s database and photos.';
 
   @override
   String get backupReassure =>
-      'Il backup resta a te: nessun cloud, nessun account. Custodiscilo dove preferisci.';
+      'The backup stays with you: no cloud, no account. Keep it wherever you prefer.';
 
   @override
   String get backupSectionTitle => 'Backup';
 
   @override
-  String get backupCreate => 'Crea backup';
+  String get backupCreate => 'Create backup';
 
   @override
-  String get backupEncryptToggle => 'Proteggi con password (consigliato)';
+  String get backupEncryptToggle => 'Protect with a password (recommended)';
 
   @override
   String get backupPasswordLabel => 'Password';
 
   @override
-  String get backupPasswordConfirmLabel => 'Conferma password';
+  String get backupPasswordConfirmLabel => 'Confirm password';
 
   @override
   String get backupPasswordWarning =>
-      'Questa password protegge il backup. Se la dimentichi, non sarà possibile recuperarlo.';
+      'This password protects the backup. If you forget it, the backup can’t be recovered.';
 
   @override
-  String get backupPasswordTooShort => 'Usa almeno 10 caratteri.';
+  String get backupPasswordTooShort => 'Use at least 10 characters.';
 
   @override
-  String get backupPasswordMismatch => 'Le password non coincidono.';
-
-  @override
-  String get backupPlaintextToggle => 'Crea un backup senza password';
+  String get backupPasswordMismatch => 'The passwords don’t match.';
 
   @override
   String get backupPlaintextWarning =>
-      'Questo backup non è protetto: chi ha il file può vederne il contenuto.';
+      'This backup isn’t protected: anyone with the file can see its contents.';
 
   @override
-  String get backupWorking => 'Sto preparando il backup…';
+  String get backupWorking => 'Preparing the backup…';
 
   @override
-  String get backupSaving => 'Sto salvando…';
+  String get backupSaving => 'Saving…';
 
   @override
   String get backupSuccess =>
-      'Backup creato. Ora è al sicuro dove hai scelto di conservarlo.';
+      'Backup created. It’s now safe wherever you chose to keep it.';
 
   @override
   String get backupFailure =>
-      'Non siamo riusciti a creare il backup. I tuoi dati sono rimasti al loro posto.';
+      'We couldn’t create the backup. Your data stayed where it was.';
 
   @override
   String backupIncomplete(String object) {
-    return 'Manca la foto di «$object». Aggiungila o rimuovila, poi riprova.';
+    return 'The photo of “$object” is missing. Add it or remove it, then try again.';
   }
 
   @override
-  String get backupLowSpace => 'Spazio insufficiente per creare il backup.';
+  String get backupLowSpace => 'Not enough space to create the backup.';
 
   @override
   String get backupDormantMissingWarning =>
-      'Alcune foto non più presenti non sono state incluse.';
+      'Some photos that are no longer present weren’t included.';
 
   @override
   String backupLastDate(String date) {
-    return 'Ultimo backup: $date';
+    return 'Last backup: $date';
   }
 
   @override
-  String get backupNever => 'Nessun backup ancora.';
+  String get restoreSectionTitle => 'Restore';
 
   @override
-  String get restoreSectionTitle => 'Ripristino';
+  String get restoreAction => 'Restore from a backup';
 
   @override
-  String get restoreAction => 'Ripristina da backup';
-
-  @override
-  String get restoreComingSoon => 'Disponibile nel prossimo aggiornamento.';
+  String get restoreComingSoon => 'Available in the next update.';
 
   @override
   String get restoreIntro =>
-      'Scegli un file di backup di Pole² per riportare qui i tuoi dati.';
+      'Choose a Pole² backup file to bring your data back here.';
 
   @override
   String get restoreReplaceWarning =>
-      'Il ripristino sostituisce i dati attuali di Pole² con quelli del backup. Le cose che hai adesso su questo dispositivo verranno rimpiazzate.';
+      'Restoring replaces Pole²’s current data with the data from the backup. The data currently on this device will be replaced.';
 
   @override
-  String get restoreConfirm => 'Ho capito, ripristina';
+  String get restoreConfirm => 'I understand, restore';
 
   @override
-  String get restorePasswordTitle => 'Password del backup';
+  String get restorePasswordTitle => 'Backup password';
 
   @override
   String get restorePasswordPrompt =>
-      'Questo backup è protetto. Inserisci la password.';
+      'This backup is protected. Enter the password.';
 
   @override
-  String get restoreSummaryTitle => 'Contenuto del backup';
+  String get restoreSummaryTitle => 'Backup contents';
 
   @override
   String restoreSummaryCounts(int objects, int photos, int places, int people) {
-    return '$objects oggetti · $photos foto · $places luoghi · $people persone';
+    return '$objects items · $photos photos · $places places · $people people';
   }
 
   @override
   String restoreSummaryCreated(String date) {
-    return 'Creato il $date';
+    return 'Created on $date';
   }
 
   @override
   String get restoreMigratedNote =>
-      'Backup di una versione precedente: verrà aggiornato durante il ripristino.';
+      'Backup from an earlier version: it will be updated during the restore.';
 
   @override
-  String get restorePreparing => 'Sto verificando il backup…';
+  String get restorePreparing => 'Checking the backup…';
 
   @override
-  String get restoreCloseTitle => 'Quasi fatto';
+  String get restoreCloseTitle => 'Almost done';
 
   @override
   String get restoreCloseBody =>
-      'Pole² verrà chiusa per completare il ripristino. Riaprila per continuare.';
+      'Pole² will close to finish the restore. Reopen it to continue.';
 
   @override
-  String get restoreCloseButton => 'Chiudi Pole²';
+  String get restoreCloseButton => 'Close Pole²';
 
   @override
-  String get restoreClosing => 'Chiusura…';
+  String get restoreClosing => 'Closing…';
 
   @override
   String get restoreCloseManual =>
-      'Chiudi Pole² dalle applicazioni recenti e riaprila per completare il ripristino.';
+      'Close Pole² from recent apps and reopen it to finish the restore.';
 
   @override
   String get restoreErrPrepareFailed =>
-      'Non siamo riusciti a preparare il ripristino. I tuoi dati sono rimasti al loro posto.';
+      'We couldn’t prepare the restore. Your data stayed where it was.';
 
   @override
   String get restoreDoneMessage =>
-      'Backup ripristinato. Le tue cose sono di nuovo al loro posto.';
+      'Backup restored. Your things are back where they belong.';
 
   @override
   String get restoreFailedMessage =>
-      'Ripristino non riuscito. I tuoi dati sono rimasti al loro posto.';
+      'Restore failed. Your data stayed where it was.';
 
   @override
-  String get restoreErrNewer => 'Aggiorna Pole² per aprire questo backup.';
+  String get restoreErrNewer => 'Update Pole² to open this backup.';
 
   @override
-  String get restoreErrPassword => 'Password errata oppure backup danneggiato.';
+  String get restoreErrPassword => 'Wrong password, or the backup is damaged.';
 
   @override
   String get restoreErrIncompleteMedia =>
-      'Nel backup mancano delle foto necessarie.';
+      'The backup is missing some required photos.';
 
   @override
-  String get restoreErrLowSpace => 'Spazio insufficiente per il ripristino.';
+  String get restoreErrLowSpace => 'Not enough space for the restore.';
 
   @override
   String get restoreErrAccess =>
-      'Pole² non ha ricevuto l\'accesso al file scelto. Prova a selezionarlo di nuovo.';
+      'Pole² wasn’t given access to the chosen file. Try selecting it again.';
 
   @override
   String get restoreErrUnreadable =>
-      'Non è stato possibile leggere il file scelto. Riprova.';
+      'The chosen file couldn’t be read. Try again.';
 
   @override
-  String get restoreErrEmpty => 'Il file scelto è vuoto.';
+  String get restoreErrEmpty => 'The chosen file is empty.';
 
   @override
-  String get restoreErrNotBackup => 'Questo file non è un backup di Pole².';
+  String get restoreErrNotBackup => 'This file isn’t a Pole² backup.';
 
   @override
-  String get restoreErrGeneric => 'Non è stato possibile leggere il backup.';
+  String get restoreErrGeneric => 'The backup couldn’t be read.';
 
   @override
-  String get peopleMenu => 'Persone';
+  String get peopleMenu => 'People';
 
   @override
-  String get peopleTitle => 'Persone';
+  String get peopleTitle => 'People';
 
   @override
-  String get peopleSearchHint => 'Cerca una persona';
+  String get peopleSearchHint => 'Search for a person';
 
   @override
   String get peopleEmpty =>
-      'Le persone a cui presti o dai qualcosa compaiono qui.';
+      'The people you lend or give things to appear here.';
 
   @override
-  String get peopleAddTooltip => 'Aggiungi persona';
+  String get peopleAddTooltip => 'Add person';
 
   @override
-  String get peopleAddTitle => 'Aggiungi persona';
+  String get peopleAddTitle => 'Add person';
 
   @override
   String peopleCountLent(int count) {
-    return '$count in prestito';
+    return '$count on loan';
   }
 
   @override
@@ -1287,87 +1171,87 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dati',
-      one: '1 dato',
+      other: '$count given',
+      one: '1 given',
     );
     return '$_temp0';
   }
 
   @override
-  String get personSectionLent => 'In prestito';
+  String get personSectionLent => 'On loan';
 
   @override
-  String get personSectionGiven => 'Dati';
+  String get personSectionGiven => 'Given';
 
   @override
-  String get personSectionHistory => 'Storico';
+  String get personSectionHistory => 'History';
 
   @override
   String personGivenOn(String date) {
-    return 'Dato il $date';
+    return 'Given on $date';
   }
 
   @override
   String personHistReturned(String date) {
-    return 'Restituito il $date';
+    return 'Returned on $date';
   }
 
   @override
   String personHistGiven(String date) {
-    return 'Dato il $date';
+    return 'Given on $date';
   }
 
   @override
   String personHistReacquired(String date) {
-    return 'Ripreso il $date';
+    return 'Taken back on $date';
   }
 
   @override
-  String get personEmpty => 'Ancora nessun collegamento con le tue cose.';
+  String get personEmpty => 'No connection with your things yet.';
 
   @override
-  String get personRename => 'Rinomina';
+  String get personRename => 'Rename';
 
   @override
-  String get personRenameTitle => 'Rinomina persona';
+  String get personRenameTitle => 'Rename person';
 
   @override
-  String get personRenameDuplicate => 'Esiste già una persona con questo nome.';
+  String get personRenameDuplicate => 'A person with this name already exists.';
 
   @override
-  String get personDelete => 'Rimuovi';
+  String get personDelete => 'Remove';
 
   @override
   String personDeleteTitle(String name) {
-    return 'Rimuovere $name?';
+    return 'Remove $name?';
   }
 
   @override
   String get personDeleteBody =>
-      'La cronologia resta leggibile. Puoi rimuovere una persona solo quando non ha nulla in prestito o che le hai dato.';
+      'Their history stays readable. You can remove a person only when they have nothing on loan or that you’ve given them.';
 
   @override
   String personDeleteBlocked(String name) {
-    return 'Non puoi rimuovere $name finché ha qualcosa in prestito o che le hai dato.';
+    return 'You can’t remove $name while they have something on loan or that you’ve given them.';
   }
 
   @override
-  String get personDeletedSnack => 'Persona rimossa.';
+  String get personDeletedSnack => 'Person removed.';
 
   @override
-  String get settingsMenu => 'Impostazioni';
+  String get settingsMenu => 'Settings';
 
   @override
-  String get settingsTitle => 'Impostazioni';
+  String get settingsTitle => 'Settings';
 
   @override
-  String get settingsLanguageSection => 'Lingua';
+  String get settingsLanguageSection => 'Language';
 
   @override
-  String get languageAuto => 'Automatico';
+  String get languageAuto => 'Automatic';
 
   @override
-  String get languageAutoSubtitle => 'Segue la lingua del dispositivo';
+  String get languageAutoSubtitle => 'Follows your device language';
 
   @override
   String get languageItalian => 'Italiano';
@@ -1376,225 +1260,221 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
-  String get settingsDataSection => 'Dati e spazio';
+  String get settingsDataSection => 'Data and space';
 
   @override
-  String get settingsDataRow => 'Backup, ripristino e spazio';
+  String get settingsDataRow => 'Backup, restore and space';
 
   @override
-  String get settingsDataRowSub => 'Crea backup, ripristina, libera spazio';
+  String get settingsDataRowSub => 'Create a backup, restore, free up space';
 
   @override
-  String get settingsUpdatesSection => 'Aggiornamenti';
+  String get settingsUpdatesSection => 'Updates';
 
   @override
-  String get settingsInstalledVersion => 'Versione installata';
+  String get settingsInstalledVersion => 'Installed version';
 
   @override
-  String get settingsUpdateCheck => 'Controlla aggiornamenti';
+  String get settingsUpdateCheck => 'Check for updates';
 
   @override
-  String get settingsUpdateCheckSub => 'Cerca una versione più recente';
+  String get settingsUpdateCheckSub => 'Look for a newer version';
 
   @override
-  String get settingsUpdateChecking => 'Sto controllando…';
+  String get settingsUpdateChecking => 'Checking…';
 
   @override
-  String get settingsUpdateUpToDate => 'Pole² è aggiornata.';
+  String get settingsUpdateUpToDate => 'Pole² is up to date.';
 
   @override
   String get settingsUpdateCheckFailed =>
-      'Non è stato possibile controllare ora. Riprova quando vuoi.';
+      'Couldn’t check right now. Try again whenever you like.';
 
   @override
   String get settingsUpdateManagedByStore =>
-      'Gli aggiornamenti arrivano dal Play Store.';
+      'Updates come from the Play Store.';
 
   @override
-  String get settingsInfoSection => 'Informazioni e supporto';
+  String get settingsInfoSection => 'Information and support';
 
   @override
-  String get settingsInfoRow => 'Informazioni e supporto';
+  String get settingsInfoRow => 'Information and support';
 
   @override
-  String get settingsInfoRowSub => 'Supporto, privacy, sito e licenze';
+  String get settingsInfoRowSub => 'Support, privacy, website and licenses';
 
   @override
-  String get infoMenu => 'Informazioni e supporto';
+  String get infoTitle => 'Information and support';
 
   @override
-  String get infoTitle => 'Informazioni e supporto';
-
-  @override
-  String get infoSlogan =>
-      'Custodisci ciò che conta, conta ciò che custodisci.';
+  String get infoSlogan => 'Keep what counts, and count what you keep.';
 
   @override
   String infoVersion(String version, String build) {
-    return 'Versione $version · build $build';
+    return 'Version $version · build $build';
   }
 
   @override
-  String get infoVersionUnknown => 'Versione non disponibile';
+  String get infoVersionUnknown => 'Version unavailable';
 
   @override
   String get infoLocalFirst =>
-      'I dati di Pole² restano sul tuo dispositivo, salvo i backup che scegli di esportare.';
+      'Pole²’s data stays on your device, except for the backups you choose to export.';
 
   @override
-  String get infoLinksTitle => 'Sul sito';
+  String get infoLinksTitle => 'On the web';
 
   @override
-  String get infoLinkSite => 'Sito di Pole²';
+  String get infoLinkSite => 'Pole² website';
 
   @override
-  String get infoLinkSiteSub => 'La casa pubblica di Pole²';
+  String get infoLinkSiteSub => 'Pole²’s public home';
 
   @override
-  String get infoLinkGuide => 'Guida';
+  String get infoLinkGuide => 'Guide';
 
   @override
-  String get infoLinkGuideSub => 'Come si usa, con calma';
+  String get infoLinkGuideSub => 'How to use it, calmly';
 
   @override
-  String get infoLinkNews => 'Novità';
+  String get infoLinkNews => 'What’s new';
 
   @override
-  String get infoLinkNewsSub => 'Cosa è cambiato';
+  String get infoLinkNewsSub => 'What has changed';
 
   @override
-  String get infoLinkSupport => 'Supporto';
+  String get infoLinkSupport => 'Support';
 
   @override
-  String get infoLinkSupportSub => 'Scrivici se qualcosa non torna';
+  String get infoLinkSupportSub => 'Write to us if something’s not right';
 
   @override
   String get infoLinkPrivacy => 'Privacy';
 
   @override
-  String get infoLinkPrivacySub => 'Cosa resta sul dispositivo';
+  String get infoLinkPrivacySub => 'What stays on the device';
 
   @override
   String infoLinkSemantics(String label) {
-    return '$label. Si apre nel browser.';
+    return '$label. Opens in the browser.';
   }
 
   @override
   String get infoLinkFootnote =>
-      'I link si aprono nel tuo browser. Il supporto riceve solo la versione installata.';
+      'Links open in your browser. Support only receives the installed version.';
 
   @override
   String get infoOpenFailed =>
-      'Non è stato possibile aprire il link. Puoi visitare pole2.app dal tuo browser.';
+      'Couldn’t open the link. You can visit pole2.app from your browser.';
 
   @override
   String get infoOpenNoBrowser =>
-      'Non c\'è un browser su questo dispositivo. Puoi visitare pole2.app da un altro dispositivo.';
+      'There’s no browser on this device. You can visit pole2.app from another device.';
 
   @override
-  String get infoLegalTitle => 'Sull\'app';
+  String get infoLegalTitle => 'About the app';
 
   @override
-  String get infoLicenses => 'Licenze open source';
+  String get infoLicenses => 'Open-source licenses';
 
   @override
-  String get infoLicensesSub => 'Le librerie che rendono possibile Pole²';
+  String get infoLicensesSub => 'The libraries that make Pole² possible';
 
   @override
   String infoLicensesSemantics(String label) {
-    return '$label. Rimane nell\'app.';
+    return '$label. Stays in the app.';
   }
 
   @override
   String get infoLicensesLegalese =>
-      'Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui mantengono ciascuna la propria licenza.';
+      'Pole² keeps your data on your device. Each open-source library listed here is distributed under its own license.';
 
   @override
-  String get permanentDeleteAction => 'Elimina definitivamente';
+  String get permanentDeleteAction => 'Delete permanently';
 
   @override
   String permanentDeleteTitle(String title) {
-    return 'Eliminare definitivamente «$title»?';
+    return 'Permanently delete “$title”?';
   }
 
   @override
   String get permanentDeleteBody =>
-      'Questa azione non può essere annullata. L\'oggetto, la sua cronologia e le sue foto verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato prima d\'ora conterrà ancora questo oggetto: ripristinando quel backup, l\'oggetto potrà tornare.';
+      'This can’t be undone. The item and its history will be deleted from this device. Photos and attachments used only by this item will be deleted too. Linked people and places remain. A backup created earlier can bring the item back.';
 
   @override
-  String get permanentDeleteConfirm => 'Elimina definitivamente';
+  String get permanentDeleteConfirm => 'Delete permanently';
 
   @override
-  String get permanentDeleteCancel => 'Annulla';
+  String get permanentDeleteCancel => 'Cancel';
 
   @override
   String permanentDeleteDoneSnack(String title) {
-    return '«$title» eliminato da questo dispositivo.';
+    return '“$title” deleted from this device.';
   }
 
   @override
   String permanentDeletePartialSnack(String title) {
-    return '«$title» è stato eliminato. Alcuni file verranno recuperati più tardi con «Libera spazio».';
+    return '“$title” was deleted. Some files will be reclaimed later with “Free up space”.';
   }
 
   @override
   String permanentDeleteFailedSnack(String title) {
-    return 'Non è stato possibile eliminare «$title». Nulla è stato modificato.';
+    return 'Couldn’t delete “$title”. Nothing was changed.';
   }
 
   @override
   String get permanentDeleteBlockedBackup =>
-      'Un backup è in corso. Attendi che finisca prima di eliminare.';
+      'A backup is in progress. Wait for it to finish before deleting.';
 
   @override
   String get permanentDeleteBlockedRestore =>
-      'Un ripristino è in corso. Completalo prima di eliminare definitivamente.';
+      'A restore is in progress. Finish it before deleting permanently.';
 
   @override
-  String get selectAction => 'Seleziona';
+  String get selectAction => 'Select';
 
   @override
   String selectionCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count selezionati',
-      one: '1 selezionato',
+      other: '$count selected',
+      one: '1 selected',
     );
     return '$_temp0';
   }
 
   @override
-  String get selectionClose => 'Chiudi selezione';
+  String get selectionClose => 'Close selection';
 
   @override
-  String get selectAll => 'Seleziona tutto';
+  String get selectAll => 'Select all';
 
   @override
-  String get selectAllResults => 'Seleziona tutti i risultati';
+  String get selectAllResults => 'Select all results';
 
   @override
   String permanentDeleteManyTitle(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Eliminare definitivamente $count oggetti?',
-      one: 'Eliminare definitivamente 1 oggetto?',
+      other: 'Permanently delete $count items?',
+      one: 'Permanently delete 1 item?',
     );
     return '$_temp0';
   }
 
   @override
   String get permanentDeleteManyBody =>
-      'Questa azione non può essere annullata. Gli oggetti selezionati, la loro cronologia e le foto usate soltanto da loro verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare questi oggetti.';
+      'This can’t be undone. The selected items and their history will be deleted from this device. Photos and attachments used only by these items will be deleted too. Linked people and places remain. A backup created earlier can bring the items back.';
 
   @override
   String permanentDeleteManyDoneSnack(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count oggetti eliminati da questo dispositivo.',
-      one: '1 oggetto eliminato da questo dispositivo.',
+      other: '$count items deleted from this device.',
+      one: '1 item deleted from this device.',
     );
     return '$_temp0';
   }
@@ -1605,91 +1485,89 @@ class AppLocalizationsEn extends AppLocalizations {
       count,
       locale: localeName,
       other:
-          '$count oggetti eliminati. Alcuni file verranno recuperati più tardi con «Libera spazio».',
+          '$count items deleted. Some files will be reclaimed later with “Free up space”.',
       one:
-          '1 oggetto eliminato. Alcuni file verranno recuperati più tardi con «Libera spazio».',
+          '1 item deleted. Some files will be reclaimed later with “Free up space”.',
     );
     return '$_temp0';
   }
 
   @override
   String get permanentDeleteManyFailedSnack =>
-      'Non è stato possibile eliminare gli oggetti selezionati. Nulla è stato modificato.';
+      'Couldn’t delete the selected items. Nothing was changed.';
 
   @override
   String get permanentDeleteStaleSnack =>
-      'La selezione è cambiata. Nulla è stato eliminato.';
+      'The selection changed. Nothing was deleted.';
 
   @override
-  String get storageSectionTitle => 'Spazio sul dispositivo';
+  String get storageSectionTitle => 'Space on the device';
 
   @override
   String get storageBody =>
-      'Pole² può cercare fotografie che non appartengono più ad alcun oggetto.';
+      'Pole² can look for photographs that no longer belong to any item.';
 
   @override
-  String get storageScanAction => 'Controlla lo spazio';
+  String get storageScanAction => 'Check the space';
 
   @override
-  String get storageScanning => 'Sto controllando lo spazio…';
+  String get storageScanning => 'Checking the space…';
 
   @override
-  String get storageNoCandidates =>
-      'Non ci sono file inutilizzati da rimuovere.';
+  String get storageNoCandidates => 'There are no unused files to remove.';
 
   @override
   String storageCandidates(String size) {
-    return 'Puoi liberare circa $size. Verranno rimosse soltanto fotografie che Pole² non utilizza più. Backup e dati recuperabili non verranno toccati.';
+    return 'You can free up about $size. Only photographs that Pole² no longer uses will be removed. Backups and recoverable data won’t be touched.';
   }
 
   @override
-  String get storageCleanCancel => 'Annulla';
+  String get storageCleanCancel => 'Cancel';
 
   @override
-  String get storageCleanAction => 'Libera spazio';
+  String get storageCleanAction => 'Free up space';
 
   @override
-  String get storageCleaning => 'Sto liberando spazio…';
+  String get storageCleaning => 'Freeing up space…';
 
   @override
   String storageDone(String size) {
-    return 'Spazio liberato: $size.';
+    return 'Space freed: $size.';
   }
 
   @override
   String storagePartial(String size) {
-    return 'Spazio liberato: $size. Alcuni file non sono stati rimossi.';
+    return 'Space freed: $size. Some files weren’t removed.';
   }
 
   @override
   String get storageScanFailed =>
-      'Non è stato possibile controllare lo spazio. Nulla è stato modificato.';
+      'Couldn’t check the space. Nothing was changed.';
 
   @override
   String get storageBlockedBackup =>
-      'Un backup è in corso. Attendi che finisca prima di liberare spazio.';
+      'A backup is in progress. Wait for it to finish before freeing up space.';
 
   @override
   String get storageBlockedRestore =>
-      'Un ripristino è in corso. Completalo prima di liberare spazio.';
+      'A restore is in progress. Finish it before freeing up space.';
 
   @override
   String get storageBlockedPermanentDelete =>
-      'Un\'eliminazione è in corso. Attendi che finisca prima di liberare spazio.';
+      'A deletion is in progress. Wait for it to finish before freeing up space.';
 
   @override
   String get mediaSaveBlockedBackup =>
-      'Un backup è in corso. Riprova a salvare la foto tra poco.';
+      'A backup is in progress. Try saving the photo again shortly.';
 
   @override
   String get mediaSaveBlockedRestore =>
-      'Un ripristino è in corso. Completalo prima di salvare la foto.';
+      'A restore is in progress. Finish it before saving the photo.';
 
   @override
   String get mediaSaveBlockedBusy =>
-      'Un\'operazione è in corso. Riprova a salvare la foto tra poco.';
+      'An operation is in progress. Try saving the photo again shortly.';
 
   @override
-  String get mediaSaveFailed =>
-      'Non è stato possibile salvare la foto. Nulla è stato modificato.';
+  String get mediaSaveFailed => 'Couldn’t save the photo. Nothing was changed.';
 }

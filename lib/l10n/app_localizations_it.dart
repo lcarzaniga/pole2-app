@@ -118,13 +118,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get tapToAddMore => 'Tocca per aggiungere altro';
 
   @override
-  String get documentsTitle => 'Documenti';
-
-  @override
-  String get documentsSubtitle => 'Qui vivono ricevute, manuali e garanzie.';
-
-  @override
-  String get recordEditorTitleNew => 'Nota';
+  String get recordEditorTitleNew => 'Nuova registrazione';
 
   @override
   String get recordEditorTitleEdit => 'Modifica';
@@ -134,9 +128,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get recordDescriptionHint => 'Scrivi una nota…';
-
-  @override
-  String get recordDetailsToggle => 'Aggiungi dettagli';
 
   @override
   String get recordCategoryLabel => 'Categoria';
@@ -158,9 +149,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get recordAttachmentsLabel => 'Allegati';
-
-  @override
-  String get recordAttachmentAdd => 'Aggiungi un documento';
 
   @override
   String get attachmentAdd => 'Aggiungi allegato';
@@ -410,9 +398,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get placePickerTitle => 'Dove si trova?';
 
   @override
-  String get newPlaceHint => 'Nuovo luogo — es. Garage, Ufficio';
-
-  @override
   String get addPlaceButton => 'Aggiungi';
 
   @override
@@ -526,23 +511,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get closeButton => 'Chiudi';
 
   @override
-  String get placeContentsEmpty => 'Qui non c\'è ancora niente.';
-
-  @override
   String get placeEmptyHint =>
       'Puoi assegnare un oggetto a questo luogo dalla sua scheda.';
-
-  @override
-  String placeItemCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count oggetti',
-      one: '1 oggetto',
-      zero: 'Nessun oggetto',
-    );
-    return '$_temp0';
-  }
 
   @override
   String get placeMoveAction => 'Sposta in un altro luogo';
@@ -563,28 +533,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get placeEditTooltip => 'Cambia luogo';
 
   @override
-  String get noteEditorTitle => 'Aggiungi una nota';
-
-  @override
-  String get noteHint => 'Scrivi una nota…';
-
-  @override
-  String get addNote => 'Aggiungi una nota';
-
-  @override
-  String get addDocument => 'Aggiungi un documento';
-
-  @override
-  String get documentAdd => 'Aggiungi';
-
-  @override
-  String get documentRemovedSnack => 'Documento rimosso.';
-
-  @override
   String get documentAddFailed => 'Nulla è andato perso. Riprova quando vuoi.';
-
-  @override
-  String get documentOpen => 'Apri';
 
   @override
   String get documentOpenFailed =>
@@ -605,9 +554,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get hubNote => 'Nota';
-
-  @override
-  String get hubDocument => 'Documento';
 
   @override
   String get hubDate => 'Data';
@@ -712,17 +658,6 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String photoCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count foto',
-      one: '1 foto',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get lendToSomeone => 'Presta a qualcuno';
 
   @override
@@ -748,9 +683,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get lentDateLabel => 'Data del prestito';
-
-  @override
-  String get expectedReturnLabel => 'Rientro previsto';
 
   @override
   String get expectedReturnOptional => 'Rientro previsto (facoltativo)';
@@ -800,11 +732,6 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String returnReminderTitle(String object) {
-    return 'Rientro: $object';
-  }
-
-  @override
   String get loanStarted => 'Prestato. È annotato.';
 
   @override
@@ -842,9 +769,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get archiveRemovedTab => 'Rimossi';
-
-  @override
-  String get archiveOpen => 'Apri';
 
   @override
   String get archiveRestore => 'Ripristina';
@@ -926,9 +850,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get placeMoveToRoot => 'Nessun luogo superiore';
 
   @override
-  String get placeParent => 'Luogo superiore';
-
-  @override
   String placeTotalCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -936,18 +857,6 @@ class AppLocalizationsIt extends AppLocalizations {
       other: '$count oggetti in tutto',
       one: '1 oggetto in tutto',
       zero: 'Niente',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String placeDirectCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count qui',
-      one: '1 qui',
-      zero: 'niente qui',
     );
     return '$_temp0';
   }
@@ -978,9 +887,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get placeNoDirectItems => 'Nessun oggetto direttamente qui.';
 
   @override
-  String get placeNoChildren => 'Nessun sottoluogo.';
-
-  @override
   String get placeDeleteHasChildren => 'Prima sposta o rimuovi i sottoluoghi.';
 
   @override
@@ -988,14 +894,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get placeMovedToSnack => 'Luogo spostato.';
-
-  @override
-  String placeCreateUnder(String parent) {
-    return 'Nuovo sottoluogo di «$parent»';
-  }
-
-  @override
-  String get placeRootLevel => 'Luogo principale';
 
   @override
   String get newRootPlaceHint => 'Nuovo luogo principale';
@@ -1028,9 +926,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get giveNoteLabel => 'Nota (facoltativa)';
 
   @override
-  String get markAsGiven => 'Segna come dato';
-
-  @override
   String get giveEffectHint =>
       'Uscirà dalla Home e dal suo luogo, ma resterà al sicuro in Archivio.';
 
@@ -1051,9 +946,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get transferDateFutureError => 'La data non può essere nel futuro.';
 
   @override
-  String get resolveLoanBeforeGive => 'Segna prima l\'oggetto come restituito.';
-
-  @override
   String get reacquireAction => 'Torna tra i miei oggetti';
 
   @override
@@ -1071,9 +963,6 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get reacquireBeforeTransferError =>
       'Non può essere prima di quando l\'hai dato.';
-
-  @override
-  String get backupMenu => 'Backup e ripristino';
 
   @override
   String get backupTitle => 'Backup e ripristino';
@@ -1112,9 +1001,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get backupPasswordMismatch => 'Le password non coincidono.';
 
   @override
-  String get backupPlaintextToggle => 'Crea un backup senza password';
-
-  @override
   String get backupPlaintextWarning =>
       'Questo backup non è protetto: chi ha il file può vederne il contenuto.';
 
@@ -1148,9 +1034,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String backupLastDate(String date) {
     return 'Ultimo backup: $date';
   }
-
-  @override
-  String get backupNever => 'Nessun backup ancora.';
 
   @override
   String get restoreSectionTitle => 'Ripristino';
@@ -1420,9 +1303,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsInfoRowSub => 'Supporto, privacy, sito e licenze';
 
   @override
-  String get infoMenu => 'Informazioni e supporto';
-
-  @override
   String get infoTitle => 'Informazioni e supporto';
 
   @override
@@ -1507,7 +1387,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get infoLicensesLegalese =>
-      'Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui mantengono ciascuna la propria licenza.';
+      'Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui sono distribuite ciascuna secondo la propria licenza.';
 
   @override
   String get permanentDeleteAction => 'Elimina definitivamente';
@@ -1519,7 +1399,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get permanentDeleteBody =>
-      'Questa azione non può essere annullata. L\'oggetto, la sua cronologia e le sue foto verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato prima d\'ora conterrà ancora questo oggetto: ripristinando quel backup, l\'oggetto potrà tornare.';
+      'Questa azione non può essere annullata. L\'oggetto e la sua cronologia verranno eliminati da questo dispositivo. Anche le foto e gli allegati usati soltanto da questo oggetto verranno eliminati. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare l\'oggetto.';
 
   @override
   String get permanentDeleteConfirm => 'Elimina definitivamente';
@@ -1586,7 +1466,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get permanentDeleteManyBody =>
-      'Questa azione non può essere annullata. Gli oggetti selezionati, la loro cronologia e le foto usate soltanto da loro verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare questi oggetti.';
+      'Questa azione non può essere annullata. Gli oggetti selezionati e la loro cronologia verranno eliminati da questo dispositivo. Anche le foto e gli allegati usati soltanto da questi oggetti verranno eliminati. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare gli oggetti.';
 
   @override
   String permanentDeleteManyDoneSnack(int count) {

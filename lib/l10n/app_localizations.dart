@@ -284,22 +284,10 @@ abstract class AppLocalizations {
   /// **'Tocca per aggiungere altro'**
   String get tapToAddMore;
 
-  /// RETIRE CANDIDATE (confirmed unused) - standalone Documenti section removed (M9 correction)
-  ///
-  /// In it, this message translates to:
-  /// **'Documenti'**
-  String get documentsTitle;
-
-  /// RETIRE CANDIDATE (confirmed unused) - standalone Documenti section removed (M9 correction)
-  ///
-  /// In it, this message translates to:
-  /// **'Qui vivono ricevute, manuali e garanzie.'**
-  String get documentsSubtitle;
-
   /// No description provided for @recordEditorTitleNew.
   ///
   /// In it, this message translates to:
-  /// **'Nota'**
+  /// **'Nuova registrazione'**
   String get recordEditorTitleNew;
 
   /// No description provided for @recordEditorTitleEdit.
@@ -319,12 +307,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Scrivi una nota…'**
   String get recordDescriptionHint;
-
-  /// RETIRE CANDIDATE (confirmed unused) - the «Aggiungi dettagli» disclosure was removed (M9 UX correction)
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi dettagli'**
-  String get recordDetailsToggle;
 
   /// No description provided for @recordCategoryLabel.
   ///
@@ -367,12 +349,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Allegati'**
   String get recordAttachmentsLabel;
-
-  /// RETIRE CANDIDATE (confirmed unused) - superseded by attachmentAdd (M9.1)
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi un documento'**
-  String get recordAttachmentAdd;
 
   /// No description provided for @attachmentAdd.
   ///
@@ -812,12 +788,6 @@ abstract class AppLocalizations {
   /// **'Dove si trova?'**
   String get placePickerTitle;
 
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Nuovo luogo — es. Garage, Ufficio'**
-  String get newPlaceHint;
-
   /// No description provided for @addPlaceButton.
   ///
   /// In it, this message translates to:
@@ -1010,23 +980,11 @@ abstract class AppLocalizations {
   /// **'Chiudi'**
   String get closeButton;
 
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Qui non c\'è ancora niente.'**
-  String get placeContentsEmpty;
-
   /// No description provided for @placeEmptyHint.
   ///
   /// In it, this message translates to:
   /// **'Puoi assegnare un oggetto a questo luogo dalla sua scheda.'**
   String get placeEmptyHint;
-
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'{count, plural, =0{Nessun oggetto} =1{1 oggetto} other{{count} oggetti}}'**
-  String placeItemCount(int count);
 
   /// No description provided for @placeMoveAction.
   ///
@@ -1064,53 +1022,11 @@ abstract class AppLocalizations {
   /// **'Cambia luogo'**
   String get placeEditTooltip;
 
-  /// RETIRE CANDIDATE (confirmed unused) - the note editor was replaced by the record editor (M9 correction)
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi una nota'**
-  String get noteEditorTitle;
-
-  /// RETIRE CANDIDATE (confirmed unused) - superseded by recordDescriptionHint (M9 correction)
-  ///
-  /// In it, this message translates to:
-  /// **'Scrivi una nota…'**
-  String get noteHint;
-
-  /// RETIRE CANDIDATE (confirmed unused) - the note editor was replaced by the record editor (M9 correction)
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi una nota'**
-  String get addNote;
-
-  /// RETIRE CANDIDATE (confirmed unused) - standalone document flow removed (M9 correction)
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi un documento'**
-  String get addDocument;
-
-  /// RETIRE CANDIDATE (confirmed unused) - standalone document flow removed (M9 correction)
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi'**
-  String get documentAdd;
-
-  /// RETIRE CANDIDATE (confirmed unused) - standalone document flow removed (M9 correction)
-  ///
-  /// In it, this message translates to:
-  /// **'Documento rimosso.'**
-  String get documentRemovedSnack;
-
   /// No description provided for @documentAddFailed.
   ///
   /// In it, this message translates to:
   /// **'Nulla è andato perso. Riprova quando vuoi.'**
   String get documentAddFailed;
-
-  /// RETIRE CANDIDATE (confirmed unused) - standalone document flow removed (M9 correction)
-  ///
-  /// In it, this message translates to:
-  /// **'Apri'**
-  String get documentOpen;
 
   /// No description provided for @documentOpenFailed.
   ///
@@ -1147,12 +1063,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Nota'**
   String get hubNote;
-
-  /// RETIRE CANDIDATE (confirmed unused) - the «Documento» hub action was removed (M9 correction)
-  ///
-  /// In it, this message translates to:
-  /// **'Documento'**
-  String get hubDocument;
 
   /// No description provided for @hubDate.
   ///
@@ -1328,12 +1238,6 @@ abstract class AppLocalizations {
   /// **'{current} di {total}'**
   String photoPosition(int current, int total);
 
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'{count, plural, =1{1 foto} other{{count} foto}}'**
-  String photoCount(int count);
-
   /// No description provided for @lendToSomeone.
   ///
   /// In it, this message translates to:
@@ -1387,12 +1291,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Data del prestito'**
   String get lentDateLabel;
-
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Rientro previsto'**
-  String get expectedReturnLabel;
 
   /// No description provided for @expectedReturnOptional.
   ///
@@ -1472,12 +1370,6 @@ abstract class AppLocalizations {
   /// **'Restituito il {date}'**
   String returnedOn(String date);
 
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Rientro: {object}'**
-  String returnReminderTitle(String object);
-
   /// No description provided for @loanStarted.
   ///
   /// In it, this message translates to:
@@ -1549,12 +1441,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Rimossi'**
   String get archiveRemovedTab;
-
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Apri'**
-  String get archiveOpen;
 
   /// No description provided for @archiveRestore.
   ///
@@ -1706,23 +1592,11 @@ abstract class AppLocalizations {
   /// **'Nessun luogo superiore'**
   String get placeMoveToRoot;
 
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Luogo superiore'**
-  String get placeParent;
-
   /// No description provided for @placeTotalCount.
   ///
   /// In it, this message translates to:
   /// **'{count, plural, =0{Niente} =1{1 oggetto in tutto} other{{count} oggetti in tutto}}'**
   String placeTotalCount(int count);
-
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'{count, plural, =0{niente qui} =1{1 qui} other{{count} qui}}'**
-  String placeDirectCount(int count);
 
   /// No description provided for @placeSubtreeCount.
   ///
@@ -1754,12 +1628,6 @@ abstract class AppLocalizations {
   /// **'Nessun oggetto direttamente qui.'**
   String get placeNoDirectItems;
 
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun sottoluogo.'**
-  String get placeNoChildren;
-
   /// No description provided for @placeDeleteHasChildren.
   ///
   /// In it, this message translates to:
@@ -1777,18 +1645,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Luogo spostato.'**
   String get placeMovedToSnack;
-
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Nuovo sottoluogo di «{parent}»'**
-  String placeCreateUnder(String parent);
-
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Luogo principale'**
-  String get placeRootLevel;
 
   /// No description provided for @newRootPlaceHint.
   ///
@@ -1850,12 +1706,6 @@ abstract class AppLocalizations {
   /// **'Nota (facoltativa)'**
   String get giveNoteLabel;
 
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Segna come dato'**
-  String get markAsGiven;
-
   /// No description provided for @giveEffectHint.
   ///
   /// In it, this message translates to:
@@ -1885,12 +1735,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'La data non può essere nel futuro.'**
   String get transferDateFutureError;
-
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Segna prima l\'oggetto come restituito.'**
-  String get resolveLoanBeforeGive;
 
   /// No description provided for @reacquireAction.
   ///
@@ -1927,12 +1771,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Non può essere prima di quando l\'hai dato.'**
   String get reacquireBeforeTransferError;
-
-  /// RETIRE CANDIDATE (confirmed unused) - overflow entry replaced by settingsMenu (1.0.26 checkpoint A)
-  ///
-  /// In it, this message translates to:
-  /// **'Backup e ripristino'**
-  String get backupMenu;
 
   /// No description provided for @backupTitle.
   ///
@@ -2000,12 +1838,6 @@ abstract class AppLocalizations {
   /// **'Le password non coincidono.'**
   String get backupPasswordMismatch;
 
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Crea un backup senza password'**
-  String get backupPlaintextToggle;
-
   /// No description provided for @backupPlaintextWarning.
   ///
   /// In it, this message translates to:
@@ -2059,12 +1891,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Ultimo backup: {date}'**
   String backupLastDate(String date);
-
-  /// SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun backup ancora.'**
-  String get backupNever;
 
   /// No description provided for @restoreSectionTitle.
   ///
@@ -2516,12 +2342,6 @@ abstract class AppLocalizations {
   /// **'Supporto, privacy, sito e licenze'**
   String get settingsInfoRowSub;
 
-  /// RETIRE CANDIDATE (confirmed unused) - overflow entry replaced by settingsMenu (1.0.26 checkpoint A)
-  ///
-  /// In it, this message translates to:
-  /// **'Informazioni e supporto'**
-  String get infoMenu;
-
   /// No description provided for @infoTitle.
   ///
   /// In it, this message translates to:
@@ -2669,7 +2489,7 @@ abstract class AppLocalizations {
   /// No description provided for @infoLicensesLegalese.
   ///
   /// In it, this message translates to:
-  /// **'Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui mantengono ciascuna la propria licenza.'**
+  /// **'Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui sono distribuite ciascuna secondo la propria licenza.'**
   String get infoLicensesLegalese;
 
   /// No description provided for @permanentDeleteAction.
@@ -2687,7 +2507,7 @@ abstract class AppLocalizations {
   /// No description provided for @permanentDeleteBody.
   ///
   /// In it, this message translates to:
-  /// **'Questa azione non può essere annullata. L\'oggetto, la sua cronologia e le sue foto verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato prima d\'ora conterrà ancora questo oggetto: ripristinando quel backup, l\'oggetto potrà tornare.'**
+  /// **'Questa azione non può essere annullata. L\'oggetto e la sua cronologia verranno eliminati da questo dispositivo. Anche le foto e gli allegati usati soltanto da questo oggetto verranno eliminati. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare l\'oggetto.'**
   String get permanentDeleteBody;
 
   /// No description provided for @permanentDeleteConfirm.
@@ -2771,7 +2591,7 @@ abstract class AppLocalizations {
   /// No description provided for @permanentDeleteManyBody.
   ///
   /// In it, this message translates to:
-  /// **'Questa azione non può essere annullata. Gli oggetti selezionati, la loro cronologia e le foto usate soltanto da loro verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare questi oggetti.'**
+  /// **'Questa azione non può essere annullata. Gli oggetti selezionati e la loro cronologia verranno eliminati da questo dispositivo. Anche le foto e gli allegati usati soltanto da questi oggetti verranno eliminati. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare gli oggetti.'**
   String get permanentDeleteManyBody;
 
   /// Success snackbar after batch permanent deletion.

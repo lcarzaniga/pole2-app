@@ -52,17 +52,11 @@
   "detailsEmptySubtitle": "Da dove viene, quanto è costato, quando l'hai preso.",
   "tapToAddMore": "Tocca per aggiungere altro",
 
-  "documentsTitle": "Documenti",
-  "@documentsTitle": { "description": "RETIRE CANDIDATE (confirmed unused) - standalone Documenti section removed (M9 correction)" },
-  "documentsSubtitle": "Qui vivono ricevute, manuali e garanzie.",
-  "@documentsSubtitle": { "description": "RETIRE CANDIDATE (confirmed unused) - standalone Documenti section removed (M9 correction)" },
 
-  "recordEditorTitleNew": "Nota",
+  "recordEditorTitleNew": "Nuova registrazione",
   "recordEditorTitleEdit": "Modifica",
   "recordDescriptionLabel": "Descrizione",
   "recordDescriptionHint": "Scrivi una nota…",
-  "recordDetailsToggle": "Aggiungi dettagli",
-  "@recordDetailsToggle": { "description": "RETIRE CANDIDATE (confirmed unused) - the «Aggiungi dettagli» disclosure was removed (M9 UX correction)" },
   "recordCategoryLabel": "Categoria",
   "recordReferenceDateLabel": "Data",
   "recordValidityLabel": "Validità",
@@ -70,8 +64,6 @@
   "recordValidityEndPrefix": "Scade il",
   "recordRemindMe": "Ricordamelo",
   "recordAttachmentsLabel": "Allegati",
-  "recordAttachmentAdd": "Aggiungi un documento",
-  "@recordAttachmentAdd": { "description": "RETIRE CANDIDATE (confirmed unused) - superseded by attachmentAdd (M9.1)" },
   "attachmentAdd": "Aggiungi allegato",
   "attachSheetTitle": "Aggiungi un allegato",
   "attachChoosePhoto": "Scegli una foto",
@@ -171,8 +163,6 @@
   "placeLabel": "Luogo",
   "placeAssignHint": "Tocca per assegnare un luogo",
   "placePickerTitle": "Dove si trova?",
-  "newPlaceHint": "Nuovo luogo — es. Garage, Ufficio",
-  "@newPlaceHint": { "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring." },
   "addPlaceButton": "Aggiungi",
   "placeManageTooltip": "Gestisci",
   "placeDelete": "Elimina",
@@ -214,43 +204,20 @@
   "updateWithoutContinue": "Continua",
   "updateWithoutBack": "Indietro",
   "closeButton": "Chiudi",
-  "placeContentsEmpty": "Qui non c'è ancora niente.",
-  "@placeContentsEmpty": { "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring." },
   "placeEmptyHint": "Puoi assegnare un oggetto a questo luogo dalla sua scheda.",
-  "placeItemCount": "{count, plural, =0{Nessun oggetto} =1{1 oggetto} other{{count} oggetti}}",
-  "@placeItemCount": {
-    "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.",
-    "placeholders": { "count": { "type": "int" } }
-  },
   "placeMoveAction": "Sposta in un altro luogo",
   "placeRemoveAction": "Rimuovi dal luogo",
   "placeMovedSnack": "Oggetto spostato.",
   "placeRemovedFromSnack": "Rimosso dal luogo.",
   "itemActionsTooltip": "Opzioni",
   "placeEditTooltip": "Cambia luogo",
-  "noteEditorTitle": "Aggiungi una nota",
-  "@noteEditorTitle": { "description": "RETIRE CANDIDATE (confirmed unused) - the note editor was replaced by the record editor (M9 correction)" },
-  "noteHint": "Scrivi una nota…",
-  "@noteHint": { "description": "RETIRE CANDIDATE (confirmed unused) - superseded by recordDescriptionHint (M9 correction)" },
-  "addNote": "Aggiungi una nota",
-  "@addNote": { "description": "RETIRE CANDIDATE (confirmed unused) - the note editor was replaced by the record editor (M9 correction)" },
-  "addDocument": "Aggiungi un documento",
-  "@addDocument": { "description": "RETIRE CANDIDATE (confirmed unused) - standalone document flow removed (M9 correction)" },
-  "documentAdd": "Aggiungi",
-  "@documentAdd": { "description": "RETIRE CANDIDATE (confirmed unused) - standalone document flow removed (M9 correction)" },
-  "documentRemovedSnack": "Documento rimosso.",
-  "@documentRemovedSnack": { "description": "RETIRE CANDIDATE (confirmed unused) - standalone document flow removed (M9 correction)" },
   "documentAddFailed": "Nulla è andato perso. Riprova quando vuoi.",
-  "documentOpen": "Apri",
-  "@documentOpen": { "description": "RETIRE CANDIDATE (confirmed unused) - standalone document flow removed (M9 correction)" },
   "documentOpenFailed": "Non è stato possibile aprire l'allegato. Riprova quando vuoi.",
   "documentOpenNoApp": "Nessuna app disponibile per aprire questo tipo di file.",
   "documentMissing": "Questo allegato non è più disponibile.",
   "documentRemoveTooltip": "Rimuovi allegato",
   "hubPhoto": "Foto",
   "hubNote": "Nota",
-  "hubDocument": "Documento",
-  "@hubDocument": { "description": "RETIRE CANDIDATE (confirmed unused) - the «Documento» hub action was removed (M9 correction)" },
   "hubDate": "Data",
   "hubPlace": "Luogo",
   "searchHint": "Cerca",
@@ -297,11 +264,6 @@
       "total": { "type": "int" }
     }
   },
-  "photoCount": "{count, plural, =1{1 foto} other{{count} foto}}",
-  "@photoCount": {
-    "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.",
-    "placeholders": { "count": { "type": "int" } }
-  },
 
   "lendToSomeone": "Presta a qualcuno",
   "lendEditTitle": "Modifica prestito",
@@ -312,8 +274,6 @@
   "personNameHint": "Nome",
   "addPersonButton": "Aggiungi",
   "lentDateLabel": "Data del prestito",
-  "expectedReturnLabel": "Rientro previsto",
-  "@expectedReturnLabel": { "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring." },
   "expectedReturnOptional": "Rientro previsto (facoltativo)",
   "noReturnDate": "Nessuna data di rientro",
   "returnDateClear": "Togli la data",
@@ -339,11 +299,6 @@
   "@returnedOn": {
     "placeholders": { "date": { "type": "String" } }
   },
-  "returnReminderTitle": "Rientro: {object}",
-  "@returnReminderTitle": {
-    "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.",
-    "placeholders": { "object": { "type": "String" } }
-  },
   "loanStarted": "Prestato. È annotato.",
   "loanUpdated": "Prestito aggiornato.",
   "loanReturned": "Restituito. Bentornato.",
@@ -357,8 +312,6 @@
   "archiveMenu": "Archivio",
   "archiveKeptTab": "Conservati",
   "archiveRemovedTab": "Rimossi",
-  "archiveOpen": "Apri",
-  "@archiveOpen": { "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring." },
   "archiveRestore": "Ripristina",
   "archiveRestoredSnack": "Ripristinato.",
   "removedRestoredSnack": "Ripristinato.",
@@ -388,15 +341,8 @@
   "placeDirectItemsSection": "Qui direttamente",
   "placeMove": "Sposta luogo",
   "placeMoveToRoot": "Nessun luogo superiore",
-  "placeParent": "Luogo superiore",
-  "@placeParent": { "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring." },
   "placeTotalCount": "{count, plural, =0{Niente} =1{1 oggetto in tutto} other{{count} oggetti in tutto}}",
   "@placeTotalCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "placeDirectCount": "{count, plural, =0{niente qui} =1{1 qui} other{{count} qui}}",
-  "@placeDirectCount": {
-    "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.",
     "placeholders": { "count": { "type": "int" } }
   },
   "placeSubtreeCount": "{count, plural, =0{vuoto} =1{1 oggetto} other{{count} oggetti}}",
@@ -407,18 +353,9 @@
   "placesEmptyHint": "Crea un luogo per iniziare a organizzare le tue cose.",
   "placeEmptyTree": "Qui non c'è ancora niente.",
   "placeNoDirectItems": "Nessun oggetto direttamente qui.",
-  "placeNoChildren": "Nessun sottoluogo.",
-  "@placeNoChildren": { "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring." },
   "placeDeleteHasChildren": "Prima sposta o rimuovi i sottoluoghi.",
   "placeMoveInvalid": "Non puoi spostarlo lì.",
   "placeMovedToSnack": "Luogo spostato.",
-  "placeCreateUnder": "Nuovo sottoluogo di «{parent}»",
-  "@placeCreateUnder": {
-    "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring.",
-    "placeholders": { "parent": { "type": "String" } }
-  },
-  "placeRootLevel": "Luogo principale",
-  "@placeRootLevel": { "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring." },
   "newRootPlaceHint": "Nuovo luogo principale",
   "placeNewChildTitle": "Nuovo sottoluogo",
   "placeParentGone": "Quel luogo non c'è più.",
@@ -430,8 +367,6 @@
   "giveRecipientChoose": "Scegli una persona",
   "giveDateLabel": "Quando",
   "giveNoteLabel": "Nota (facoltativa)",
-  "markAsGiven": "Segna come dato",
-  "@markAsGiven": { "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring." },
   "giveEffectHint": "Uscirà dalla Home e dal suo luogo, ma resterà al sicuro in Archivio.",
   "givenToPerson": "Dato a {name}",
   "@givenToPerson": {
@@ -443,8 +378,6 @@
   },
   "givenSavedSnack": "Dato. È annotato.",
   "transferDateFutureError": "La data non può essere nel futuro.",
-  "resolveLoanBeforeGive": "Segna prima l'oggetto come restituito.",
-  "@resolveLoanBeforeGive": { "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring." },
   "reacquireAction": "Torna tra i miei oggetti",
   "reacquireTitle": "Torna tra i miei oggetti",
   "reacquireDateLabel": "Quando è tornato",
@@ -452,8 +385,6 @@
   "reacquiredSnack": "Bentornato tra le tue cose.",
   "reacquireBeforeTransferError": "Non può essere prima di quando l'hai dato.",
 
-  "backupMenu": "Backup e ripristino",
-  "@backupMenu": { "description": "RETIRE CANDIDATE (confirmed unused) - overflow entry replaced by settingsMenu (1.0.26 checkpoint A)" },
   "backupTitle": "Backup e ripristino",
   "backupIntro": "I tuoi dati restano sul dispositivo. Puoi creare un file che contiene il database e le foto di Pole².",
   "backupReassure": "Il backup resta a te: nessun cloud, nessun account. Custodiscilo dove preferisci.",
@@ -465,8 +396,6 @@
   "backupPasswordWarning": "Questa password protegge il backup. Se la dimentichi, non sarà possibile recuperarlo.",
   "backupPasswordTooShort": "Usa almeno 10 caratteri.",
   "backupPasswordMismatch": "Le password non coincidono.",
-  "backupPlaintextToggle": "Crea un backup senza password",
-  "@backupPlaintextToggle": { "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring." },
   "backupPlaintextWarning": "Questo backup non è protetto: chi ha il file può vederne il contenuto.",
   "backupWorking": "Sto preparando il backup…",
   "backupSaving": "Sto salvando…",
@@ -482,8 +411,6 @@
   "@backupLastDate": {
     "placeholders": { "date": { "type": "String" } }
   },
-  "backupNever": "Nessun backup ancora.",
-  "@backupNever": { "description": "SUSPECTED ORPHAN - no lib reference; verify against the product before retiring." },
   "restoreSectionTitle": "Ripristino",
   "restoreAction": "Ripristina da backup",
   "restoreComingSoon": "Disponibile nel prossimo aggiornamento.",
@@ -597,8 +524,6 @@
   "settingsInfoRow": "Informazioni e supporto",
   "settingsInfoRowSub": "Supporto, privacy, sito e licenze",
 
-  "infoMenu": "Informazioni e supporto",
-  "@infoMenu": { "description": "RETIRE CANDIDATE (confirmed unused) - overflow entry replaced by settingsMenu (1.0.26 checkpoint A)" },
   "infoTitle": "Informazioni e supporto",
   "infoSlogan": "Custodisci ciò che conta, conta ciò che custodisci.",
   "infoVersion": "Versione {version} · build {build}",
@@ -638,14 +563,14 @@
     "description": "Spoken label for the licenses row: the purpose plus the fact that it stays inside the app (no browser).",
     "placeholders": { "label": { "type": "String" } }
   },
-  "infoLicensesLegalese": "Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui mantengono ciascuna la propria licenza.",
+  "infoLicensesLegalese": "Pole² conserva i tuoi dati sul dispositivo. Le librerie open source elencate qui sono distribuite ciascuna secondo la propria licenza.",
   "permanentDeleteAction": "Elimina definitivamente",
   "permanentDeleteTitle": "Eliminare definitivamente «{title}»?",
   "@permanentDeleteTitle": {
     "description": "Confirmation dialog title for permanently deleting one removed possession.",
     "placeholders": { "title": { "type": "String" } }
   },
-  "permanentDeleteBody": "Questa azione non può essere annullata. L'oggetto, la sua cronologia e le sue foto verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato prima d'ora conterrà ancora questo oggetto: ripristinando quel backup, l'oggetto potrà tornare.",
+  "permanentDeleteBody": "Questa azione non può essere annullata. L'oggetto e la sua cronologia verranno eliminati da questo dispositivo. Anche le foto e gli allegati usati soltanto da questo oggetto verranno eliminati. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare l'oggetto.",
   "permanentDeleteConfirm": "Elimina definitivamente",
   "permanentDeleteCancel": "Annulla",
   "permanentDeleteDoneSnack": "«{title}» eliminato da questo dispositivo.",
@@ -679,7 +604,7 @@
     "description": "Confirmation dialog title for permanently deleting several removed possessions.",
     "placeholders": { "count": { "type": "int" } }
   },
-  "permanentDeleteManyBody": "Questa azione non può essere annullata. Gli oggetti selezionati, la loro cronologia e le foto usate soltanto da loro verranno eliminati da questo dispositivo. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare questi oggetti.",
+  "permanentDeleteManyBody": "Questa azione non può essere annullata. Gli oggetti selezionati e la loro cronologia verranno eliminati da questo dispositivo. Anche le foto e gli allegati usati soltanto da questi oggetti verranno eliminati. Le persone e i luoghi collegati restano. Un backup creato in precedenza potrà riportare gli oggetti.",
   "permanentDeleteManyDoneSnack": "{count, plural, one{1 oggetto eliminato da questo dispositivo.} other{{count} oggetti eliminati da questo dispositivo.}}",
   "@permanentDeleteManyDoneSnack": {
     "description": "Success snackbar after batch permanent deletion.",
