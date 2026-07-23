@@ -6,7 +6,10 @@ import 'package:http/http.dart' as http;
 import 'model/update_release.dart';
 
 /// The public update endpoint — static and **HTTPS only**.
-const String kLatestJsonUrl = 'https://pole2.it/releases/latest.json';
+///
+/// Uses the canonical domain (`pole2.app`); `pole2.it` serves byte-identical
+/// JSON and remains a working alias, so older installs keep updating.
+const String kLatestJsonUrl = 'https://pole2.app/releases/latest.json';
 
 /// Fetches and validates the release descriptor from [url].
 ///

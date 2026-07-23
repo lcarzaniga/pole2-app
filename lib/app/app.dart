@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../features/settings/application/language_preference.dart';
 import '../l10n/app_localizations.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
@@ -8,20 +9,33 @@ import 'theme/app_theme.dart';
 /// Root widget: wires theme, routing and localization into a single
 /// [MaterialApp.router].
 ///
-/// Localization is Italian-only for now. English is not yet a complete
-/// translation, so it is deliberately NOT exposed as a supported locale: the
-/// app is pinned to Italian regardless of the device language. This guarantees
-/// a fully Italian interface with no possibility of mixed Italian/English text.
-/// (See [supportedLocale] and the note in `lib/l10n/app_en.arb`.)
+/// Pole² ships two languages. The person's choice (Impostazioni → Lingua) is a
+/// device preference read from [languagePreferenceProvider]:
+///
+///  * **Automatico** passes `locale: null`, so Flutter hands the device locale
+///    to [resolveAppLocale], which applies the single rule — `it` (any region)
+///    stays Italian, **everything else becomes English**.
+///  * **Italiano / English** pass that locale explicitly, overriding the device.
+///
+/// Because the preference is watched, changing it rebuilds [MaterialApp] and the
+/// whole interface switches language immediately — no restart.
+///
+/// English is the universal fallback. That is only honest while `app_en.arb` is
+/// complete: any untranslated key would silently fall back to the Italian
+/// template. Completeness is therefore asserted by a test, never assumed — and
+/// no build is published until it passes (English content lands in a later
+/// checkpoint of this milestone).
 class KobeApp extends ConsumerWidget {
   const KobeApp({super.key});
 
-  /// The single locale the app currently supports and is pinned to.
-  static const Locale supportedLocale = Locale('it');
+  /// The locales Pole² ships: Italian (the semantic source) and English (the
+  /// universal fallback).
+  static const List<Locale> supportedLocales = kSupportedLocales;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final language = ref.watch(languagePreferenceProvider);
 
     return MaterialApp.router(
       // Use the callback's context (below MaterialApp's Localizations), not the
@@ -32,10 +46,11 @@ class KobeApp extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      // Italian only. Pinning both the supported list and the active locale
-      // means any device language resolves entirely to Italian — never English.
-      supportedLocales: const [supportedLocale],
-      locale: supportedLocale,
+      supportedLocales: supportedLocales,
+      // null while "Automatico" → the device locale reaches the callback below.
+      locale: language.locale,
+      localeResolutionCallback: (deviceLocale, _) =>
+          resolveAppLocale(deviceLocale),
       routerConfig: router,
     );
   }

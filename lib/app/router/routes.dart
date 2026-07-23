@@ -35,6 +35,10 @@ abstract final class Routes {
   static const String informationName = 'information';
   static const String informationPath = '/information';
 
+  /// Impostazioni: language, data & space, updates, information.
+  static const String settingsName = 'settings';
+  static const String settingsPath = '/settings';
+
   /// Create a new possession.
   static const String newPossessionName = 'new-possession';
   static const String newPossessionPath = '/possession/new';

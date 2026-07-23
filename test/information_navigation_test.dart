@@ -15,59 +15,74 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  testWidgets('Home → Informazioni e supporto → Back returns to Home', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(360, 780);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+  testWidgets(
+    'Home → Impostazioni → Informazioni e supporto → Back returns to Home',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 780);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      tester.platformDispatcher.localeTestValue = const Locale('it');
+      tester.platformDispatcher.localesTestValue = const [Locale('it')];
+      addTearDown(tester.platformDispatcher.clearLocaleTestValue);
+      addTearDown(tester.platformDispatcher.clearLocalesTestValue);
 
-    final db = AppDatabase.forTesting(NativeDatabase.memory());
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          databaseProvider.overrideWith((ref) {
-            ref.onDispose(db.close);
-            return db;
-          }),
-          installedBuildProvider.overrideWith(
-            (ref) async =>
-                const InstalledBuild(version: '1.0.16', buildNumber: '2021'),
-          ),
-        ],
-        child: const KobeApp(),
-      ),
-    );
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            databaseProvider.overrideWith((ref) {
+              ref.onDispose(db.close);
+              return db;
+            }),
+            installedBuildProvider.overrideWith(
+              (ref) async =>
+                  const InstalledBuild(version: '1.0.16', buildNumber: '2021'),
+            ),
+          ],
+          child: const KobeApp(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
 
-    // Open the overflow and go.
-    await tester.tap(find.byIcon(Icons.more_vert));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Informazioni e supporto'));
-    await tester.pumpAndSettle();
+      // Informazioni now lives under Impostazioni: overflow → Impostazioni →
+      // Informazioni e supporto.
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Impostazioni'));
+      await tester.pumpAndSettle();
+      // The row sits below the fold on a 360×780 screen — scroll to it first.
+      await tester.scrollUntilVisible(
+        find.text('Supporto, privacy, sito e licenze'),
+        200,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Supporto, privacy, sito e licenze'));
+      await tester.pumpAndSettle();
 
-    expect(find.byType(InformationScreen), findsOneWidget);
-    expect(find.text('Versione 1.0.16 · build 2021'), findsOneWidget);
-    expect(tester.takeException(), isNull);
+      expect(find.byType(InformationScreen), findsOneWidget);
+      expect(find.text('Versione 1.0.16 · build 2021'), findsOneWidget);
+      expect(tester.takeException(), isNull);
 
-    // Back returns naturally to Home — the app bar's own back affordance.
-    final backButton = find.byType(BackButton);
-    expect(backButton, findsOneWidget);
-    await tester.tap(backButton);
-    await tester.pumpAndSettle();
+      // Back returns to Impostazioni, then to Home — each screen's own back
+      // affordance, no special-casing.
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+      expect(find.byType(InformationScreen), findsNothing);
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
 
-    expect(find.byType(InformationScreen), findsNothing);
-    // Home is itself again: the launcher is present and still blooms exactly
-    // the two creation methods (M7.0 is untouched by this milestone).
-    await tester.tap(find.bySemanticsLabel('Conserva qualcosa'));
-    await tester.pumpAndSettle();
-    expect(find.byType(TurtleShellMenu), findsOneWidget);
-    expect(find.text('Dalla foto'), findsOneWidget);
-    expect(find.text('Dal nome'), findsOneWidget);
+      // Home is itself again: the launcher is present and still blooms exactly
+      // the two creation methods (M7.0 is untouched by this milestone).
+      await tester.tap(find.bySemanticsLabel('Conserva qualcosa'));
+      await tester.pumpAndSettle();
+      expect(find.byType(TurtleShellMenu), findsOneWidget);
+      expect(find.text('Dalla foto'), findsOneWidget);
+      expect(find.text('Dal nome'), findsOneWidget);
 
-    await tester.pumpWidget(const SizedBox());
-    await tester.pumpAndSettle();
-  });
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+    },
+  );
 }

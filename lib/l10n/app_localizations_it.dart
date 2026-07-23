@@ -1355,6 +1355,71 @@ class AppLocalizationsIt extends AppLocalizations {
   String get personDeletedSnack => 'Persona rimossa.';
 
   @override
+  String get settingsMenu => 'Impostazioni';
+
+  @override
+  String get settingsTitle => 'Impostazioni';
+
+  @override
+  String get settingsLanguageSection => 'Lingua';
+
+  @override
+  String get languageAuto => 'Automatico';
+
+  @override
+  String get languageAutoSubtitle => 'Segue la lingua del dispositivo';
+
+  @override
+  String get languageItalian => 'Italiano';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get settingsDataSection => 'Dati e spazio';
+
+  @override
+  String get settingsDataRow => 'Backup, ripristino e spazio';
+
+  @override
+  String get settingsDataRowSub => 'Crea backup, ripristina, libera spazio';
+
+  @override
+  String get settingsUpdatesSection => 'Aggiornamenti';
+
+  @override
+  String get settingsInstalledVersion => 'Versione installata';
+
+  @override
+  String get settingsUpdateCheck => 'Controlla aggiornamenti';
+
+  @override
+  String get settingsUpdateCheckSub => 'Cerca una versione più recente';
+
+  @override
+  String get settingsUpdateChecking => 'Sto controllando…';
+
+  @override
+  String get settingsUpdateUpToDate => 'Pole² è aggiornata.';
+
+  @override
+  String get settingsUpdateCheckFailed =>
+      'Non è stato possibile controllare ora. Riprova quando vuoi.';
+
+  @override
+  String get settingsUpdateManagedByStore =>
+      'Gli aggiornamenti arrivano dal Play Store.';
+
+  @override
+  String get settingsInfoSection => 'Informazioni e supporto';
+
+  @override
+  String get settingsInfoRow => 'Informazioni e supporto';
+
+  @override
+  String get settingsInfoRowSub => 'Supporto, privacy, sito e licenze';
+
+  @override
   String get infoMenu => 'Informazioni e supporto';
 
   @override

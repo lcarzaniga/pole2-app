@@ -56,6 +56,13 @@ void main() {
     // wiring like onGenerateTitle and the GoRouter is exercised. This catches
     // crashes that a bare MaterialApp harness would miss.
     final db = AppDatabase.forTesting(NativeDatabase.memory());
+    // An Italian device, so the default "Automatico" preference resolves to
+    // Italian (the rule lives in resolveAppLocale, covered in its own test).
+    tester.platformDispatcher.localeTestValue = const Locale('it');
+    tester.platformDispatcher.localesTestValue = const [Locale('it')];
+    addTearDown(tester.platformDispatcher.clearLocaleTestValue);
+    addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -74,13 +81,13 @@ void main() {
     // The home app bar shows the Pole² brand wordmark (Work Sans, Text.rich).
     expect(find.byType(PoleWordmark), findsWidgets);
 
-    // The app must be pinned to Italian: English is not a supported locale, so
-    // no mixed Italian/English interface can ever appear.
-    expect(KobeApp.supportedLocale, const Locale('it'));
+    // Two shipped locales; "Automatico" passes a null locale so the device
+    // language reaches localeResolutionCallback.
+    expect(KobeApp.supportedLocales, const [Locale('it'), Locale('en')]);
     final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
-    expect(app.locale, const Locale('it'));
-    expect(app.supportedLocales, const [Locale('it')]);
-    // The Italian empty-state copy is showing (not the English draft).
+    expect(app.locale, isNull);
+    expect(app.supportedLocales, const [Locale('it'), Locale('en')]);
+    // On an Italian device the interface is Italian.
     expect(find.text('Una casa serena per le tue cose'), findsWidgets);
     expect(find.text('A calm home for your things'), findsNothing);
 

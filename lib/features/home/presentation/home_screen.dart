@@ -100,21 +100,20 @@ class HomeScreen extends ConsumerWidget {
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
+            // Content destinations stay here; everything configurable now lives
+            // under Impostazioni (which leads to Backup e ripristino and
+            // Informazioni e supporto), so no destination appears twice.
             onSelected: (value) {
               if (value == 'archive') context.pushNamed(Routes.archiveName);
               if (value == 'places') context.pushNamed(Routes.placesName);
               if (value == 'people') context.pushNamed(Routes.peopleName);
-              if (value == 'backup') context.pushNamed(Routes.backupName);
-              if (value == 'information') {
-                context.pushNamed(Routes.informationName);
-              }
+              if (value == 'settings') context.pushNamed(Routes.settingsName);
             },
             itemBuilder: (context) => [
               PopupMenuItem(value: 'places', child: Text(l10n.placesMenu)),
               PopupMenuItem(value: 'people', child: Text(l10n.peopleMenu)),
               PopupMenuItem(value: 'archive', child: Text(l10n.archiveMenu)),
-              PopupMenuItem(value: 'backup', child: Text(l10n.backupMenu)),
-              PopupMenuItem(value: 'information', child: Text(l10n.infoMenu)),
+              PopupMenuItem(value: 'settings', child: Text(l10n.settingsMenu)),
             ],
           ),
         ],

@@ -2390,6 +2390,132 @@ abstract class AppLocalizations {
   /// **'Persona rimossa.'**
   String get personDeletedSnack;
 
+  /// No description provided for @settingsMenu.
+  ///
+  /// In it, this message translates to:
+  /// **'Impostazioni'**
+  String get settingsMenu;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Impostazioni'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsLanguageSection.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua'**
+  String get settingsLanguageSection;
+
+  /// No description provided for @languageAuto.
+  ///
+  /// In it, this message translates to:
+  /// **'Automatico'**
+  String get languageAuto;
+
+  /// No description provided for @languageAutoSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Segue la lingua del dispositivo'**
+  String get languageAutoSubtitle;
+
+  /// No description provided for @languageItalian.
+  ///
+  /// In it, this message translates to:
+  /// **'Italiano'**
+  String get languageItalian;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In it, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @settingsDataSection.
+  ///
+  /// In it, this message translates to:
+  /// **'Dati e spazio'**
+  String get settingsDataSection;
+
+  /// No description provided for @settingsDataRow.
+  ///
+  /// In it, this message translates to:
+  /// **'Backup, ripristino e spazio'**
+  String get settingsDataRow;
+
+  /// No description provided for @settingsDataRowSub.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea backup, ripristina, libera spazio'**
+  String get settingsDataRowSub;
+
+  /// No description provided for @settingsUpdatesSection.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiornamenti'**
+  String get settingsUpdatesSection;
+
+  /// No description provided for @settingsInstalledVersion.
+  ///
+  /// In it, this message translates to:
+  /// **'Versione installata'**
+  String get settingsInstalledVersion;
+
+  /// No description provided for @settingsUpdateCheck.
+  ///
+  /// In it, this message translates to:
+  /// **'Controlla aggiornamenti'**
+  String get settingsUpdateCheck;
+
+  /// No description provided for @settingsUpdateCheckSub.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca una versione più recente'**
+  String get settingsUpdateCheckSub;
+
+  /// No description provided for @settingsUpdateChecking.
+  ///
+  /// In it, this message translates to:
+  /// **'Sto controllando…'**
+  String get settingsUpdateChecking;
+
+  /// No description provided for @settingsUpdateUpToDate.
+  ///
+  /// In it, this message translates to:
+  /// **'Pole² è aggiornata.'**
+  String get settingsUpdateUpToDate;
+
+  /// No description provided for @settingsUpdateCheckFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile controllare ora. Riprova quando vuoi.'**
+  String get settingsUpdateCheckFailed;
+
+  /// No description provided for @settingsUpdateManagedByStore.
+  ///
+  /// In it, this message translates to:
+  /// **'Gli aggiornamenti arrivano dal Play Store.'**
+  String get settingsUpdateManagedByStore;
+
+  /// No description provided for @settingsInfoSection.
+  ///
+  /// In it, this message translates to:
+  /// **'Informazioni e supporto'**
+  String get settingsInfoSection;
+
+  /// No description provided for @settingsInfoRow.
+  ///
+  /// In it, this message translates to:
+  /// **'Informazioni e supporto'**
+  String get settingsInfoRow;
+
+  /// No description provided for @settingsInfoRowSub.
+  ///
+  /// In it, this message translates to:
+  /// **'Supporto, privacy, sito e licenze'**
+  String get settingsInfoRowSub;
+
   /// No description provided for @infoMenu.
   ///
   /// In it, this message translates to:

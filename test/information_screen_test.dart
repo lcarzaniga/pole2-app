@@ -416,7 +416,7 @@ void main() {
   });
 
   group('navigation from Home', () {
-    testWidgets('the overflow lists it last, after Backup e ripristino', (
+    testWidgets('the overflow lists content destinations then Impostazioni', (
       tester,
     ) async {
       final db = AppDatabase.forTesting(NativeDatabase.memory());
@@ -446,7 +446,9 @@ void main() {
       await tester.tap(find.byIcon(Icons.more_vert));
       await tester.pumpAndSettle();
 
-      // The intended order: Luoghi · Persone · Archivio · Backup · Informazioni.
+      // Content destinations, then the single configuration destination.
+      // Backup e ripristino and Informazioni e supporto now live *inside*
+      // Impostazioni, so they must NOT also appear here (no duplication).
       final items = tester
           .widgetList<Text>(
             find.descendant(
@@ -456,13 +458,7 @@ void main() {
           )
           .map((t) => t.data)
           .toList();
-      expect(items, const [
-        'Luoghi',
-        'Persone',
-        'Archivio',
-        'Backup e ripristino',
-        'Informazioni e supporto',
-      ]);
+      expect(items, const ['Luoghi', 'Persone', 'Archivio', 'Impostazioni']);
 
       await _teardown(tester);
     });
