@@ -260,6 +260,44 @@ void main() {
     expect(await dao().attachmentEvidenceIds(eventId), hasLength(2));
   });
 
+  test(
+    'M9.1: a mixed record keeps each attachment\'s own EvidenceKind',
+    () async {
+      final p = await newPossession('Trapano');
+      final eventId = await dao().createRecordWithAttachments(
+        possessionId: p,
+        kind: EventKind.warranty,
+        at: now,
+        attachments: [
+          const AttachmentInput(
+            fileId: 'img-1',
+            relativePath: 'documents/img-1.jpg',
+            mimeType: 'image/jpeg',
+            byteSize: 42,
+            kind: EvidenceKind.photo,
+            label: 'Foto',
+          ),
+          const AttachmentInput(
+            fileId: 'doc-1',
+            relativePath: 'documents/doc-1.pdf',
+            mimeType: 'application/pdf',
+            byteSize: 99,
+            kind: EvidenceKind.other,
+            label: 'ricevuta.pdf',
+          ),
+        ],
+      );
+      final atts = await dao().watchAttachments(eventId).first;
+      expect(atts, hasLength(2));
+      final byName = {for (final a in atts) a.displayName: a};
+      expect(byName['Foto']!.evidence.kind, EvidenceKind.photo);
+      expect(byName['Foto']!.file.mimeType, 'image/jpeg');
+      expect(byName['ricevuta.pdf']!.evidence.kind, EvidenceKind.other);
+      expect(byName['ricevuta.pdf']!.file.mimeType, 'application/pdf');
+      expect(await fkCheck(), isEmpty);
+    },
+  );
+
   test('reclaimIfOrphan on an unknown id is a calm no-op', () async {
     expect(await dao().reclaimIfOrphan('nope'), isNull);
   });

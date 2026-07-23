@@ -163,6 +163,21 @@ class AppLocalizationsIt extends AppLocalizations {
   String get recordAttachmentAdd => 'Aggiungi un documento';
 
   @override
+  String get attachmentAdd => 'Aggiungi allegato';
+
+  @override
+  String get attachSheetTitle => 'Aggiungi un allegato';
+
+  @override
+  String get attachChoosePhoto => 'Scegli una foto';
+
+  @override
+  String get attachChooseDocument => 'Scegli un documento';
+
+  @override
+  String get attachmentPhotoDefaultLabel => 'Foto';
+
+  @override
   String get recordSwitchToNoteTitle => 'Passare a Nota?';
 
   @override

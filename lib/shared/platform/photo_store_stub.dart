@@ -34,3 +34,14 @@ ImageProvider coverImageProvider({
     'YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
   ),
 );
+
+/// Web has no on-disk image, so the thumbnail is just the fallback.
+Widget attachmentThumb({
+  required String absolutePath,
+  required double size,
+  required Widget fallback,
+}) => SizedBox(
+  width: size,
+  height: size,
+  child: Center(child: fallback),
+);

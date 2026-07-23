@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path/path.dart' as p;
 
 import '../../../app/router/routes.dart';
 import '../../../app/theme/app_icon_size.dart';
@@ -887,6 +888,9 @@ class _EventRow extends ConsumerWidget {
     final attachments = isRecord
         ? (ref.watch(recordAttachmentsProvider(event.id)).value ?? const [])
         : const <AttachmentWithFile>[];
+    final docsPath = attachments.isEmpty
+        ? null
+        : ref.watch(appDocumentsPathProvider).value;
 
     final row = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -947,6 +951,11 @@ class _EventRow extends ConsumerWidget {
                       for (final att in attachments)
                         AttachmentTile(
                           name: att.displayName,
+                          imagePath:
+                              (docsPath != null &&
+                                  att.file.mimeType.startsWith('image/'))
+                              ? p.join(docsPath, att.file.relativePath)
+                              : null,
                           onOpen: () => _openAttachment(context, att),
                         ),
                     ],

@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:project_kobe/core/database/app_database.dart';
 import 'package:project_kobe/core/database/tables/enums.dart';
 import 'package:project_kobe/core/providers/database_provider.dart';
@@ -38,15 +42,107 @@ Future<void> _unmount(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+/// Fakes the image_picker platform so "Scatta una foto" can be exercised.
+class _FakeImagePicker extends ImagePickerPlatform
+    with MockPlatformInterfaceMixin {
+  XFile? Function()? onGet;
+  @override
+  Future<XFile?> getImageFromSource({
+    required ImageSource source,
+    ImagePickerOptions options = const ImagePickerOptions(),
+  }) async => onGet?.call();
+}
+
+// A 1×1 PNG (decodes fine even when named .jpg — Image decodes by content).
+const _png = <int>[
+  0x89,
+  0x50,
+  0x4E,
+  0x47,
+  0x0D,
+  0x0A,
+  0x1A,
+  0x0A,
+  0x00,
+  0x00,
+  0x00,
+  0x0D,
+  0x49,
+  0x48,
+  0x44,
+  0x52,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x08,
+  0x06,
+  0x00,
+  0x00,
+  0x00,
+  0x1F,
+  0x15,
+  0xC4,
+  0x89,
+  0x00,
+  0x00,
+  0x00,
+  0x0D,
+  0x49,
+  0x44,
+  0x41,
+  0x54,
+  0x78,
+  0x9C,
+  0x62,
+  0x00,
+  0x01,
+  0x00,
+  0x00,
+  0x05,
+  0x00,
+  0x01,
+  0x0D,
+  0x0A,
+  0x2D,
+  0xB4,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x49,
+  0x45,
+  0x4E,
+  0x44,
+  0xAE,
+  0x42,
+  0x60,
+  0x82,
+];
+
 void main() {
   late AppDatabase db;
   late String possessionId;
+  late _FakeImagePicker picker;
+  late Directory dir;
 
   setUp(() async {
     db = AppDatabase.forTesting(NativeDatabase.memory());
     possessionId = (await db.possessionsDao.createPossession(
       title: 'Caldaia',
     )).id;
+    picker = _FakeImagePicker();
+    ImagePickerPlatform.instance = picker;
+    dir = Directory.systemTemp.createTempSync('pole2_ed_');
+  });
+  tearDown(() {
+    try {
+      dir.deleteSync(recursive: true);
+    } catch (_) {}
   });
 
   testWidgets('new editor defaults to Nota with the selector always visible', (
@@ -71,7 +167,7 @@ void main() {
 
     // A plain note hides every structured field.
     expect(find.text('Aggiungi una scadenza'), findsNothing);
-    expect(find.text('Aggiungi un documento'), findsNothing);
+    expect(find.text('Aggiungi allegato'), findsNothing);
     expect(find.text('Data'), findsNothing);
     await _unmount(tester);
   });
@@ -88,7 +184,7 @@ void main() {
     expect(_chip(tester, 'Garanzia').selected, isTrue);
     expect(find.text('Data'), findsOneWidget);
     expect(find.text('Aggiungi una scadenza'), findsOneWidget);
-    expect(find.text('Aggiungi un documento'), findsOneWidget);
+    expect(find.text('Aggiungi allegato'), findsOneWidget);
     await _unmount(tester);
   });
 
@@ -148,6 +244,48 @@ void main() {
       expect(find.text('Aggiungi una scadenza'), findsNothing);
       expect(find.textContaining('Scade il'), findsNothing);
       expect(find.text('Data'), findsNothing);
+      await _unmount(tester);
+    });
+  });
+
+  group('attachments (M9.1)', () {
+    testWidgets('"Aggiungi allegato" opens a three-source sheet', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_app(db, possessionId: possessionId));
+      await tester.pumpAndSettle();
+      // Attachments live under a structured category.
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Garanzia'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Aggiungi allegato'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Aggiungi un allegato'), findsOneWidget); // sheet title
+      expect(find.text('Scatta una foto'), findsOneWidget);
+      expect(find.text('Scegli una foto'), findsOneWidget);
+      expect(find.text('Scegli un documento'), findsOneWidget);
+      await _unmount(tester);
+    });
+
+    testWidgets('capturing a photo adds a "Foto" attachment with a thumbnail', (
+      tester,
+    ) async {
+      final f = File('${dir.path}/cap.jpg')..writeAsBytesSync(_png);
+      picker.onGet = () => XFile(f.path);
+
+      await tester.pumpWidget(_app(db, possessionId: possessionId));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Garanzia'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Aggiungi allegato'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Scatta una foto'));
+      await tester.pumpAndSettle();
+
+      // The new image shows the default "Foto" label and a thumbnail.
+      expect(find.text('Foto'), findsOneWidget);
+      expect(find.byType(Image), findsWidgets);
       await _unmount(tester);
     });
   });

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../app/theme/app_icon_size.dart';
 import '../../../core/database/tables/enums.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/platform/photo_store.dart';
 
 /// M9 — the contextual-record categories offered in the record editor, in
 /// display order. Each maps 1:1 to an [EventKind]; the user-facing category
@@ -54,8 +55,10 @@ IconData recordCategoryIcon(EventKind kind) => switch (kind) {
   _ => Icons.description_outlined,
 };
 
-/// A single attachment row: file icon, name, open, and (optional) remove. Kept
-/// here so the record editor and the timeline render attachments identically.
+/// A single attachment row: an image evidence thumbnail (when [imagePath] points
+/// to a readable image) or a generic file icon, plus name, open and (optional)
+/// remove. Kept here so the record editor and the timeline render attachments
+/// identically. Missing/corrupt images fall back to the generic file icon.
 class AttachmentTile extends StatelessWidget {
   const AttachmentTile({
     super.key,
@@ -63,12 +66,19 @@ class AttachmentTile extends StatelessWidget {
     required this.onOpen,
     this.onRemove,
     this.removeTooltip,
+    this.imagePath,
   });
 
   final String name;
   final VoidCallback onOpen;
   final VoidCallback? onRemove;
   final String? removeTooltip;
+
+  /// Absolute path to an image to preview as a thumbnail. Null for non-image
+  /// attachments (PDF etc.), which keep the generic file icon.
+  final String? imagePath;
+
+  static const double _thumb = 40;
 
   @override
   Widget build(BuildContext context) {
@@ -81,11 +91,7 @@ class AttachmentTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(
           children: [
-            Icon(
-              Icons.attach_file,
-              size: AppIconSize.sm,
-              color: scheme.onSurfaceVariant,
-            ),
+            _leading(scheme),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -108,6 +114,25 @@ class AttachmentTile extends StatelessWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _leading(ColorScheme scheme) {
+    final fallback = Icon(
+      Icons.attach_file,
+      size: AppIconSize.sm,
+      color: scheme.onSurfaceVariant,
+    );
+    final path = imagePath;
+    if (path == null) return fallback;
+    return Semantics(
+      image: true,
+      label: name,
+      child: attachmentThumb(
+        absolutePath: path,
+        size: _thumb,
+        fallback: fallback,
       ),
     );
   }

@@ -10,8 +10,11 @@ import '../../../l10n/app_localizations.dart';
 import '../../../shared/format.dart';
 import '../../../shared/layout/safe_insets.dart';
 import '../../../shared/phrasing.dart';
+import 'package:path/path.dart' as p;
+
 import '../application/event_providers.dart';
 import '../application/possession_providers.dart';
+import '../media/attachment_picker.dart';
 import '../media/document_pick.dart';
 import '../media/document_store.dart';
 import '../media/record_flow.dart';
@@ -45,7 +48,7 @@ class _RecordEditorScreenState extends ConsumerState<RecordEditorScreen> {
   ReminderLead? _lead;
   bool _saving = false;
 
-  final _newAttachments = <PickedDocument>[];
+  final _newAttachments = <PickedAttachment>[];
   final _removedExisting = <String>{};
 
   bool get _isEdit => widget.recordId != null;
@@ -104,7 +107,7 @@ class _RecordEditorScreenState extends ConsumerState<RecordEditorScreen> {
     super.dispose();
   }
 
-  void _discard(PickedDocument a) {
+  void _discard(PickedAttachment a) {
     final path = a.tempPath;
     if (path == null) return;
     // Best-effort cleanup of the cached copy; ignore failures.
@@ -132,10 +135,20 @@ class _RecordEditorScreenState extends ConsumerState<RecordEditorScreen> {
     });
   }
 
+  /// "Aggiungi allegato": a calm three-option sheet — photograph, choose an
+  /// image, or choose a document — then pick and stage-in-memory. A captured or
+  /// chosen image gets the default visible label "Foto" (no rename in M9.1).
   Future<void> _addAttachment() async {
-    final picked = await pickAttachment();
+    final source = await _showAttachmentSheet();
+    if (source == null || !mounted) return; // dismissed — silent.
+    var picked = await pickAttachment(source);
     if (!mounted) return;
-    if (picked.status == DocumentPickStatus.picked) {
+    if (picked.status == AttachmentPickStatus.picked) {
+      if (picked.isImage && (picked.displayName ?? '').trim().isEmpty) {
+        picked = picked.withDisplayName(
+          AppLocalizations.of(context).attachmentPhotoDefaultLabel,
+        );
+      }
       setState(() => _newAttachments.add(picked));
       return;
     }
@@ -144,6 +157,52 @@ class _RecordEditorScreenState extends ConsumerState<RecordEditorScreen> {
       picked.status,
     );
     if (msg != null) _snack(msg);
+  }
+
+  Future<AttachmentSource?> _showAttachmentSheet() {
+    final l10n = AppLocalizations.of(context);
+    return showModalBottomSheet<AttachmentSource>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                0,
+                AppSpacing.lg,
+                AppSpacing.sm,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  l10n.attachSheetTitle,
+                  style: Theme.of(ctx).textTheme.titleMedium,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: Text(l10n.photoTakePhoto),
+              onTap: () => Navigator.of(ctx).pop(AttachmentSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(l10n.attachChoosePhoto),
+              onTap: () => Navigator.of(ctx).pop(AttachmentSource.gallery),
+            ),
+            ListTile(
+              leading: const Icon(Icons.description_outlined),
+              title: Text(l10n.attachChooseDocument),
+              onTap: () => Navigator.of(ctx).pop(AttachmentSource.document),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        ),
+      ),
+    );
   }
 
   /// Selects a category. Switching between structured categories preserves every
@@ -285,10 +344,11 @@ class _RecordEditorScreenState extends ConsumerState<RecordEditorScreen> {
     final l10n = AppLocalizations.of(context);
     final possession = ref.watch(possessionByIdProvider(widget.possessionId));
 
-    final existing = _isEdit
+    final List<AttachmentWithFile> existing = _isEdit
         ? (ref.watch(recordAttachmentsProvider(widget.recordId!)).value ??
               const [])
         : const [];
+    final docsPath = ref.watch(appDocumentsPathProvider).value;
 
     return Scaffold(
       appBar: AppBar(
@@ -360,7 +420,7 @@ class _RecordEditorScreenState extends ConsumerState<RecordEditorScreen> {
             const SizedBox(height: AppSpacing.lg),
             _validitySection(context, l10n, theme, scheme),
             const SizedBox(height: AppSpacing.lg),
-            _attachmentsSection(context, l10n, theme, existing),
+            _attachmentsSection(context, l10n, theme, existing, docsPath),
           ],
         ],
       ),
@@ -435,7 +495,8 @@ class _RecordEditorScreenState extends ConsumerState<RecordEditorScreen> {
     BuildContext context,
     AppLocalizations l10n,
     ThemeData theme,
-    List<dynamic> existing,
+    List<AttachmentWithFile> existing,
+    String? docsPath,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -444,20 +505,24 @@ class _RecordEditorScreenState extends ConsumerState<RecordEditorScreen> {
         for (final att in existing)
           if (!_removedExisting.contains(att.evidence.id))
             AttachmentTile(
-              name: att.displayName as String,
+              name: att.displayName,
+              imagePath:
+                  (docsPath != null && att.file.mimeType.startsWith('image/'))
+                  ? p.join(docsPath, att.file.relativePath)
+                  : null,
               removeTooltip: l10n.documentRemoveTooltip,
               onOpen: () => _openExisting(
-                att.file.relativePath as String,
-                att.file.mimeType as String,
-                att.displayName as String,
+                att.file.relativePath,
+                att.file.mimeType,
+                att.displayName,
               ),
-              onRemove: () => setState(
-                () => _removedExisting.add(att.evidence.id as String),
-              ),
+              onRemove: () =>
+                  setState(() => _removedExisting.add(att.evidence.id)),
             ),
         for (final a in _newAttachments)
           AttachmentTile(
             name: a.displayName ?? '',
+            imagePath: a.isImage ? a.tempPath : null,
             removeTooltip: l10n.documentRemoveTooltip,
             onOpen: () {},
             onRemove: () => setState(() {
@@ -470,7 +535,7 @@ class _RecordEditorScreenState extends ConsumerState<RecordEditorScreen> {
           child: TextButton.icon(
             onPressed: _addAttachment,
             icon: const Icon(Icons.attach_file),
-            label: Text(l10n.recordAttachmentAdd),
+            label: Text(l10n.attachmentAdd),
           ),
         ),
       ],

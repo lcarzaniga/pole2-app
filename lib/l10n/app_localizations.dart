@@ -374,6 +374,36 @@ abstract class AppLocalizations {
   /// **'Aggiungi un documento'**
   String get recordAttachmentAdd;
 
+  /// No description provided for @attachmentAdd.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi allegato'**
+  String get attachmentAdd;
+
+  /// No description provided for @attachSheetTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi un allegato'**
+  String get attachSheetTitle;
+
+  /// No description provided for @attachChoosePhoto.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli una foto'**
+  String get attachChoosePhoto;
+
+  /// No description provided for @attachChooseDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli un documento'**
+  String get attachChooseDocument;
+
+  /// No description provided for @attachmentPhotoDefaultLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Foto'**
+  String get attachmentPhotoDefaultLabel;
+
   /// No description provided for @recordSwitchToNoteTitle.
   ///
   /// In it, this message translates to:

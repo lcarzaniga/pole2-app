@@ -115,11 +115,18 @@ Future<StagedImport> _stageAll(List<XFile> picked) async {
 }
 
 /// One already app-managed local file to stage (an attachment the native SAF
-/// layer copied out of a content URI into app storage).
+/// layer copied out of a content URI, or an image_picker-normalized JPEG). When
+/// [ext] is given (e.g. `.jpg` for a re-encoded image) it overrides the source
+/// path's extension so the stored name's extension always agrees with the MIME.
 class LocalFileToStage {
-  const LocalFileToStage({required this.srcPath, required this.mimeType});
+  const LocalFileToStage({
+    required this.srcPath,
+    required this.mimeType,
+    this.ext,
+  });
   final String srcPath;
   final String mimeType;
+  final String? ext;
 }
 
 /// Stages one already app-managed local file — see [stageLocalFiles].
@@ -152,7 +159,7 @@ Future<StagedImport> stageLocalFiles(
   final entries = <PhotoImportEntry>[];
   for (final src in sources) {
     final fileId = _uuid.v4();
-    final ext = p.extension(src.srcPath);
+    final ext = src.ext ?? p.extension(src.srcPath);
     final safeExt = normalizeRelativePath('x$ext') == null ? '' : ext;
     final tempRel = '$_importsRoot/$opId/$fileId$safeExt';
     final finalRel = '$finalRoot/$fileId$safeExt';

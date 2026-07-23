@@ -92,7 +92,10 @@ void main() {
       expect(exists(ph.tempRelativePath), isTrue);
     }
     var committed = false;
-    final outcome = await promoteAndCommit(staged, () async => committed = true);
+    final outcome = await promoteAndCommit(
+      staged,
+      () async => committed = true,
+    );
     expect(outcome, PhotoPromoteOutcome.committed);
     expect(committed, isTrue);
     for (final ph in staged.photos) {
@@ -155,6 +158,23 @@ void main() {
     expect(r.abandonedPrepared, 1);
     expect(dirExists('photo_imports/${staged.operationId}'), isFalse);
     expect(exists(staged.photos.single.finalRelativePath), isFalse);
+  });
+
+  test('M9.1: an image with an explicit ext is stored as documents/<id>.jpg '
+      'regardless of the source path extension', () async {
+    // image_picker temp files may carry any extension; the record flow forces
+    // .jpg so the stored name agrees with the image/jpeg MIME.
+    final src = fakeCopiedFile('image_picker_tmp.xyz', [1, 2, 3]);
+    final staged = await stageLocalFiles([
+      LocalFileToStage(srcPath: src, mimeType: 'image/jpeg', ext: '.jpg'),
+    ], finalRoot: 'documents');
+    final fin = staged.photos.single.finalRelativePath;
+    expect(fin, startsWith('documents/'));
+    expect(fin, endsWith('.jpg'));
+    expect(staged.photos.single.mimeType, 'image/jpeg');
+    final outcome = await promoteAndCommit(staged, () async {});
+    expect(outcome, PhotoPromoteOutcome.committed);
+    expect(exists(fin), isTrue);
   });
 
   test('sanitizeDocumentName defeats traversal and keeps a readable name', () {

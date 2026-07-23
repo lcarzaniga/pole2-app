@@ -12,8 +12,7 @@ import '../../backup/restore/restore_pending.dart';
 import '../application/permanent_delete_activity.dart';
 import '../application/permanent_delete_cleanup.dart';
 import '../application/possession_providers.dart';
-import 'document_pick.dart';
-import 'document_store.dart';
+import 'attachment_source.dart';
 import 'photo_import.dart';
 
 /// The user-facing outcome of saving a record (creating or editing).
@@ -25,20 +24,18 @@ enum RecordSaveStatus {
   failed,
 }
 
-/// Opens the system picker and copies the chosen file into app storage, ready to
-/// hold in the editor as a pending attachment. Nothing is committed here.
-Future<PickedDocument> pickAttachment() => pickDocument();
-
-/// The calm message for a picker outcome (null when nothing to say — a chosen or
-/// cancelled pick is silent).
+/// The calm message for an attachment-pick outcome (null when nothing to say —
+/// a chosen or cancelled pick is silent). A denied camera/photo permission gets
+/// the dedicated calm recovery copy.
 String? attachmentPickMessage(
   AppLocalizations l10n,
-  DocumentPickStatus status,
+  AttachmentPickStatus status,
 ) => switch (status) {
-  DocumentPickStatus.picked || DocumentPickStatus.cancelled => null,
-  DocumentPickStatus.unavailable ||
-  DocumentPickStatus.unreadable ||
-  DocumentPickStatus.failed => l10n.documentAddFailed,
+  AttachmentPickStatus.picked || AttachmentPickStatus.cancelled => null,
+  AttachmentPickStatus.permissionDenied => l10n.cameraDeniedSnack,
+  AttachmentPickStatus.unavailable ||
+  AttachmentPickStatus.unreadable ||
+  AttachmentPickStatus.failed => l10n.documentAddFailed,
 };
 
 /// Creates a record ([EventKind] category + title/notes + date + optional
@@ -54,7 +51,7 @@ Future<RecordSaveStatus> saveNewRecord(
   String? title,
   String? notes,
   ReminderLead? remindLead,
-  List<PickedDocument> newAttachments = const [],
+  List<PickedAttachment> newAttachments = const [],
 }) async {
   final blocked = await _saveBlockedReason(ref);
   if (blocked != null) return _blockedStatus(blocked);
@@ -80,7 +77,7 @@ Future<RecordSaveStatus> saveNewRecord(
 Future<RecordSaveStatus> addAttachmentsToRecord(
   WidgetRef ref, {
   required String eventId,
-  required List<PickedDocument> newAttachments,
+  required List<PickedAttachment> newAttachments,
 }) async {
   if (newAttachments.isEmpty) return RecordSaveStatus.saved;
   final blocked = await _saveBlockedReason(ref);
@@ -96,7 +93,7 @@ Future<RecordSaveStatus> addAttachmentsToRecord(
 /// them, then run [commit] with the promoted inputs — all atomic. Cleans staged
 /// temp files on any failure.
 Future<RecordSaveStatus> _stageAndCommit(
-  List<PickedDocument> attachments,
+  List<PickedAttachment> attachments,
   Future<void> Function(List<AttachmentInput>) commit,
 ) async {
   if (attachments.isEmpty) {
@@ -112,7 +109,12 @@ Future<RecordSaveStatus> _stageAndCommit(
   try {
     staged = await stageLocalFiles([
       for (final a in attachments)
-        LocalFileToStage(srcPath: a.tempPath!, mimeType: a.mimeType!),
+        LocalFileToStage(
+          srcPath: a.tempPath!,
+          mimeType: a.mimeType!,
+          // Re-encoded images are always JPEG; force the extension to agree.
+          ext: a.isImage ? '.jpg' : null,
+        ),
     ], finalRoot: kDocumentsRoot);
   } catch (_) {
     for (final a in attachments) {
@@ -129,6 +131,8 @@ Future<RecordSaveStatus> _stageAndCommit(
           relativePath: staged.photos[i].finalRelativePath,
           mimeType: staged.photos[i].mimeType,
           byteSize: staged.photos[i].byteSize,
+          // Each attachment keeps its own kind: image → photo, else → other.
+          kind: attachments[i].kind ?? EvidenceKind.other,
           label: attachments[i].displayName,
         ),
     ];

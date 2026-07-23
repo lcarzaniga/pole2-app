@@ -119,3 +119,28 @@ ImageProvider coverImageProvider({
   required String docsPath,
   required String relativePath,
 }) => FileImage(File(p.join(docsPath, relativePath)));
+
+/// A small square thumbnail for an image attachment at [absolutePath]. Decodes
+/// at ~2× the display size (never the full ~3000 px evidence image) and falls
+/// back to [fallback] when the file is missing or corrupt. Kept behind the
+/// platform facade so `dart:io` never enters the web graph.
+Widget attachmentThumb({
+  required String absolutePath,
+  required double size,
+  required Widget fallback,
+}) => ClipRRect(
+  borderRadius: BorderRadius.circular(6),
+  child: Image.file(
+    File(absolutePath),
+    width: size,
+    height: size,
+    fit: BoxFit.cover,
+    cacheWidth: (size * 2).round(),
+    gaplessPlayback: true,
+    errorBuilder: (_, _, _) => SizedBox(
+      width: size,
+      height: size,
+      child: Center(child: fallback),
+    ),
+  ),
+);

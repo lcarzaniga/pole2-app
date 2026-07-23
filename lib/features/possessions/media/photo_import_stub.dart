@@ -11,9 +11,14 @@ Future<PhotoStageResult> stagePhotosFromGallery() async =>
     const PhotoStageResult.cancelled();
 
 class LocalFileToStage {
-  const LocalFileToStage({required this.srcPath, required this.mimeType});
+  const LocalFileToStage({
+    required this.srcPath,
+    required this.mimeType,
+    this.ext,
+  });
   final String srcPath;
   final String mimeType;
+  final String? ext;
 }
 
 Future<StagedImport> stageLocalFile(
