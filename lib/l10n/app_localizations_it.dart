@@ -157,7 +157,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get recordRemindMe => 'Ricordamelo';
 
   @override
-  String get recordAttachmentsLabel => 'Documenti';
+  String get recordAttachmentsLabel => 'Allegati';
 
   @override
   String get recordAttachmentAdd => 'Aggiungi un documento';
@@ -182,7 +182,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get recordSwitchToNoteBody =>
-      'Una nota semplice non conserva data, scadenza, promemoria o documenti. Vuoi rimuoverli?';
+      'Una nota semplice non conserva data, scadenza, promemoria o allegati. Vuoi rimuoverli?';
 
   @override
   String get recordSwitchToNoteConfirm => 'Rimuovi e continua';
@@ -588,17 +588,17 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get documentOpenFailed =>
-      'Non è stato possibile aprire il documento. Riprova quando vuoi.';
+      'Non è stato possibile aprire l\'allegato. Riprova quando vuoi.';
 
   @override
   String get documentOpenNoApp =>
-      'Nessuna app disponibile per aprire questo tipo di documento.';
+      'Nessuna app disponibile per aprire questo tipo di file.';
 
   @override
-  String get documentMissing => 'Questo documento non è più disponibile.';
+  String get documentMissing => 'Questo allegato non è più disponibile.';
 
   @override
-  String get documentRemoveTooltip => 'Rimuovi documento';
+  String get documentRemoveTooltip => 'Rimuovi allegato';
 
   @override
   String get hubPhoto => 'Foto';
